@@ -218,5 +218,71 @@ footer {
 
   .hero-text {
     font-size: 17px;
+
+  .hero-map {
+  max-width: 1180px;
+  height: 620px;
+  margin: 0 auto 16px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  position: relative;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+#heroMap {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.hero-map-text {
+  position: absolute;
+  z-index: 500;
+  top: 30px;
+  left: 30px;
+  max-width: 420px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 26px;
+  backdrop-filter: blur(12px);
+}
+
+.hero-map-text h1 {
+  font-size: 52px;
+  letter-spacing: -0.04em;
+  margin: 8px 0;
+}
+
+.hero-map-text p {
+  color: var(--muted);
+  font-size: 17px;
+}
+
+.hero-tags .ny {
+  background: #e1f5ee;
+  color: #085041;
+}
+
+.hero-tags .thai {
+  background: #faeeda;
+  color: #854f0b;
+}
+
+.hero-tags .london {
+  background: #faece7;
+  color: #712b13;
+}
+
+.location-label {
+  font-family: var(--font);
+  font-weight: 600;
+  background: white;
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 999px;
+  padding: 6px 10px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
   }
 }
