@@ -1,54 +1,150 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Nawa Portfolio</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nawa · Analytics Portfolio</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="stylesheet" href="style.css" />
 </head>
-  
+
 <body>
 
-<section class="hero">
-  <h1>Hi, I’m Nawa.</h1>
-  <p>I turn messy data into business decisions.</p>
-</section>
+  <nav class="nav">
+    <div class="brand">Nawa · Analytics Portfolio</div>
+    <div class="nav-links">
+      <a href="#projects">Projects</a>
+      <a href="#experience">Experience</a>
+      <a href="#journey">Journey</a>
+      <a href="#skills">Skills</a>
+    </div>
+  </nav>
 
-<section class="projects">
-  <h2>Featured Projects</h2>
+  <section class="hero">
+    <p class="eyebrow">Applied Analytics · Product · Data Storytelling</p>
+    <h1>Hi, I’m Nawa.</h1>
+    <p class="hero-text">
+      I turn messy data into business decisions — combining supply chain experience,
+      machine learning, IoT systems, and product analytics.
+    </p>
+    <div class="hero-tags">
+      <span>Python</span>
+      <span>SQL</span>
+      <span>Machine Learning</span>
+      <span>Tableau</span>
+      <span>Product Analytics</span>
+    </div>
+  </section>
 
-  <div class="card">
-    <h3>Fintech Risk Analytics</h3>
-    <p>10K+ news headlines → downside risk modeling</p>
-  </div>
+  <section id="projects" class="section">
+    <div class="section-header">
+      <p class="eyebrow">Selected Work</p>
+      <h2>Featured Projects</h2>
+    </div>
 
-  <div class="card">
-    <h3>AIoT Mood Detection</h3>
-    <p>Real-time system, 432K msgs/month</p>
-  </div>
+    <div class="grid">
+      <div class="card">
+        <p class="card-label">Machine Learning · Finance</p>
+        <h3>Fintech Risk Analytics</h3>
+        <p>Built a news-driven pipeline using 10K+ headlines and 6+ NLP features to model volatility, downside risk, and stress scenarios.</p>
+      </div>
 
-</section>
+      <div class="card">
+        <p class="card-label">IoT · Real-Time Analytics</p>
+        <h3>AIoT Mood Detection</h3>
+        <p>Developed a Core2 → AWS IoT system processing ~432K messages/month with &lt;2s latency and live/replay dashboards.</p>
+      </div>
 
-  <section class="experience">
-  <h2>Experience</h2>
+      <div class="card">
+        <p class="card-label">NLP · Creator Economy</p>
+        <h3>YouTube Micro-Creator Analytics</h3>
+        <p>Engineered 1,200+ video observations with 15+ features to analyze engagement drivers for creators under 10K subscribers.</p>
+      </div>
 
-  <div class="card">
-    <h3>Cisco — Logistics Analyst</h3>
-    <p>Managed ~$16K/week shipments, improving delivery reliability.</p>
-  </div>
+      <div class="card">
+        <p class="card-label">Data Engineering</p>
+        <h3>PopFlow Trend Platform</h3>
+        <p>Built an ETL pipeline using Python, APIs, and MongoDB across 100K+ records with a trend scoring model for go-to-market decisions.</p>
+      </div>
 
-  <div class="card">
-    <h3>Fabrinet — Production Planner</h3>
-    <p>Reduced partial shipments by 40% through process redesign.</p>
-  </div>
-</section>
+      <div class="card">
+        <p class="card-label">Tableau · Strategy</p>
+        <h3>Nike Revenue Storytelling</h3>
+        <p>Created 3 dashboards and a 10-slide executive story explaining revenue decline through pricing, demand, and competitor signals.</p>
+      </div>
+
+      <div class="card">
+        <p class="card-label">Consulting · Innovation</p>
+        <h3>Google Innovation Lab</h3>
+        <p>Designed an AI solution using user personas, success metrics, and feature scoring framework, achieving Top 5 finalist ranking.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="experience" class="section">
+    <div class="section-header">
+      <p class="eyebrow">Professional Background</p>
+      <h2>Experience</h2>
+    </div>
+
+    <div class="timeline">
+      <div class="timeline-card">
+        <span class="date">2022 — 2025</span>
+        <h3>Cisco · Logistics & Supply Chain Analyst</h3>
+        <p>Analyzed logistics data supporting ~$16K/week shipments and improved delivery reliability through IT and operations coordination.</p>
+      </div>
+
+      <div class="timeline-card">
+        <span class="date">2022 — 2025</span>
+        <h3>Fabrinet · Production Planner</h3>
+        <p>Redesigned fulfillment workflows and reduced partial shipments by 40% for U.S. market distribution.</p>
+      </div>
+
+      <div class="timeline-card">
+        <span class="date">2019 — 2022</span>
+        <h3>Fabrinet · Process & Test Engineer</h3>
+        <p>Built Excel automation tools and analyzed 1K+ units/month production data to identify bottlenecks and improve efficiency.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="journey" class="section">
+    <div class="section-header">
+      <p class="eyebrow">Global Journey</p>
+      <h2>Thailand → New York</h2>
+    </div>
+    <div class="map-card">
+      <div id="map"></div>
+    </div>
+  </section>
+
+  <section id="skills" class="section">
+    <div class="section-header">
+      <p class="eyebrow">Toolbox</p>
+      <h2>Skills</h2>
+    </div>
+
+    <div class="skills">
+      <span>Python</span>
+      <span>SQL</span>
+      <span>PySpark</span>
+      <span>Machine Learning</span>
+      <span>NLP</span>
+      <span>Tableau</span>
+      <span>Power BI</span>
+      <span>MongoDB</span>
+      <span>Product Strategy</span>
+      <span>KPI Design</span>
+    </div>
+  </section>
+
+  <footer>
+    <p>Built by Nawa · Data Analytics Portfolio</p>
+  </footer>
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script src="script.js"></script>
-
-<section class="map">
-  <h2>🌍 My Journey</h2>
-  <div id="map"></div>
-</section>
-
+  <script src="script.js"></script>
 </body>
 </html>
