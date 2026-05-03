@@ -19,6 +19,10 @@
   padding: 0;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: var(--font);
   background: linear-gradient(180deg, #e1f5ee 0%, var(--bg) 45%);
@@ -54,7 +58,12 @@ body {
   font-size: 14px;
 }
 
-.hero, .section {
+.nav-links a:hover {
+  color: var(--accent);
+}
+
+.hero,
+.section {
   max-width: 1180px;
   margin: 0 auto 16px;
   background: var(--surface);
@@ -75,7 +84,9 @@ body {
   color: var(--muted);
 }
 
-.eyebrow, .card-label, .date {
+.eyebrow,
+.card-label,
+.date {
   font-family: var(--mono);
   font-size: 12px;
   color: var(--light);
@@ -83,14 +94,16 @@ body {
   letter-spacing: 0.06em;
 }
 
-.hero-tags, .skills {
+.hero-tags,
+.skills {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
   margin-top: 22px;
 }
 
-.hero-tags span, .skills span {
+.hero-tags span,
+.skills span {
   background: var(--surface2);
   border: 1px solid var(--border);
   border-radius: 999px;
@@ -114,7 +127,8 @@ body {
   gap: 14px;
 }
 
-.card, .timeline-card {
+.card,
+.timeline-card {
   background: var(--surface2);
   border: 1px solid var(--border);
   border-radius: 16px;
@@ -122,19 +136,35 @@ body {
   transition: 0.2s ease;
 }
 
-.card:hover, .timeline-card:hover {
+.card:hover,
+.timeline-card:hover {
   transform: translateY(-4px);
   background: #ffffff;
 }
 
-.card h3, .timeline-card h3 {
+.card h3,
+.timeline-card h3 {
   margin: 8px 0;
   font-size: 21px;
   letter-spacing: -0.02em;
 }
 
-.card p, .timeline-card p {
+.card p,
+.timeline-card p {
   color: var(--muted);
+}
+
+.project-link {
+  display: inline-block;
+  margin-top: 14px;
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.project-link:hover {
+  text-decoration: underline;
 }
 
 .timeline {
@@ -164,6 +194,10 @@ footer {
 }
 
 @media (max-width: 900px) {
+  body {
+    padding: 12px;
+  }
+
   .grid {
     grid-template-columns: 1fr;
   }
@@ -173,7 +207,16 @@ footer {
     gap: 10px;
   }
 
+  .nav-links {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
   .hero h1 {
     font-size: 42px;
+  }
+
+  .hero-text {
+    font-size: 17px;
   }
 }
