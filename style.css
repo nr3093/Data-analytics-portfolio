@@ -286,3 +286,47 @@ footer {
 }
   }
 }
+
+body {
+  background: linear-gradient(
+    180deg,
+    #e6f4f1 0%,
+    #f7f6f3 45%,
+    #f3efe8 100%
+  );
+}
+
+.card {
+  background: #f9f7f2;
+  border-radius: 18px;
+  padding: 22px;
+  transition: all 0.25s ease;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+}
+
+:root {
+  --accent: #1d9e75;
+  --accent2: #ff6b6b;
+}
+
+.card-label {
+  color: var(--accent2);
+}
+
+.identity {
+  margin-top: 10px;
+  font-size: 16px;
+  color: #6f6d68;
+  font-style: italic;
+}
+
+.personal-text {
+  max-width: 700px;
+  color: #6f6d68;
+  margin-bottom: 20px;
+}
