@@ -1,162 +1,114 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nawa · Analytics Portfolio</title>
-
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <link rel="stylesheet" href="style.css" />
-</head>
-
-<body>
-
-  <nav class="nav">
-    <div class="brand">Nawa · Analytics Portfolio</div>
-    <div class="nav-links">
-      <a href="#projects">Projects</a>
-      <a href="#experience">Experience</a>
-      <a href="#journey">Journey</a>
-      <a href="#skills">Skills</a>
-    </div>
-  </nav>
-
-<section class="hero-map">
-  <div class="hero-map-text">
-    <p class="eyebrow">Global Analytics Journey</p>
-    <h1>From Operations → AI → Product</h1>
-
-    <p>
-      Thailand → London → New York<br>
-      Turning data into decisions with curiosity and creativity.
-    </p>
-
-    <p class="identity">Data analyst with a storyteller’s mindset</p>
-
-    <div class="hero-tags">
-      <span class="ny">📍 New York Current</span>
-      <span class="thai">Thailand</span>
-      <span class="london">London</span>
-    </div>
+/* ─────────────────────────────────────────────────────────────────────────
+   Nawakamol Rojanabenjakun · Career Race · script.js
+   v3 — drives the route animation, mood switcher, animated split times,
+        and the toolbox skill cards. No Leaflet dependency in this version.
+   ───────────────────────────────────────────────────────────────────────── */
+ 
+// ─────────────────────────────────────────────────────────────────────────
+// SKILLS — rendered into the gear section
+// ─────────────────────────────────────────────────────────────────────────
+const SKILLS = [
+  { cat: 'Programming',        items: ['Python', 'SQL', 'PySpark', 'NoSQL', 'Pandas', 'NumPy', 'Flask'] },
+  { cat: 'Data & ML',          items: ['Machine Learning', 'Predictive Modeling', 'A/B Testing', 'Customer Segmentation', 'Demand Forecasting'] },
+  { cat: 'Analytics & Viz',    items: ['Tableau', 'Power BI', 'Excel', 'MongoDB', 'Neo4j'] },
+  { cat: 'Product & Business', items: ['Product Strategy', 'MVP Definition', 'User Research', 'Market Analysis', 'Roadmapping', 'KPI Design', 'Pricing Analytics', 'Data Storytelling'] },
+  { cat: 'Systems & Methods',  items: ['Agile', 'SDLC', 'Lean Six Sigma', 'Kaizen', 'Process Optimization', 'Oracle ERP', 'Cisco Business Tools'] },
+];
+ 
+document.getElementById('skills-grid').innerHTML = SKILLS.map(s => `
+  <div class="skill-card">
+    <h3>${s.cat}</h3>
+    <div class="skill-list">${s.items.map(i => `<span>${i}</span>`).join('')}</div>
   </div>
-
-  <div id="heroMap"></div>
-</section>
-
-  <section id="projects" class="section">
-    <div class="section-header">
-      <p class="eyebrow">Selected Work</p>
-      <h2>Featured Projects</h2>
-    </div>
-
-    <div class="grid">
-      <div class="card">
-        <p class="card-label">Machine Learning · Finance</p>
-        <h3>Fintech Risk Analytics</h3>
-        <p>Built a news-driven pipeline using 10K+ headlines and 6+ NLP features to model volatility, downside risk, and stress scenarios.</p>
-        <a href="#" class="project-link">View Project →</a>
-      </div>
-
-      <div class="card">
-        <p class="card-label">IoT · Real-Time Analytics</p>
-        <h3>AIoT Mood Detection</h3>
-        <p>Developed a Core2 → AWS IoT system processing ~432K messages/month with &lt;2s latency and live/replay dashboards.</p>
-        <a href="#" class="project-link">View Project →</a>
-      </div>
-
-      <div class="card">
-        <p class="card-label">NLP · Creator Economy</p>
-        <h3>YouTube Micro-Creator Analytics</h3>
-        <p>Engineered 1,200+ video observations with 15+ features to analyze engagement drivers for creators under 10K subscribers.</p>
-        <a href="#" class="project-link">View Project →</a>
-      </div>
-
-      <div class="card">
-        <p class="card-label">Data Engineering</p>
-        <h3>PopFlow Trend Platform</h3>
-        <p>Built an ETL pipeline using Python, APIs, and MongoDB across 100K+ records with a trend scoring model for go-to-market decisions.</p>
-        <a href="#" class="project-link">View Project →</a>
-      </div>
-
-      <div class="card">
-        <p class="card-label">Tableau · Strategy</p>
-        <h3>Nike Revenue Storytelling</h3>
-        <p>Created 3 dashboards and a 10-slide executive story explaining revenue decline through pricing, demand, and competitor signals.</p>
-        <a href="#" class="project-link">View Project →</a>
-      </div>
-
-      <div class="card">
-        <p class="card-label">Consulting · Innovation</p>
-        <h3>Google Innovation Lab</h3>
-        <p>Designed an AI solution using user personas, success metrics, and a feature scoring framework, achieving Top 5 finalist ranking.</p>
-        <a href="#" class="project-link">View Project →</a>
-      </div>
-    </div>
-  </section>
-
-  <section id="experience" class="section">
-    <div class="section-header">
-      <p class="eyebrow">Professional Background</p>
-      <h2>Experience</h2>
-    </div>
-
-    <div class="timeline">
-      <div class="timeline-card">
-        <span class="date">2022 — 2025</span>
-        <h3>Cisco · Logistics & Supply Chain Analyst</h3>
-        <p>Analyzed logistics data supporting ~$16K/week shipments and improved delivery reliability through IT and operations coordination.</p>
-      </div>
-
-      <div class="timeline-card">
-        <span class="date">2022 — 2025</span>
-        <h3>Fabrinet · Production Planner</h3>
-        <p>Redesigned fulfillment workflows and reduced partial shipments by 40% for U.S. market distribution.</p>
-      </div>
-
-      <div class="timeline-card">
-        <span class="date">2019 — 2022</span>
-        <h3>Fabrinet · Process & Test Engineer</h3>
-        <p>Built Excel automation tools and analyzed 1K+ units/month production data to identify bottlenecks and improve efficiency.</p>
-      </div>
-    </div>
-  </section>
-
-  <section id="journey" class="section">
-    <div class="section-header">
-      <p class="eyebrow">Global Journey</p>
-      <h2>Thailand → New York</h2>
-    </div>
-    <div class="map-card">
-      <div id="map"></div>
-    </div>
-  </section>
-
-  <section id="skills" class="section">
-    <div class="section-header">
-      <p class="eyebrow">Toolbox</p>
-      <h2>Skills</h2>
-    </div>
-
-    <div class="skills">
-      <span>Python</span>
-      <span>SQL</span>
-      <span>PySpark</span>
-      <span>Machine Learning</span>
-      <span>NLP</span>
-      <span>Tableau</span>
-      <span>Power BI</span>
-      <span>MongoDB</span>
-      <span>Product Strategy</span>
-      <span>KPI Design</span>
-    </div>
-  </section>
-
-  <footer>
-    <p>Built by Nawa · Data Analytics Portfolio</p>
-  </footer>
-
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script src="script.js"></script>
-</body>
-</html>
+`).join('');
+ 
+// ─────────────────────────────────────────────────────────────────────────
+// LinkedIn (replace if your URL is different)
+// ─────────────────────────────────────────────────────────────────────────
+const linkedinUrl = 'https://www.linkedin.com/in/nawakamol-rojanabenjakun/';
+document.getElementById('linkedin-link').href = linkedinUrl;
+document.getElementById('footer-linkedin').href = linkedinUrl;
+ 
+// ─────────────────────────────────────────────────────────────────────────
+// MOOD SWITCHER — drawmood callback. Body class swap retints --accent.
+// Persists across visits via localStorage.
+// ─────────────────────────────────────────────────────────────────────────
+const moodButtons = document.querySelectorAll('.ms-btn');
+function setMood(mood) {
+  document.body.classList.remove('mood-calm', 'mood-energetic', 'mood-stressed', 'mood-tired');
+  if (mood && mood !== 'default') document.body.classList.add('mood-' + mood);
+  moodButtons.forEach(b => b.classList.toggle('active', b.dataset.mood === mood));
+  try { localStorage.setItem('drawmood-portfolio-mood', mood); } catch(e) {}
+}
+moodButtons.forEach(b => b.addEventListener('click', () => setMood(b.dataset.mood)));
+try {
+  const saved = localStorage.getItem('drawmood-portfolio-mood');
+  if (saved) setMood(saved);
+} catch(e) {}
+ 
+// ─────────────────────────────────────────────────────────────────────────
+// ROUTE ANIMATION — draw the line on cover, then pop the mile pins in
+// sequence so the journey "runs" as the page loads.
+// ─────────────────────────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  const progress = document.getElementById('route-progress');
+  const pins = document.querySelectorAll('.mile-pin');
+ 
+  // Wait one frame for layout, then animate
+  requestAnimationFrame(() => {
+    setTimeout(() => { progress.style.width = '100%'; }, 200);
+    pins.forEach((pin, i) => {
+      setTimeout(() => pin.classList.add('shown'), 300 + i * 380);
+    });
+  });
+});
+ 
+// ─────────────────────────────────────────────────────────────────────────
+// ANIMATED SPLIT TIMES — count up when scrolled into view
+// ─────────────────────────────────────────────────────────────────────────
+function animateCount(el, target) {
+  const start = performance.now();
+  const dur = 1300;
+  function step(now) {
+    const t = Math.min(1, (now - start) / dur);
+    const eased = 1 - Math.pow(1 - t, 3);    // easeOutCubic
+    el.textContent = Math.round(target * eased).toLocaleString();
+    if (t < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+ 
+const countObserver = new IntersectionObserver((entries) => {
+  for (const entry of entries) {
+    if (entry.isIntersecting) {
+      const el = entry.target;
+      const target = parseInt(el.dataset.count, 10);
+      animateCount(el, target);
+      countObserver.unobserve(el);
+    }
+  }
+}, { threshold: 0.4 });
+ 
+document.querySelectorAll('.split-num').forEach(el => countObserver.observe(el));
+ 
+// ─────────────────────────────────────────────────────────────────────────
+// SUBTLE: bib race-marker color follows the mile currently visible.
+// As the user scrolls, swap the bib's accent dot to that mile's color.
+// ─────────────────────────────────────────────────────────────────────────
+const milesByEl = new Map();
+document.querySelectorAll('.mile-section').forEach(s => {
+  const styleStr = s.getAttribute('style') || '';
+  const m = styleStr.match(/--mile-color:\s*(#[0-9a-fA-F]+)/);
+  if (m) milesByEl.set(s, m[1]);
+});
+ 
+const bibMarker = document.querySelector('.bib-marker');
+const sectionObserver = new IntersectionObserver((entries) => {
+  for (const entry of entries) {
+    if (entry.isIntersecting) {
+      const color = milesByEl.get(entry.target);
+      if (color && bibMarker) bibMarker.style.color = color;
+    }
+  }
+}, { threshold: 0.4 });
+document.querySelectorAll('.mile-section').forEach(s => sectionObserver.observe(s));
