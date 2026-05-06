@@ -7,153 +7,24 @@
 
   <!-- Leaflet Map -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
 
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg:           #f9f7f4;
-      --ink:          #1a1814;
-      --muted:        #7a7570;
-      --accent:       #2d5be3;
-      --accent-light: #eef1fd;
-      --border:       #e4e0da;
-      --card:         #ffffff;
-      --radius:       12px;
-    }
-
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--bg);
-      color: var(--ink);
-      line-height: 1.6;
-      font-size: 15px;
-    }
-
-    .container { max-width: 780px; margin: 0 auto; padding: 0 24px; }
-
-    section { padding: 48px 0; border-bottom: 1px solid var(--border); }
-
-    .section-label {
-      font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
-      color: var(--muted); margin-bottom: 16px; font-weight: 500;
-    }
-
-    .section-title {
-      font-family: 'DM Serif Display', serif;
-      font-size: 2rem; margin-bottom: 24px;
-    }
-
-    header { padding: 72px 0 48px; border-bottom: 1px solid var(--border); }
-
-    .name {
-      font-family: 'DM Serif Display', serif;
-      font-size: clamp(3rem, 8vw, 5.5rem);
-      letter-spacing: -0.02em; line-height: 1; margin-bottom: 16px;
-    }
-
-    .tagline {
-      color: var(--muted); font-size: 14px;
-      letter-spacing: 0.06em; text-transform: uppercase;
-    }
-
-    .journey-stops {
-      display: flex; gap: 8px; align-items: center;
-      flex-wrap: wrap; margin-bottom: 24px;
-    }
-
-    .stop-badge {
-      background: var(--accent-light); color: var(--accent);
-      border-radius: 999px; padding: 4px 14px;
-      font-size: 13px; font-weight: 500;
-    }
-
-    .stop-arrow { color: var(--muted); font-size: 18px; }
-
-    #journey-map {
-      height: 380px; width: 100%;
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      overflow: hidden;
-    }
-
-    .leaflet-popup-content-wrapper {
-      border-radius: 10px !important;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.12) !important;
-      font-family: 'DM Sans', sans-serif !important;
-    }
-    .leaflet-popup-content { font-size: 13px; line-height: 1.6; }
-    .popup-name  { font-weight: 600; font-size: 14px; display: block; margin-bottom: 2px; }
-    .popup-years { color: #7a7570; font-size: 12px; display: block; }
-    .popup-desc  { display: block; margin-top: 4px; }
-    .popup-tag {
-      display: inline-block; margin-top: 6px;
-      background: #eef1fd; color: #2d5be3;
-      border-radius: 999px; padding: 2px 10px;
-      font-size: 11px; font-weight: 500;
-    }
-
-    .projects-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-
-    @media (max-width: 600px) {
-  .projects-grid { grid-template-columns: 1fr; }
-}
-
-    .project-card {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 24px;
-      transition: box-shadow 0.2s, border-color 0.2s;
-    }
-    .project-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.07); border-color: #ccc; }
-    .project-card.highlight { border-color: var(--accent); background: var(--accent-light); }
-
-    .project-tag   { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
-    .project-title { font-family: 'DM Serif Display', serif; font-size: 1.2rem; margin-bottom: 6px; }
-    .project-desc  { color: var(--muted); font-size: 14px; margin-bottom: 8px; }
-    .project-meta  { font-size: 12px; color: #aaa; margin-bottom: 8px; }
-    .project-where { font-size: 12px; color: var(--accent); margin-bottom: 14px; font-weight: 500; }
-    .project-link  { color: var(--accent); text-decoration: none; font-size: 13px; font-weight: 500; }
-    .project-link:hover { text-decoration: underline; }
-
-    .exp-item { margin-bottom: 28px; }
-    .exp-meta  { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
-    .exp-title { font-weight: 500; font-size: 15px; margin-bottom: 4px; }
-    .exp-desc  { font-size: 14px; color: var(--muted); max-width: 560px; }
-
-    .skills-cloud { display: flex; flex-wrap: wrap; gap: 8px; }
-    .skill-pill {
-      background: var(--ink); color: var(--bg);
-      border-radius: 999px; padding: 5px 14px; font-size: 13px;
-    }
-
-    .beyond-desc { max-width: 520px; color: var(--muted); margin-bottom: 16px; }
-    .emoji-row   { display: flex; gap: 8px; flex-wrap: wrap; }
-    .emoji-chip  {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 999px; padding: 5px 14px; font-size: 14px;
-    }
-
-    footer {
-      padding: 32px 0; text-align: center;
-      font-size: 12px; color: var(--muted);
-    }
-  </style>
+  <!-- Your stylesheet -->
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
 <div class="container">
 
-  <!-- Header -->
+  <!-- ── Header ── -->
   <header>
     <h1 class="name">Nawa</h1>
     <p class="tagline">Data Analytics Portfolio</p>
   </header>
 
-  <!-- Journey + Map -->
+  <!-- ── Journey + Map ── -->
   <section id="journey">
     <p class="section-label">My Journey</p>
     <div class="journey-stops">
@@ -166,7 +37,7 @@
     <div id="journey-map"></div>
   </section>
 
-  <!-- Projects -->
+  <!-- ── Projects ── -->
   <section id="projects">
     <p class="section-label">Selected Work</p>
     <h2 class="section-title">Featured Projects</h2>
@@ -178,7 +49,7 @@
         <p class="project-desc">Predicted downside risk from news signals.</p>
         <p class="project-meta">10K+ headlines · NLP · volatility modeling</p>
         <p class="project-where">🇬🇧 London (Remote)</p>
-        <a href="#" class="project-link">View Project →</a>
+        <a href="projects/fintech.html" class="project-link">View Project →</a>
       </div>
 
       <div class="project-card">
@@ -186,7 +57,7 @@
         <h3 class="project-title">AIoT Mood Detection</h3>
         <p class="project-desc">Built a real-time mood detection system.</p>
         <p class="project-meta">432K msgs/month · &lt;2s latency · dashboard</p>
-        <a href="#" class="project-link">View Project →</a>
+        <a href="projects/aiot.html" class="project-link">View Project →</a>
       </div>
 
       <div class="project-card">
@@ -194,7 +65,7 @@
         <h3 class="project-title">YouTube Micro-Creator Analytics</h3>
         <p class="project-desc">Analyzed creator engagement patterns.</p>
         <p class="project-meta">1,200+ videos · 15+ features · API data</p>
-        <a href="#" class="project-link">View Project →</a>
+        <a href="projects/youtube.html" class="project-link">View Project →</a>
       </div>
 
       <div class="project-card">
@@ -202,7 +73,7 @@
         <h3 class="project-title">PopFlow Trend Platform</h3>
         <p class="project-desc">Built a multi-source trend analytics pipeline.</p>
         <p class="project-meta">Python · APIs · MongoDB · 100K+ records</p>
-        <a href="#" class="project-link">View Project →</a>
+        <a href="projects/popflow.html" class="project-link">View Project →</a>
       </div>
 
       <div class="project-card">
@@ -210,7 +81,7 @@
         <h3 class="project-title">Nike Revenue Storytelling</h3>
         <p class="project-desc">Translated business decline into executive insights.</p>
         <p class="project-meta">3 dashboards · 10-slide boardroom story</p>
-        <a href="#" class="project-link">View Project →</a>
+        <a href="projects/nike.html" class="project-link">View Project →</a>
       </div>
 
       <div class="project-card">
@@ -218,13 +89,13 @@
         <h3 class="project-title">Google Innovation Lab</h3>
         <p class="project-desc">Designed an AI solution with user personas and metrics.</p>
         <p class="project-meta">Top 5 finalist · product scoring framework</p>
-        <a href="#" class="project-link">View Project →</a>
+        <a href="projects/google.html" class="project-link">View Project →</a>
       </div>
 
     </div>
   </section>
 
-  <!-- Experience -->
+  <!-- ── Experience ── -->
   <section id="experience">
     <p class="section-label">Professional Background</p>
     <h2 class="section-title">Experience</h2>
@@ -248,7 +119,7 @@
     </div>
   </section>
 
-  <!-- Skills -->
+  <!-- ── Skills ── -->
   <section id="skills">
     <p class="section-label">Toolbox</p>
     <h2 class="section-title">Skills</h2>
@@ -266,7 +137,7 @@
     </div>
   </section>
 
-  <!-- Beyond Data -->
+  <!-- ── Beyond Data ── -->
   <section id="beyond">
     <p class="section-label">Beyond Data</p>
     <h2 class="section-title">What inspires me</h2>
@@ -279,89 +150,15 @@
     </div>
   </section>
 
-  <footer>Built by Nawakamol Rojanabenjakun · Data Analytics Portfolio</footer>
+  <footer>Built by Nawa · Data Analytics Portfolio</footer>
 
-</div>
+</div><!-- /container -->
 
-<script>
-  window.addEventListener('DOMContentLoaded', function () {
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    const map = L.map('journey-map', {
-      scrollWheelZoom: false,
-      zoomControl: true
-    }).setView([30, 30], 2);
-
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-      attribution: '© <a href="https://carto.com/">CARTO</a> · © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      maxZoom: 18
-    }).addTo(map);
-
-    function makeIcon(emoji, isActive) {
-      return L.divIcon({
-        className: '',
-        html: `<div style="
-          font-size: 20px; width: 42px; height: 42px;
-          display: flex; align-items: center; justify-content: center;
-          background: ${isActive ? '#2d5be3' : '#ffffff'};
-          border: 2.5px solid #2d5be3; border-radius: 50%;
-          box-shadow: 0 4px 14px rgba(45,91,227,0.3);
-        ">${emoji}</div>`,
-        iconSize: [42, 42],
-        iconAnchor: [21, 21],
-        popupAnchor: [0, -26]
-      });
-    }
-
-    const places = [
-      {
-        emoji: '🇹🇭', name: 'Thailand',
-        lat: 13.7563, lng: 100.5018,
-        years: '2019 – 2025',
-        desc: 'Cisco & Fabrinet · Supply Chain & Engineering',
-        tag: null, isActive: false
-      },
-      {
-        emoji: '🇬🇧', name: 'London',
-        lat: 51.5074, lng: -0.1278,
-        years: 'Jan 2026 – Apr 2026',
-        desc: 'Zanista · Industry Project & Operational Research (Remote)',
-        tag: '💻 Remote Project', isActive: false
-      },
-      {
-        emoji: '🇺🇸', name: 'New York',
-        lat: 40.7128, lng: -74.0060,
-        years: '2026 → Present',
-        desc: 'Current chapter · Open to opportunities',
-        tag: '📍 Currently here', isActive: true
-      }
-    ];
-
-    const coords = [];
-
-    places.forEach(function (p) {
-      const marker = L.marker([p.lat, p.lng], {
-        icon: makeIcon(p.emoji, p.isActive)
-      }).addTo(map);
-
-      const tagHtml = p.tag ? `<span class="popup-tag">${p.tag}</span>` : '';
-
-      marker.bindPopup(`
-        <span class="popup-name">${p.emoji} ${p.name}</span>
-        <span class="popup-years">${p.years}</span>
-        <span class="popup-desc">${p.desc}</span>
-        ${tagHtml}
-      `);
-
-      coords.push([p.lat, p.lng]);
-    });
-
-    L.polyline(coords, {
-      color: '#2d5be3', weight: 2,
-      dashArray: '8, 10', opacity: 0.55
-    }).addTo(map);
-
-  });
-</script>
+<!-- Your script -->
+<script src="script.js"></script>
 
 </body>
 </html>
