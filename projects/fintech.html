@@ -1,94 +1,430 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fintech Risk Analytics · Nawa</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../style.css" />
   <style>
-    nav{padding:20px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;}
-    .back-link{color:var(--accent);text-decoration:none;font-size:14px;font-weight:500;}
-    .back-link:hover{text-decoration:underline;}
-    .nav-sep{color:var(--border);}
-    .nav-title{color:var(--muted);font-size:14px;}
-    .hero{padding:48px 0 32px;border-bottom:1px solid var(--border);}
-    .proj-tag{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
-    .proj-title{font-family:'DM Serif Display',serif;font-size:clamp(2rem,5vw,3rem);line-height:1.1;margin-bottom:16px;}
-    .proj-where{display:inline-flex;align-items:center;gap:6px;background:var(--accent-light);color:var(--accent);border-radius:999px;padding:4px 14px;font-size:13px;font-weight:500;margin-bottom:16px;}
-    .proj-summary{color:var(--muted);font-size:16px;max-width:600px;line-height:1.7;}
-    .screenshot{margin:32px 0;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);}
-    .ph{height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--muted);font-size:14px;background:linear-gradient(135deg,#f0eee9,#e8e4de);}
-    .ph .icon{font-size:40px;opacity:.4;}
-    .ph small{font-size:12px;opacity:.7;}
-    .ds{padding:36px 0;border-bottom:1px solid var(--border);}
-    .dl{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;font-weight:500;}
-    .dt{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:12px;}
-    p{color:var(--muted);margin-bottom:12px;}
-    .tg{display:flex;flex-wrap:wrap;gap:8px;}
-    .tp{background:var(--ink);color:var(--bg);border-radius:999px;padding:5px 14px;font-size:13px;}
-    .rg{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
-    .rc{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center;}
-    .rn{font-family:'DM Serif Display',serif;font-size:2rem;color:var(--accent);display:block;}
-    .rl{font-size:12px;color:var(--muted);margin-top:4px;}
-    .lr{display:flex;gap:12px;flex-wrap:wrap;}
-    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:var(--radius);font-size:14px;font-weight:500;text-decoration:none;transition:opacity .2s;}
-    .btn:hover{opacity:.85;}
-    .bp{background:var(--accent);color:white;}
-    .bo{background:transparent;border:1px solid var(--border);color:var(--ink);}
-    footer{padding:32px 0;text-align:center;font-size:12px;color:var(--muted);border-top:1px solid var(--border);}
-    footer a{color:var(--accent);text-decoration:none;}
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #f9f7f4;
+      --ink:          #1a1814;
+      --muted:        #7a7570;
+      --accent:       #2d5be3;
+      --accent-light: #eef1fd;
+      --border:       #e4e0da;
+      --card:         #ffffff;
+      --surface:      #f2f0ec;
+      --radius:       12px;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.6;
+      font-size: 16px;
+    }
+
+    .container { max-width: 740px; margin: 0 auto; padding: 0 24px 64px; }
+
+    /* ── Nav ── */
+    nav {
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .back-link { color: var(--accent); text-decoration: none; font-size: 14px; font-weight: 500; }
+    .back-link:hover { text-decoration: underline; }
+    .nav-sep { color: var(--border); }
+    .nav-title { color: var(--muted); font-size: 14px; }
+
+    /* ── Hero ── */
+    .hero { padding: 40px 0 28px; }
+
+    .proj-tag {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
+
+    .proj-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2.2rem, 6vw, 3.2rem);
+      line-height: 1.05;
+      margin-bottom: 14px;
+      letter-spacing: -0.01em;
+    }
+
+    .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      border-radius: 999px;
+      padding: 4px 14px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .badge-blue  { background: var(--accent-light); color: var(--accent); }
+    .badge-dark  { background: var(--ink); color: var(--bg); }
+
+    .proj-summary {
+      font-size: 17px;
+      color: var(--muted);
+      max-width: 580px;
+      line-height: 1.65;
+    }
+    .proj-summary strong { color: var(--ink); font-weight: 500; }
+
+    /* ── Divider ── */
+    .divider { height: 1px; background: var(--border); margin: 28px 0; }
+
+    /* ── Stats ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 32px;
+    }
+    @media (max-width: 560px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+
+    .stat-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 16px 14px;
+    }
+    .stat-number {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.7rem;
+      color: var(--accent);
+      display: block;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .stat-label { font-size: 11px; color: var(--muted); line-height: 1.4; }
+
+    /* ── Screenshot ── */
+    .screenshot {
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      margin-bottom: 32px;
+    }
+    .screenshot img { width: 100%; display: block; }
+    .screenshot-placeholder {
+      height: 240px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 14px;
+      background: var(--surface);
+    }
+    .ph-icon { font-size: 32px; opacity: 0.3; }
+    .ph-hint { font-size: 11px; opacity: 0.55; font-family: monospace; }
+
+    /* ── Sections ── */
+    .section { margin-bottom: 30px; }
+
+    .section-label {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 14px;
+      font-weight: 500;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ── About ── */
+    .about-text {
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+    .about-text strong { color: var(--ink); font-weight: 500; }
+
+    /* ── Model pipeline ── */
+    .model-steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    @media (max-width: 520px) { .model-steps { grid-template-columns: repeat(2, 1fr); } }
+
+    .model-step {
+      background: var(--surface);
+      border-radius: 8px;
+      padding: 12px 12px 10px;
+      position: relative;
+    }
+    .model-step.final { background: var(--accent-light); border: 1px solid #c5d3f8; }
+    .step-num { font-size: 10px; color: var(--muted); font-weight: 500; margin-bottom: 4px; letter-spacing: .05em; }
+    .step-name { font-size: 12px; font-weight: 500; color: var(--ink); margin-bottom: 4px; line-height: 1.3; }
+    .model-step.final .step-name { color: var(--accent); }
+    .step-desc { font-size: 11px; color: var(--muted); line-height: 1.4; }
+
+    /* ── Results table ── */
+    .results-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+    .results-table th {
+      text-align: left;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .results-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      color: var(--ink);
+    }
+    .results-table tr:last-child td { border-bottom: none; }
+    .results-table tr:nth-child(even) td { background: var(--surface); }
+    .good { color: var(--accent); font-weight: 500; }
+
+    .result-note {
+      font-size: 13px;
+      color: var(--muted);
+      background: var(--accent-light);
+      border-radius: 8px;
+      padding: 12px 14px;
+      line-height: 1.6;
+    }
+    .result-note strong { color: var(--accent); font-weight: 500; }
+
+    /* ── Tech stack ── */
+    .tech-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tech-pill {
+      background: var(--ink);
+      color: var(--bg);
+      border-radius: 999px;
+      padding: 5px 14px;
+      font-size: 13px;
+    }
+
+    /* ── Links ── */
+    .link-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 22px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: opacity 0.15s;
+      font-family: 'DM Sans', sans-serif;
+      border: none;
+      cursor: pointer;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--ink); }
+
+    /* ── Footer ── */
+    footer {
+      padding-top: 40px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    footer a { color: var(--accent); text-decoration: none; }
   </style>
 </head>
 <body>
 <div class="container">
+
+  <!-- Nav -->
   <nav>
-    <a href="../index.html" class="back-link">← Back to Portfolio</a>
+    <a href="../index.html" class="back-link">← Back</a>
     <span class="nav-sep">·</span>
     <span class="nav-title">Fintech Risk Analytics</span>
   </nav>
+
+  <!-- Hero -->
   <div class="hero">
-    <p class="proj-tag">Machine Learning · Finance</p>
+    <p class="proj-tag">Machine Learning · Quantitative Finance · NLP</p>
     <h1 class="proj-title">Fintech Risk Analytics</h1>
-    <span class="proj-where">🇬🇧 London (Remote)</span>
-    <p class="proj-summary">Built an NLP-powered pipeline that predicts downside financial risk by analyzing sentiment from 10,000+ news headlines, linking news events to equity volatility patterns.</p>
+    <div class="badges">
+      <span class="badge badge-blue">🇬🇧 London (Remote)</span>
+      <span class="badge badge-blue">Columbia Engineering</span>
+      <span class="badge badge-dark">MS Operations Research</span>
+    </div>
+    <p class="proj-summary">
+      Built a <strong>news-driven downside risk model</strong> that captures
+      what traditional Gaussian models miss — asymmetric panic reactions,
+      fat-tailed crashes, and black swan events — tested on Nike, Exxon, and Google.
+    </p>
   </div>
+
+  <div class="divider"></div>
+
+  <!-- Key Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-number">3</span>
+      <span class="stat-label">Stocks tested across sectors</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">1.67%</span>
+      <span class="stat-label">Best VaR breach rate (vs 25% baseline)</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">4</span>
+      <span class="stat-label">Model versions developed</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">v=2.0</span>
+      <span class="stat-label">Student-t tail confirmed empirically</span>
+    </div>
+  </div>
+
+  <!-- Screenshot -->
   <div class="screenshot">
-    <div class="ph">
-      <span class="icon">📊</span>
+    <div class="screenshot-placeholder">
+      <span class="ph-icon">📊</span>
       <span>Add your project screenshot here</span>
-      <small>Replace with: &lt;img src="../images/fintech.png"&gt;</small>
+      <span class="ph-hint">&lt;img src="../images/fintech.png" alt="Model output"&gt;</span>
     </div>
   </div>
-  <div class="ds">
-    <p class="dl">About the Project</p>
-    <h2 class="dt">Predicting Risk from the News</h2>
-    <p>Financial markets react to news faster than any human can read — this project automates that signal extraction. Using NLP techniques on 10,000+ financial headlines, I built a pipeline that scores sentiment and detects risk-relevant events in real time.</p>
-    <p>The model correlates news signals with equity volatility, providing a forward-looking risk indicator that outperforms simple sentiment baselines on held-out test data.</p>
-    <p>Completed remotely while based in London, working with financial datasets from U.S. and global markets.</p>
+
+  <!-- What I Built -->
+  <div class="section">
+    <p class="section-label">What I built</p>
+    <p class="about-text">
+      Traditional risk models assume <strong>normal distributions</strong> and symmetric
+      market reactions — but real markets don't work that way. Negative news triggers
+      exponentially stronger panic than positive news triggers optimism. This project
+      built a <strong>generative news-shock framework</strong> that maps daily sentiment
+      signals directly to equity volatility, using a downside-asymmetric
+      <strong>Student-t distribution</strong> to correctly model fat tails and stress periods.
+      The business name for the project was <strong>Zanista</strong>.
+    </p>
   </div>
-  <div class="ds">
-    <p class="dl">Tools & Tech Stack</p>
-    <div class="tg">
-      <span class="tp">Python</span><span class="tp">NLP</span><span class="tp">NLTK</span>
-      <span class="tp">Scikit-learn</span><span class="tp">Pandas</span><span class="tp">Matplotlib</span><span class="tp">Financial APIs</span>
+
+  <!-- Model Pipeline -->
+  <div class="section">
+    <p class="section-label">Model evolution (4 versions)</p>
+    <div class="model-steps">
+      <div class="model-step">
+        <p class="step-num">Model 1.0</p>
+        <p class="step-name">Minimal Baseline</p>
+        <p class="step-desc">Single downside news shock, relevance-weighted sentiment</p>
+      </div>
+      <div class="model-step">
+        <p class="step-num">Model 2.0</p>
+        <p class="step-name">Improved Linear</p>
+        <p class="step-desc">Separate positive/negative shocks + market controls</p>
+      </div>
+      <div class="model-step">
+        <p class="step-num">Model 3.0</p>
+        <p class="step-name">Nonlinear + Tail-Aware</p>
+        <p class="step-desc">Nonlinear terms, interactions, conditional risk layer</p>
+      </div>
+      <div class="model-step final">
+        <p class="step-num">Model 4.0 ✦ Final</p>
+        <p class="step-name">Downside-Asymmetric Student-t</p>
+        <p class="step-desc">Replaces Gaussian with Student-t — best tail-risk capture</p>
+      </div>
     </div>
   </div>
-  <div class="ds">
-    <p class="dl">Key Results</p>
-    <div class="rg">
-      <div class="rc"><span class="rn">10K+</span><span class="rl">Headlines analyzed</span></div>
-      <div class="rc"><span class="rn">↓ Risk</span><span class="rl">Downside signals predicted</span></div>
-      <div class="rc"><span class="rn">NLP</span><span class="rl">Volatility modeling pipeline</span></div>
+
+  <!-- Results Table -->
+  <div class="section">
+    <p class="section-label">Model 4.0 results across 3 stocks</p>
+    <table class="results-table">
+      <thead>
+        <tr>
+          <th>Stock</th>
+          <th>Sector</th>
+          <th>VaR Breach Rate</th>
+          <th>Tail (v)</th>
+          <th>Key Driver</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>NIKE</strong></td>
+          <td>Retail</td>
+          <td class="good">7.4%</td>
+          <td>2.00</td>
+          <td>NegUnpriced, PosShock</td>
+        </tr>
+        <tr>
+          <td><strong>Exxon Mobil</strong></td>
+          <td>Energy</td>
+          <td class="good">1.67% ✦</td>
+          <td>2.01</td>
+          <td>SignedImb, LogVol</td>
+        </tr>
+        <tr>
+          <td><strong>Google</strong></td>
+          <td>Big Tech</td>
+          <td class="good">3.39%</td>
+          <td>2.01</td>
+          <td>NegUnpriced, SignedImb</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="result-note">
+  <strong>VaR breach rate dropped from 25.9% → as low as 1.67%</strong> — all 3 stocks
+      breach rate in traditional Gaussian models. The Student-t framework with
+      v ≈ 2.0 confirmed heavy-tailed residuals empirically across every sector tested.
+    </p>
+  </div>
+
+  <!-- Tech Stack -->
+  <div class="section">
+    <p class="section-label">Tech stack</p>
+    <div class="tech-grid">
+      <span class="tech-pill">Python</span>
+      <span class="tech-pill">NLP</span>
+      <span class="tech-pill">RavenPack API</span>
+      <span class="tech-pill">Student-t Distribution</span>
+      <span class="tech-pill">VaR Modeling</span>
+      <span class="tech-pill">GARCH</span>
+      <span class="tech-pill">Scikit-learn</span>
+      <span class="tech-pill">Pandas</span>
+      <span class="tech-pill">Matplotlib</span>
     </div>
   </div>
-  <div class="ds">
-    <p class="dl">Links</p>
-    <div class="lr">
-      <a href="#" class="btn bp">🔗 View on GitHub</a>
-      <a href="#" class="btn bo">📄 View Report</a>
+
+  <!-- Links -->
+  <div class="section">
+    <p class="section-label">Links</p>
+    <div class="link-row">
+      <a href="#" class="btn btn-primary">🔗 View on GitHub</a>
+      <a href="#" class="btn btn-outline">📄 View Report</a>
     </div>
   </div>
-  <footer>Built by Nawa · <a href="../index.html">Back to Portfolio</a></footer>
+
+  <footer>
+    Built by Nawa · <a href="../index.html">Back to Portfolio</a>
+  </footer>
+
 </div>
 </body>
 </html>
