@@ -1,59 +1,518 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AIoT Mood Detection · Nawa</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="../style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
-    nav{padding:20px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
-    .back-link{color:var(--accent);text-decoration:none;font-size:14px;font-weight:500}.back-link:hover{text-decoration:underline}
-    .nav-sep{color:var(--border)}.nav-title{color:var(--muted);font-size:14px}
-    .hero{padding:48px 0 32px;border-bottom:1px solid var(--border)}
-    .proj-tag{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
-    .proj-title{font-family:'DM Serif Display',serif;font-size:clamp(2rem,5vw,3rem);line-height:1.1;margin-bottom:16px}
-    .proj-summary{color:var(--muted);font-size:16px;max-width:600px;line-height:1.7}
-    .screenshot{margin:32px 0;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border)}
-    .ph{height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--muted);font-size:14px;background:linear-gradient(135deg,#f0eee9,#e8e4de)}
-    .ph .icon{font-size:40px;opacity:.4}.ph small{font-size:12px;opacity:.7}
-    .ds{padding:36px 0;border-bottom:1px solid var(--border)}
-    .dl{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;font-weight:500}
-    .dt{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:12px}
-    p{color:var(--muted);margin-bottom:12px}
-    .tg{display:flex;flex-wrap:wrap;gap:8px}.tp{background:var(--ink);color:var(--bg);border-radius:999px;padding:5px 14px;font-size:13px}
-    .rg{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-    .rc{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center}
-    .rn{font-family:'DM Serif Display',serif;font-size:2rem;color:var(--accent);display:block}.rl{font-size:12px;color:var(--muted);margin-top:4px}
-    .lr{display:flex;gap:12px;flex-wrap:wrap}
-    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:var(--radius);font-size:14px;font-weight:500;text-decoration:none;transition:opacity .2s}
-    .btn:hover{opacity:.85}.bp{background:var(--accent);color:white}.bo{background:transparent;border:1px solid var(--border);color:var(--ink)}
-    footer{padding:32px 0;text-align:center;font-size:12px;color:var(--muted);border-top:1px solid var(--border)}
-    footer a{color:var(--accent);text-decoration:none}
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #f9f7f4;
+      --ink:          #1a1814;
+      --muted:        #7a7570;
+      --accent:       #2d5be3;
+      --accent-light: #eef1fd;
+      --border:       #e4e0da;
+      --card:         #ffffff;
+      --surface:      #f2f0ec;
+      --radius:       12px;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.6;
+      font-size: 16px;
+    }
+
+    .container { max-width: 740px; margin: 0 auto; padding: 0 24px 64px; }
+
+    /* ── Nav ── */
+    nav {
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .back-link { color: var(--accent); text-decoration: none; font-size: 14px; font-weight: 500; }
+    .back-link:hover { text-decoration: underline; }
+    .nav-sep { color: var(--border); }
+    .nav-title { color: var(--muted); font-size: 14px; }
+
+    /* ── Hero ── */
+    .hero { padding: 40px 0 28px; }
+
+    .proj-tag {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
+
+    .proj-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2.2rem, 6vw, 3.2rem);
+      line-height: 1.05;
+      margin-bottom: 14px;
+      letter-spacing: -0.01em;
+    }
+
+    .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      border-radius: 999px;
+      padding: 4px 14px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .badge-blue { background: var(--accent-light); color: var(--accent); }
+    .badge-dark { background: var(--ink); color: var(--bg); }
+
+    .proj-summary {
+      font-size: 17px;
+      color: var(--muted);
+      max-width: 580px;
+      line-height: 1.65;
+    }
+    .proj-summary strong { color: var(--ink); font-weight: 500; }
+
+    /* ── Divider ── */
+    .divider { height: 1px; background: var(--border); margin: 28px 0; }
+
+    /* ── Stats ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 32px;
+    }
+    @media (max-width: 560px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+
+    .stat-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 16px 14px;
+    }
+    .stat-number {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.7rem;
+      color: var(--accent);
+      display: block;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .stat-label { font-size: 11px; color: var(--muted); line-height: 1.4; }
+
+    /* ── Screenshot ── */
+    .screenshot {
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      margin-bottom: 32px;
+    }
+    .screenshot img { width: 100%; display: block; }
+    .screenshot-placeholder {
+      height: 240px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 14px;
+      background: var(--surface);
+    }
+    .ph-icon { font-size: 32px; opacity: 0.3; }
+    .ph-hint { font-size: 11px; opacity: 0.55; font-family: monospace; }
+
+    /* ── Sections ── */
+    .section { margin-bottom: 30px; }
+
+    .section-label {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 14px;
+      font-weight: 500;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ── About ── */
+    .about-text {
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+    .about-text strong { color: var(--ink); font-weight: 500; }
+
+    /* ── Architecture pipeline ── */
+    .arch-steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    @media (max-width: 520px) { .arch-steps { grid-template-columns: repeat(2, 1fr); } }
+
+    .arch-step {
+      background: var(--surface);
+      border-radius: 8px;
+      padding: 12px 12px 10px;
+    }
+    .arch-step.highlight { background: var(--accent-light); border: 1px solid #c5d3f8; }
+    .step-num { font-size: 10px; color: var(--muted); font-weight: 500; margin-bottom: 4px; letter-spacing: .05em; }
+    .step-name { font-size: 12px; font-weight: 500; color: var(--ink); margin-bottom: 4px; line-height: 1.3; }
+    .arch-step.highlight .step-name { color: var(--accent); }
+    .step-desc { font-size: 11px; color: var(--muted); line-height: 1.4; }
+
+    /* ── Sensor cards ── */
+    .sensor-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+    @media (max-width: 480px) { .sensor-grid { grid-template-columns: 1fr; } }
+
+    .sensor-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+    .sensor-name { font-size: 13px; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
+    .sensor-detail { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+    /* ── Results table ── */
+    .results-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+    .results-table th {
+      text-align: left;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .results-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      color: var(--ink);
+    }
+    .results-table tr:last-child td { border-bottom: none; }
+    .results-table tr:nth-child(even) td { background: var(--surface); }
+    .good { color: var(--accent); font-weight: 500; }
+
+    .result-note {
+      font-size: 13px;
+      color: var(--muted);
+      background: var(--accent-light);
+      border-radius: 8px;
+      padding: 12px 14px;
+      line-height: 1.6;
+    }
+    .result-note strong { color: var(--accent); font-weight: 500; }
+
+    /* ── Tech stack ── */
+    .tech-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tech-pill {
+      background: var(--ink);
+      color: var(--bg);
+      border-radius: 999px;
+      padding: 5px 14px;
+      font-size: 13px;
+    }
+
+    /* ── Links ── */
+    .link-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 22px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: opacity 0.15s;
+      font-family: 'DM Sans', sans-serif;
+      border: none;
+      cursor: pointer;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--ink); }
+
+    /* ── Footer ── */
+    footer {
+      padding-top: 40px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    footer a { color: var(--accent); text-decoration: none; }
   </style>
 </head>
 <body>
 <div class="container">
-  <nav><a href="../index.html" class="back-link">← Back to Portfolio</a><span class="nav-sep">·</span><span class="nav-title">AIoT Mood Detection</span></nav>
+
+  <!-- Nav -->
+  <nav>
+    <a href="../index.html" class="back-link">← Back</a>
+    <span class="nav-sep">·</span>
+    <span class="nav-title">AIoT Mood Detection</span>
+  </nav>
+
+  <!-- Hero -->
   <div class="hero">
-    <p class="proj-tag">IoT · Real-Time Analytics</p>
-    <h1 class="proj-title">AIoT Mood Detection</h1>
-    <p class="proj-summary">Designed and built a real-time mood detection system processing 432K messages per month with under 2-second latency, combining IoT sensor data with ML classification and a live dashboard.</p>
+    <p class="proj-tag">IoT · Real-Time ML · Generative Art</p>
+    <h1 class="proj-title">Draw Your Mood</h1>
+    <div class="badges">
+      <span class="badge badge-blue">Sensor-Driven Generative Art</span>
+      <span class="badge badge-blue">AWS IoT Core</span>
+      <span class="badge badge-dark">MS Applied Analytics · Columbia</span>
+    </div>
+    <p class="proj-summary">
+      Built a <strong>real-time emotion detection system</strong> using wearable IoT sensors —
+      5 users wear M5Stack Core2 devices that sense motion and sound, classify mood
+      every 2 seconds, and generate a visual <strong>"mood timeline" of their day</strong>.
+    </p>
   </div>
-  <div class="screenshot"><div class="ph"><span class="icon">🧠</span><span>Add your project screenshot here</span><small>Replace with: &lt;img src="../images/aiot.png"&gt;</small></div></div>
-  <div class="ds">
-    <p class="dl">About the Project</p><h2 class="dt">Real-Time Emotion Intelligence</h2>
-    <p>This system collects biometric and environmental signals from IoT sensors, processes them through a real-time streaming pipeline, and classifies mood states using a trained ML model — all with sub-2-second end-to-end latency.</p>
-    <p>The live dashboard allows operators to monitor mood trends across time, locations, and sensor clusters.</p>
-    <p>The architecture was designed for scale, handling 432,000+ messages per month without performance degradation.</p>
+
+  <div class="divider"></div>
+
+  <!-- Key Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-number">70.4%</span>
+      <span class="stat-label">XGBoost test accuracy</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">&lt;2s</span>
+      <span class="stat-label">End-to-end latency Core2 → prediction</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">5,838</span>
+      <span class="stat-label">Labeled windows across 16 sessions</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">4</span>
+      <span class="stat-label">Emotion classes: Calm, Energetic, Stressed, Tired</span>
+    </div>
   </div>
-  <div class="ds"><p class="dl">Tools & Tech Stack</p><div class="tg"><span class="tp">Python</span><span class="tp">MQTT</span><span class="tp">Kafka</span><span class="tp">Scikit-learn</span><span class="tp">Grafana</span><span class="tp">InfluxDB</span><span class="tp">IoT Sensors</span></div></div>
-  <div class="ds"><p class="dl">Key Results</p><div class="rg">
-    <div class="rc"><span class="rn">432K</span><span class="rl">Messages/month</span></div>
-    <div class="rc"><span class="rn">&lt;2s</span><span class="rl">End-to-end latency</span></div>
-    <div class="rc"><span class="rn">Live</span><span class="rl">Real-time dashboard</span></div>
-  </div></div>
-  <div class="ds"><p class="dl">Links</p><div class="lr"><a href="#" class="btn bp">🔗 View on GitHub</a><a href="#" class="btn bo">📄 View Report</a></div></div>
-  <footer>Built by Nawa · <a href="../index.html">Back to Portfolio</a></footer>
+
+  <!-- Screenshot -->
+  <div class="screenshot">
+    <div class="screenshot-placeholder">
+      <span class="ph-icon">🧠</span>
+      <span>Add your project screenshot here</span>
+      <span class="ph-hint">&lt;img src="../images/aiot.png" alt="Draw Your Mood dashboard"&gt;</span>
+    </div>
+  </div>
+
+  <!-- What I Built -->
+  <div class="section">
+    <p class="section-label">What I built</p>
+    <p class="about-text">
+      We track steps, sleep, and screen time — but <strong>emotional experience remains invisible</strong>.
+      Draw Your Mood answers: can sensor data capture how a day <em>feels</em>?
+      Five users wore <strong>M5Stack Core2</strong> devices continuously sensing IMU motion at 50Hz
+      and microphone audio at 16kHz. Every 2 seconds, raw signals were processed into
+      <strong>11 engineered features</strong>, published via MQTT to AWS IoT Core, and classified
+      by an XGBoost model into 4 emotion states grounded in
+      <strong>Russell's Circumplex Model of Affect (1980)</strong>.
+      Results streamed back to the device and a live Streamlit dashboard — turning sensor
+      signals into the <strong>story of your day</strong>.
+    </p>
+  </div>
+
+  <!-- System Architecture -->
+  <div class="section">
+    <p class="section-label">System architecture</p>
+    <div class="arch-steps">
+      <div class="arch-step">
+        <p class="step-num">Device / Edge</p>
+        <p class="step-name">M5Stack Core2 × 5</p>
+        <p class="step-desc">IMU @50Hz, Mic @16kHz, touch labeling → 60s circular buffer</p>
+      </div>
+      <div class="arch-step">
+        <p class="step-num">Communication</p>
+        <p class="step-name">MQTT via AWS IoT Core</p>
+        <p class="step-desc">Raw batches up · mood predictions down · NTP UTC timestamps</p>
+      </div>
+      <div class="arch-step">
+        <p class="step-num">Cloud / Inference</p>
+        <p class="step-name">XGBoost on Host</p>
+        <p class="step-desc">11 features per 2s window · real-time inference · runtime logs</p>
+      </div>
+      <div class="arch-step highlight">
+        <p class="step-num">Output</p>
+        <p class="step-name">Streamlit Dashboard ✦</p>
+        <p class="step-desc">Live + replay mode · mood timeline · 5-person comparison</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sensors -->
+  <div class="section">
+    <p class="section-label">Sensors & data</p>
+    <div class="sensor-grid">
+      <div class="sensor-card">
+        <p class="sensor-name">IMU / Accel + Gyro</p>
+        <p class="sensor-detail">50 Hz · 6 raw channels (ax, ay, az, gx, gy, gz) · m/s² and °/s</p>
+      </div>
+      <div class="sensor-card">
+        <p class="sensor-name">Microphone</p>
+        <p class="sensor-detail">16 kHz → 10 Hz features · dB SPL · window mean & variance</p>
+      </div>
+      <div class="sensor-card">
+        <p class="sensor-name">Touch Screen</p>
+        <p class="sensor-detail">Event-driven ground truth labels · 0=Calm · 1=Energetic · 2=Stressed · 3=Tired</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Model Results -->
+  <div class="section">
+    <p class="section-label">Model results (XGBoost · test set n=1,168)</p>
+    <table class="results-table">
+      <thead>
+        <tr>
+          <th>Emotion Class</th>
+          <th>Precision</th>
+          <th>Recall</th>
+          <th>F1</th>
+          <th>Test Samples</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Energetic</strong></td>
+          <td class="good">0.72</td>
+          <td class="good">0.81</td>
+          <td class="good">0.76</td>
+          <td>413</td>
+        </tr>
+        <tr>
+          <td><strong>Stressed</strong></td>
+          <td>0.69</td>
+          <td>0.74</td>
+          <td>0.71</td>
+          <td>324</td>
+        </tr>
+        <tr>
+          <td><strong>Tired</strong></td>
+          <td>0.72</td>
+          <td>0.71</td>
+          <td>0.71</td>
+          <td>267</td>
+        </tr>
+        <tr>
+          <td><strong>Calm</strong></td>
+          <td>0.63</td>
+          <td>0.37</td>
+          <td>0.46</td>
+          <td>164</td>
+        </tr>
+        <tr>
+          <td><strong>Weighted avg</strong></td>
+          <td class="good">0.70</td>
+          <td class="good">0.70</td>
+          <td class="good">0.70</td>
+          <td>1,168</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="result-note">
+      <strong>70.38% accuracy · 0.66 Macro F1</strong> across 4 emotion classes.
+      5 devices × 1 msg/30s = ~14,400 msgs/day — well within AWS IoT Core free tier.
+      Calm class underrepresented (n=164) — more data collection planned to balance the dataset.
+    </p>
+  </div>
+
+  <!-- Real-World Vision -->
+  <div class="section">
+    <p class="section-label">Real-world vision</p>
+    <p class="about-text" style="margin-bottom: 20px;">
+      Beyond the prototype, <strong>drawmood</strong> envisions turning sensor data into
+      a social experience — flipping the narrative from <strong>surveillance to expression</strong>.
+      Your day, written by your sensors.
+    </p>
+
+    <div class="screenshot" style="margin-bottom: 12px;">
+      <img src="../images/aiot-dashboard.png" alt="drawmood live dashboard showing 5 users and mood timeline" />
+    </div>
+
+    <div class="screenshot" style="margin-bottom: 20px;">
+      <img src="../images/aiot-app.png" alt="drawmood mobile app — mood timeline as shareable story" />
+    </div>
+
+    <div class="arch-steps">
+      <div class="arch-step">
+        <p class="step-num">Step 1</p>
+        <p class="step-name">Reflection</p>
+        <p class="step-desc">See your day differently. Recognize hidden emotional patterns you never noticed.</p>
+      </div>
+      <div class="arch-step">
+        <p class="step-num">Step 2</p>
+        <p class="step-name">Visualization</p>
+        <p class="step-desc">Data as art. Generate a full-day dynamic emotional timeline — unique to you.</p>
+      </div>
+      <div class="arch-step highlight">
+        <p class="step-num">Step 3</p>
+        <p class="step-name">Sharing ✦</p>
+        <p class="step-desc">A new social layer. Attach media and share your mood timeline as an expressive artifact.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tech Stack -->
+  <div class="section">
+    <p class="section-label">Tech stack</p>
+    <div class="tech-grid">
+      <span class="tech-pill">M5Stack Core2</span>
+      <span class="tech-pill">MicroPython</span>
+      <span class="tech-pill">MQTT</span>
+      <span class="tech-pill">AWS IoT Core</span>
+      <span class="tech-pill">XGBoost</span>
+      <span class="tech-pill">Streamlit</span>
+      <span class="tech-pill">Python</span>
+      <span class="tech-pill">IMU / Microphone</span>
+      <span class="tech-pill">Feature Engineering</span>
+      <span class="tech-pill">NTP / UTC</span>
+    </div>
+  </div>
+
+  <!-- Links -->
+  <div class="section">
+    <p class="section-label">Links</p>
+    <div class="link-row">
+      <a href="#" class="btn btn-primary">🔗 View on GitHub</a>
+      <a href="#" class="btn btn-outline">📄 View Report</a>
+    </div>
+  </div>
+
+  <footer>
+    Built by Nawa · <a href="../index.html">Back to Portfolio</a>
+  </footer>
+
 </div>
 </body>
 </html>
