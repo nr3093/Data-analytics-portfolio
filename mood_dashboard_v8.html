@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>drawmood · mood journal</title>
+
+<!--
+ ────────────────────────────────────────────────────────────────────
+  drawmood — Mood Journal (v6 — Save my day with bigger, bolder, background-agnostic text)
+
+  Objective: a journal of the wearer's mood across the day, written
+  automatically from the Core2 sensors so the user doesn't have to.
+
+  Schema (state message, published by Ruisheng's pipeline):
+  Topic:   drawmood/state/{device_id}
+  Payload: {
+    "device_id":  "core2_01",
+    "utc_ts":     1713551820000,        // epoch ms
+    "mood":       "calm",                // calm | energetic | stressed | tired
+    "window_s":   60,
+    "accel_rms":  0.42,                  // m/s^2 RMS over 2s
+    "mic_avg":    48.3,                  // dB avg over 3s
+    "angle_x":    -3.2,                  // degrees (tilt around X)
+    "angle_y":    12.7,                  // degrees (tilt around Y)
+    "angle_z":     1.4,                  // degrees (rotation around Z)
+    "label":      "auto"                 // "auto" from classifier, "manual" from button press
+  }
+
+  Sensors (agreed on alignment day):
+    accelerometer (RMS)   50 Hz → 2-second rolling RMS
+    microphone            10 Hz → 3-second avg
+    accel xyz angles      50 Hz → instantaneous tilt (deg)
+
+  Dashboard subscribes to `drawmood/state/+` (wildcard) to receive all 5
+  devices on one socket. device_id is taken from the payload for robustness.
+ ────────────────────────────────────────────────────────────────────
+-->
+
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+<style>
+  :root {
+    --calm-bg: #e1f5ee; --calm-mid: #1d9e75; --calm-dark: #085041; --calm-text: #04342c;
+    --energy-bg: #faeeda; --energy-mid: #ef9f27; --energy-dark: #854f0b; --energy-text: #412402;
+    --stress-bg: #faece7; --stress-mid: #d85a30; --stress-dark: #712b13; --stress-text: #4a1b0c;
+    --tired-bg: #f1efe8; --tired-mid: #888780; --tired-dark: #444441; --tired-text: #2c2c2a;
+    --surface: #ffffff; --surface2: #f7f6f3;
+    --border: rgba(0,0,0,0.09); --border-strong: rgba(0,0,0,0.15);
+    --text-primary: #1a1a18; --text-secondary: #5f5e5a; --text-muted: #9e9c96;
+    --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px;
+    --font: 'DM Sans', sans-serif; --mono: 'DM Mono', monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --calm-bg: #04342c; --calm-mid: #1d9e75; --calm-dark: #9fe1cb; --calm-text: #e1f5ee;
+      --energy-bg: #412402; --energy-mid: #ef9f27; --energy-dark: #fac775; --energy-text: #faeeda;
+      --stress-bg: #4a1b0c; --stress-mid: #d85a30; --stress-dark: #f0997b; --stress-text: #faece7;
+      --tired-bg: #2c2c2a; --tired-mid: #888780; --tired-dark: #b4b2a9; --tired-text: #f1efe8;
+      --surface: #1e1e1c; --surface2: #272724;
+      --border: rgba(255,255,255,0.08); --border-strong: rgba(255,255,255,0.14);
+      --text-primary: #f0ede6; --text-secondary: #9e9c96; --text-muted: #5f5e5a;
+    }
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font); background: var(--surface2); color: var(--text-primary); min-height: 100vh; padding: 20px; font-size: 14px; line-height: 1.5;
+         transition: background 0.6s ease; }
+  /* Body mood tint — follows the SELECTED device's mood. Soft top wash that
+     fades into the regular surface, with fixed attachment so the tint stays
+     present even when the page is scrolled. */
+  body.mood-calm      { background: linear-gradient(180deg, var(--calm-bg)   0%, var(--surface2) 65%) fixed; }
+  body.mood-energetic { background: linear-gradient(180deg, var(--energy-bg) 0%, var(--surface2) 65%) fixed; }
+  body.mood-stressed  { background: linear-gradient(180deg, var(--stress-bg) 0%, var(--surface2) 65%) fixed; }
+  body.mood-tired     { background: linear-gradient(180deg, var(--tired-bg)  0%, var(--surface2) 65%) fixed; }
+
+  /* ── SOURCE BAR ── */
+  .source-bar {
+    max-width: 1200px; margin: 0 auto 12px;
+    background: var(--surface); border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg); padding: 10px 16px;
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  }
+  .source-label { font-size: 11px; font-weight: 500; color: var(--text-muted); font-family: var(--mono); white-space: nowrap; }
+  .src-btn {
+    padding: 5px 14px; border-radius: 99px; border: 0.5px solid var(--border);
+    background: var(--surface2); font-size: 12px; cursor: pointer;
+    color: var(--text-secondary); font-family: var(--font); transition: all 0.15s;
+  }
+  .src-btn.active { background: var(--text-primary); color: var(--surface); border-color: var(--text-primary); }
+  .src-btn:hover:not(.active) { border-color: var(--border-strong); }
+  .mqtt-fields { display: flex; gap: 6px; align-items: center; flex: 1; min-width: 0; flex-wrap: wrap; }
+  .mqtt-fields input {
+    padding: 4px 10px; border-radius: 6px; border: 0.5px solid var(--border);
+    background: var(--surface2); font-size: 11px; color: var(--text-primary);
+    font-family: var(--mono); min-width: 0;
+  }
+  .mqtt-fields input:focus { outline: none; border-color: var(--border-strong); }
+  .mqtt-connect-btn {
+    padding: 5px 14px; border-radius: 99px; border: 0.5px solid var(--calm-mid);
+    background: var(--calm-mid); color: #fff; font-size: 12px; cursor: pointer;
+    font-family: var(--font); white-space: nowrap; transition: opacity 0.15s;
+  }
+  .mqtt-connect-btn:hover { opacity: 0.85; }
+  .replay-controls { display: flex; gap: 6px; align-items: center; }
+  .speed-select {
+    padding: 4px 8px; border-radius: 6px; border: 0.5px solid var(--border);
+    background: var(--surface2); font-size: 11px; color: var(--text-primary); font-family: var(--mono);
+  }
+  .play-btn {
+    padding: 5px 14px; border-radius: 99px; border: 0.5px solid var(--border);
+    background: var(--surface2); font-size: 12px; cursor: pointer; color: var(--text-secondary);
+    font-family: var(--font); transition: all 0.15s;
+  }
+  .play-btn:hover { border-color: var(--border-strong); }
+  .play-btn.playing { background: var(--stress-mid); color: #fff; border-color: var(--stress-mid); }
+  .progress-wrap { flex: 1; min-width: 80px; display: flex; align-items: center; gap: 6px; }
+  .progress-track { flex: 1; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--calm-mid); border-radius: 2px; transition: width 0.3s; width: 0%; }
+  .progress-ts { font-size: 10px; font-family: var(--mono); color: var(--text-muted); white-space: nowrap; }
+  .status-dot-row { display: flex; align-items: center; gap: 5px; margin-left: auto; }
+  .status-text { font-size: 11px; font-family: var(--mono); color: var(--text-muted); }
+
+  .latency-pill { font-size: 10px; font-family: var(--mono); color: var(--text-muted);
+                  padding: 2px 8px; border-radius: 99px; border: 0.5px solid var(--border);
+                  background: var(--surface2); margin-left: 6px; white-space: nowrap; }
+  .latency-pill.warn { color: var(--stress-dark); border-color: var(--stress-mid); background: var(--stress-bg); }
+
+  /* ── DASHBOARD GRID ── */
+  .dash { display: grid; grid-template-columns: 340px 1fr; grid-template-rows: auto auto 1fr; gap: 14px; max-width: 1200px; margin: 0 auto; }
+  .topbar { grid-column: 1/-1; background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 12px 18px; display: flex; align-items: center; justify-content: space-between; }
+  .topbar-brand { display: flex; flex-direction: column; gap: 1px; }
+  .brand-name { font-size: 15px; font-weight: 500; letter-spacing: -0.01em; }
+  .brand-sub { font-size: 11px; color: var(--text-muted); font-family: var(--mono); }
+  .topbar-right { display: flex; align-items: center; gap: 8px; }
+  .device-pill { display: flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 99px; border: 0.5px solid var(--border); background: var(--surface2); font-size: 12px; color: var(--text-secondary); }
+  .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .dot.on { background: var(--calm-mid); }
+  .dot.off { background: var(--border-strong); }
+
+  /* ── DEVICE GRID — one card per of the 5 Core2 devices ── */
+  .device-grid { grid-column: 1/-1; display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+  .dcard {
+    padding: 12px 14px; border-radius: var(--radius-md); border: 1.5px solid transparent;
+    background: var(--surface); cursor: pointer; transition: border-color 0.25s, transform 0.2s;
+    display: flex; flex-direction: column; gap: 8px; position: relative; min-width: 0;
+  }
+  .dcard:hover { border-color: var(--border-strong); }
+  .dcard.selected { border-color: var(--text-primary); }
+  .dcard.mood-calm   { --dc-accent: var(--calm-mid); }
+  .dcard.mood-energetic { --dc-accent: var(--energy-mid); }
+  .dcard.mood-stressed { --dc-accent: var(--stress-mid); }
+  .dcard.mood-tired  { --dc-accent: var(--tired-mid); }
+  .dcard.mood-unknown { --dc-accent: var(--border-strong); }
+  .dcard-header { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+  .dcard-id { font-size: 11px; font-family: var(--mono); color: var(--text-muted); }
+  .dcard-owner { font-size: 10px; color: var(--text-muted); font-family: var(--mono); text-align: right; }
+  .dcard-body { display: flex; align-items: center; gap: 10px; }
+  .dcard-ring {
+    width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid var(--dc-accent);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    background: var(--surface2); transition: border-color 0.4s, background 0.4s;
+  }
+  .dcard-ring svg { width: 22px; height: 22px; color: var(--dc-accent); }
+  .dcard-text { display: flex; flex-direction: column; min-width: 0; }
+  .dcard-mood { font-size: 14px; font-weight: 500; text-transform: capitalize; }
+  .dcard-age { font-size: 10px; color: var(--text-muted); font-family: var(--mono); }
+  .dcard-indicator { height: 3px; border-radius: 2px; background: var(--border); overflow: hidden; }
+  .dcard-indicator-fill { height: 100%; border-radius: 2px; background: var(--dc-accent); transition: width 0.6s ease; }
+  .dcard.offline { opacity: 0.55; }
+  .dcard .live-pill { position: absolute; top: 10px; right: 10px; font-size: 9px; font-family: var(--mono); color: var(--dc-accent); letter-spacing: 0.06em; text-transform: uppercase; }
+
+  .panel { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 16px; }
+  .panel-label { font-size: 10px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+  .panel-label .panel-sub { font-family: var(--mono); text-transform: none; letter-spacing: 0; color: var(--text-muted); font-weight: 400; }
+  .left-col { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+
+  /* ── Selected device detail ── */
+  .mood-display { display: flex; flex-direction: column; align-items: center; padding: 8px 0 4px; }
+  .mood-icon-ring { width: 80px; height: 80px; border-radius: 50%; border: 1.5px solid var(--border); background: var(--surface2); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; transition: border-color 0.4s, background 0.4s; }
+  .mood-icon-ring.calm   { border-color: var(--calm-mid);   background: var(--calm-bg); }
+  .mood-icon-ring.energetic { border-color: var(--energy-mid); background: var(--energy-bg); }
+  .mood-icon-ring.stressed { border-color: var(--stress-mid); background: var(--stress-bg); }
+  .mood-icon-ring.tired  { border-color: var(--tired-mid);  background: var(--tired-bg); }
+  .mood-icon-ring svg { width: 36px; height: 36px; }
+  .mood-name-display { font-size: 22px; font-weight: 500; letter-spacing: -0.02em; text-transform: capitalize; }
+  .mood-context { font-size: 11px; color: var(--text-muted); margin-top: 3px; font-family: var(--mono); }
+
+  .save-card-btn { margin-top: 14px; padding: 8px 18px; border-radius: 99px;
+                   border: 1px solid var(--border-strong); background: var(--surface2);
+                   font-family: var(--font); font-size: 12px; color: var(--text-primary);
+                   cursor: pointer; transition: all 0.15s; }
+  .save-card-btn:hover { background: var(--text-primary); color: var(--surface); border-color: var(--text-primary); }
+  .save-card-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* ── Feature panel (accel, mic, xyz angles) ── */
+  .feat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .feat-grid.angles { grid-template-columns: repeat(3, 1fr); margin-top: 8px; }
+  .feat-card { background: var(--surface2); border-radius: var(--radius-sm); padding: 10px; }
+  .feat-num { display: flex; align-items: baseline; gap: 2px; }
+  .feat-val { font-size: 20px; font-weight: 500; font-family: var(--mono); transition: color 0.4s; }
+  .feat-unit { font-size: 10px; color: var(--text-muted); }
+  .feat-lbl { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+  .feat-hint { font-size: 9px; color: var(--text-muted); font-family: var(--mono); margin-top: 1px; }
+  .feat-spark { margin-top: 6px; width: 100%; height: 22px; display: block; }
+
+  /* ── Model card panel ── (removed) */
+
+  .right-col { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+  .chart-wrap { position: relative; height: 130px; margin-top: 6px; }
+  .chart-wrap svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 6px; align-items: center; }
+  .leg-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-secondary); }
+  .leg-swatch { width: 10px; height: 3px; border-radius: 2px; }
+  .bottom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+  .tl-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 0.5px solid var(--border); }
+  .tl-row:last-child { border-bottom: none; }
+  .tl-time { font-size: 11px; color: var(--text-muted); width: 40px; flex-shrink: 0; font-family: var(--mono); }
+  .tl-dev { font-size: 10px; color: var(--text-muted); font-family: var(--mono); width: 64px; flex-shrink: 0; }
+  .tl-note { font-size: 11px; color: var(--text-secondary); }
+  .tl-conf { font-size: 10px; color: var(--text-muted); font-family: var(--mono); margin-left: auto; }
+
+  .mood-badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 500; text-transform: capitalize; }
+  .mood-badge.calm      { background: var(--calm-bg);   color: var(--calm-dark); }
+  .mood-badge.energetic { background: var(--energy-bg); color: var(--energy-dark); }
+  .mood-badge.stressed  { background: var(--stress-bg); color: var(--stress-dark); }
+  .mood-badge.tired     { background: var(--tired-bg);  color: var(--tired-dark); }
+
+  .alert-row {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 12px; margin-bottom: 6px;
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--border-strong);
+    background: var(--surface2);
+    transition: background 0.3s;
+  }
+  .alert-row:last-child { margin-bottom: 0; }
+  /* Tint the WHOLE alert row by mood */
+  .alert-row.calm      { background: var(--calm-bg);   border-left-color: var(--calm-mid); }
+  .alert-row.energetic { background: var(--energy-bg); border-left-color: var(--energy-mid); }
+  .alert-row.stressed  { background: var(--stress-bg); border-left-color: var(--stress-mid); }
+  .alert-row.tired     { background: var(--tired-bg);  border-left-color: var(--tired-mid); }
+  .alert-icon {
+    width: 26px; height: 26px; border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-size: 12px; font-weight: 600;
+    background: rgba(255,255,255,0.6);
+  }
+  .alert-icon.stressed  { color: var(--stress-dark); }
+  .alert-icon.energetic { color: var(--energy-dark); }
+  .alert-icon.calm      { color: var(--calm-dark); }
+  .alert-icon.tired     { color: var(--tired-dark); }
+  .alert-body { flex: 1; }
+  .alert-title { font-size: 13px; font-weight: 500; }
+  .alert-row.calm      .alert-title { color: var(--calm-dark); }
+  .alert-row.energetic .alert-title { color: var(--energy-dark); }
+  .alert-row.stressed  .alert-title { color: var(--stress-dark); }
+  .alert-row.tired     .alert-title { color: var(--tired-dark); }
+  .alert-desc  { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+
+  @keyframes pulse-ring { 0%{box-shadow:0 0 0 0 currentColor} 70%{box-shadow:0 0 0 8px transparent} 100%{box-shadow:0 0 0 0 transparent} }
+  .mood-icon-ring.live-pulse { animation: pulse-ring 1.8s ease-out; }
+
+  .schema-hint { font-size: 10px; color: var(--text-muted); font-family: var(--mono); }
+
+  @media (max-width: 900px) {
+    .device-grid { grid-template-columns: repeat(3, 1fr); }
+    .dash { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── SOURCE BAR ── -->
+<div class="source-bar" id="source-bar">
+  <span class="source-label">data source</span>
+  <button class="src-btn active" id="btn-replay" onclick="switchSource('replay')">CSV Replay</button>
+  <button class="src-btn" id="btn-mqtt" onclick="switchSource('mqtt')">MQTT Live</button>
+
+  <!-- Replay controls -->
+  <div class="replay-controls" id="replay-controls">
+    <select class="speed-select" id="speed-select" onchange="setSpeed(this.value)">
+      <option value="1">1× speed</option>
+      <option value="4" selected>4× speed</option>
+      <option value="10">10× speed</option>
+      <option value="30">30× speed</option>
+    </select>
+    <button class="play-btn" id="play-btn" onclick="togglePlay()">▶ Play</button>
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+      <span class="progress-ts" id="progress-ts">—</span>
+    </div>
+  </div>
+
+  <!-- MQTT controls -->
+  <div class="mqtt-fields" id="mqtt-fields" style="display:none">
+    <input id="mqtt-broker"    type="text" placeholder="broker" style="flex:2" value="broker.hivemq.com"/>
+    <input id="mqtt-port"      type="text" placeholder="port"   style="width:64px" value="8884"/>
+    <input id="mqtt-topic"     type="text" placeholder="topic"  style="flex:2" value="drawmood/state/+"/>
+    <button class="mqtt-connect-btn" id="mqtt-btn" onclick="toggleMqtt()">Connect</button>
+  </div>
+
+  <div class="status-dot-row">
+    <span class="dot" id="src-dot" style="background:var(--tired-mid)"></span>
+    <span class="status-text" id="src-status">paused</span>
+    <span class="latency-pill" id="latency-pill" title="Ingest delay = arrival time − message utc_ts. Target: under 500ms end-to-end.">ingest —</span>
+  </div>
+</div>
+
+<!-- ── DASHBOARD ── -->
+<div class="dash">
+
+  <div class="topbar">
+    <div class="topbar-brand">
+      <span class="brand-name">drawmood · mood journal</span>
+      <span class="brand-sub" id="topbar-sub">your day, classified by XGBoost · accel / mic / xyz tilt → mood · 5 devices</span>
+    </div>
+    <div class="topbar-right">
+      <div class="device-pill">
+        <span class="dot on" id="device-count-dot"></span>
+        <span id="device-count-label">0 / 5 devices active</span>
+      </div>
+      <div class="device-pill" title="MQTT namespace">
+        <span class="schema-hint">drawmood/state/+</span>
+      </div>
+      <div class="device-pill" title="Mood classifier — XGBoost (Extreme Gradient Boosting). 5 inputs: accel RMS, mic avg, angle x/y/z. 4 output classes: calm, energetic, stressed, tired. Trained in mood_classifier.ipynb. 70.38% accuracy on held-out test set (n=1168 segments).">
+        <span class="dot on" style="background:#9b59ff"></span>
+        <span class="schema-hint" id="model-pill">XGBoost · 70.38%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- DEVICE GRID — 5 Core2 devices (one per team member) -->  <div class="device-grid" id="device-grid"><!-- populated from JS --></div>
+
+  <!-- LEFT COL — Detail of selected device -->
+  <div class="left-col">
+    <div class="panel">
+      <div class="panel-label">
+        <span>Selected device</span>
+        <span class="panel-sub" id="sel-device-id">—</span>
+      </div>
+      <div class="mood-display">
+        <div class="mood-icon-ring" id="mood-ring">
+          <svg id="mood-svg" viewBox="0 0 36 36" fill="none" style="color:var(--tired-mid)">
+            <circle cx="18" cy="18" r="13" stroke="currentColor" stroke-width="1.2" opacity=".4"/>
+            <ellipse cx="13" cy="15.5" rx="2.5" ry="1.4" fill="currentColor" opacity=".7"/>
+            <ellipse cx="23" cy="15.5" rx="2.5" ry="1.4" fill="currentColor" opacity=".7"/>
+            <path d="M12 23 Q18 21 24 23" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" fill="none"/>
+          </svg>
+        </div>
+        <div class="mood-name-display" id="mood-name">—</div>
+        <div class="mood-context" id="mood-context">waiting for data…</div>
+        <button class="save-card-btn" onclick="saveCard()" title="Download a transparent-background PNG of your day — drop it into Instagram Stories or any photo.">
+          ⬇ Save my day
+        </button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">
+        <span>Features · classifier inputs</span>
+        <span class="panel-sub">window 60 s</span>
+      </div>
+      <div class="feat-grid">
+        <div class="feat-card">
+          <div class="feat-num"><span class="feat-val" id="f-accel">—</span><span class="feat-unit">m/s²</span></div>
+          <div class="feat-lbl">Accel RMS</div>
+          <div class="feat-hint">2 s rolling · 50 Hz</div>
+          <svg class="feat-spark" viewBox="0 0 80 22" id="spark-accel"><polyline id="poly-accel" points="40,11" fill="none" stroke="var(--tired-mid)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="feat-card">
+          <div class="feat-num"><span class="feat-val" id="f-mic">—</span><span class="feat-unit">dB</span></div>
+          <div class="feat-lbl">Mic avg</div>
+          <div class="feat-hint">3 s avg · 10 Hz</div>
+          <svg class="feat-spark" viewBox="0 0 80 22" id="spark-mic"><polyline id="poly-mic" points="40,11" fill="none" stroke="var(--tired-mid)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <div class="feat-grid angles">
+        <div class="feat-card">
+          <div class="feat-num"><span class="feat-val" id="f-ax">—</span><span class="feat-unit">°</span></div>
+          <div class="feat-lbl">Angle X</div>
+          <div class="feat-hint">tilt around X · 50 Hz</div>
+          <svg class="feat-spark" viewBox="0 0 80 22" id="spark-ax"><polyline id="poly-ax" points="40,11" fill="none" stroke="var(--tired-mid)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="feat-card">
+          <div class="feat-num"><span class="feat-val" id="f-ay">—</span><span class="feat-unit">°</span></div>
+          <div class="feat-lbl">Angle Y</div>
+          <div class="feat-hint">tilt around Y · 50 Hz</div>
+          <svg class="feat-spark" viewBox="0 0 80 22" id="spark-ay"><polyline id="poly-ay" points="40,11" fill="none" stroke="var(--tired-mid)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="feat-card">
+          <div class="feat-num"><span class="feat-val" id="f-az">—</span><span class="feat-unit">°</span></div>
+          <div class="feat-lbl">Angle Z</div>
+          <div class="feat-hint">rotation Z · 50 Hz</div>
+          <svg class="feat-spark" viewBox="0 0 80 22" id="spark-az"><polyline id="poly-az" points="40,11" fill="none" stroke="var(--tired-mid)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT COL -->
+  <div class="right-col">
+
+    <!-- History chart -->
+    <div class="panel">
+      <div class="panel-label">
+        <span>Mood history · selected device</span>
+        <span class="panel-sub" id="hist-device">—</span>
+      </div>
+      <div class="chart-wrap">
+        <svg id="history-svg" viewBox="0 0 540 130" preserveAspectRatio="none">
+          <line x1="0" y1="26"  x2="540" y2="26"  stroke="var(--border)" stroke-width="0.5"/>
+          <line x1="0" y1="65"  x2="540" y2="65"  stroke="var(--border)" stroke-width="0.5"/>
+          <line x1="0" y1="104" x2="540" y2="104" stroke="var(--border)" stroke-width="0.5"/>
+          <text font-size="9" fill="var(--text-muted)" font-family="DM Mono,monospace" x="2" y="24">high</text>
+          <text font-size="9" fill="var(--text-muted)" font-family="DM Mono,monospace" x="2" y="102">low</text>
+          <g id="history-dots"></g>
+        </svg>
+      </div>
+      <div class="legend">
+        <div class="leg-item"><div class="leg-swatch" style="background:var(--calm-mid)"></div>Calm</div>
+        <div class="leg-item"><div class="leg-swatch" style="background:var(--energy-mid)"></div>Energetic</div>
+        <div class="leg-item"><div class="leg-swatch" style="background:var(--stress-mid)"></div>Stressed</div>
+        <div class="leg-item"><div class="leg-swatch" style="background:var(--tired-mid)"></div>Tired</div>
+        <span style="margin-left:auto;font-size:11px;color:var(--text-muted)">● mood transition</span>
+      </div>
+    </div>
+
+    <!-- Timeline + Alerts -->
+    <div class="bottom-grid">
+      <div class="panel">
+        <div class="panel-label"><span>Mood journal entries</span><span class="panel-sub" title="A new entry is only written when the model has predicted the same NEW mood for 2 consecutive 60-second windows. Single-window flickers are dropped.">2-window confirm · all devices</span></div>
+        <div id="timeline-log">
+          <div class="tl-row"><span class="tl-time" style="color:var(--text-muted)">—</span><span class="tl-note" style="color:var(--text-muted)">waiting for the first entry…</span></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-label"><span>Mood alerts</span></div>
+        <div id="alerts-log">
+          <div class="alert-row tired">
+            <div class="alert-icon tired">~</div>
+            <div class="alert-body">
+              <div class="alert-title">No entries yet</div>
+              <div class="alert-desc">Mood alerts appear as the day unfolds</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────────
+// MOOD CLASSIFIER — exported from mood_classifier.ipynb
+// Model: XGBoost (Extreme Gradient Boosting) · 70.38% accuracy
+// Inputs (in order): accel_rms, mic_avg, angle_x, angle_y, angle_z
+// Classes: calm, energetic, stressed, tired
+// ─────────────────────────────────────────────────────────────────
+const MODEL_WEIGHTS = {"feature_names":["accel_rms","mic_avg","angle_x","angle_y","angle_z"],"classes":["calm","energetic","stressed","tired"],"coefs":[[[0.22631347146312664,-0.05929094947292072,0.571893032617405,0.06289502544207926,-0.7469642222125619,0.43734079506283535,0.26766466395483374,0.284839451001052,-0.21326730253283552,-0.4664496377263402,-0.6857017753575487,0.17939016306386585,0.13241634040053107,0.5747741467437872,0.34025273643834864,-0.050279229890954416],[0.1349459702340518,-0.49685205066094823,0.5457859272273885,0.052688186626562133,-0.022682901390368944,-0.12844472287931064,0.6439072919009755,0.6610336088502462,0.4454859765422882,-0.7247875117445577,-0.558590871635274,-0.8414315081657872,-0.400911544824461,0.46457919698806216,0.11611530549313188,0.8021595754887948],[-0.3429063366612941,-0.2477116344808885,0.15352067442368833,-0.6844912065409818,-0.4474729190389226,-0.16244761834694355,-0.5433998050782953,-0.09182840310723137,0.19147398032599985,0.10670264279075928,-0.03266020543686277,-0.5453806384417197,0.5200800358485065,0.5172137664015968,0.09691726783801076,-0.5087077860783652],[0.35821850878677813,-0.8549106075258172,-0.4631139381409536,-0.941832797037041,0.6154710382746603,0.3015790315023032,0.2946161247950054,0.8245689296978582,0.12518858946305242,0.49133838244615824,0.09931613986941053,-0.8292913154371351,0.25440763537075156,-0.24151668936002335,-0.6997026113583076,0.362259095160676],[0.006824188442925236,0.17455640530877975,0.24258268233484337,-0.4191369305208193,-0.7170256378573426,-0.1799933109492272,-0.47763151151445793,-0.37182856563825056,0.6278240644608778,-0.6067036528959006,-0.8729390176659441,0.08031263070829558,-0.16181884589054144,0.368331111069865,0.46587385420846594,0.05888497162724378]],[[0.5641399792660304,0.10703512885247683,0.31402038466603466,0.16618499422783073,-0.41887565500386886,-0.5830464381523512,0.3446020997831533,-0.0624908777192015],[-0.23919323278177632,0.4182813743456933,-0.3476878972868316,0.13861617155951644,-0.05956946755392379,0.1474875074701327,-0.2639249554768771,0.09097515330288423],[0.17434072616936536,-0.11314380711075937,-0.3819940978794847,0.7606095326489132,0.6340305181603764,-0.062028501304610635,-0.40199797552092936,0.65204704698366],[0.6572660823828844,0.6623125982916588,-0.05063849785621133,0.249903363859695,-0.3752863409758994,0.7622420556665299,0.1544561462832796,-0.5302119115589866],[0.09676084742675298,-0.12723800025785523,-0.3232272170607683,0.3093153355753787,0.12405143931134492,0.5717835510314908,0.4034852750038261,0.5592610345229146],[0.4796602305330656,0.32175627502141746,-0.4155556788601109,0.4300523210251642,-0.3963885314302942,-0.19448234836554285,-0.1396067052793158,-0.3242052179605223],[-0.02772364250516572,0.2819696273928995,-0.3294070314631139,0.8284801731504623,0.13631903319656274,-0.2984428505919971,0.3942131004874781,-0.6247213259195149],[0.8765657925198497,0.03827258357681927,0.2827352272502862,0.17719591409536195,0.15261476575572372,0.12702487184875552,0.6545837535577933,0.24409597293783958],[0.32096715109612883,-0.3825924528350008,-0.16843100265744781,-0.012033232255904528,0.30892349033480315,0.24501227492249494,0.39984013965246223,0.8371748205856713],[-0.8824629591318109,-0.17994294781277537,-0.39142425886455645,0.08642771631507867,-0.4052447168584339,0.525164443126604,0.6856045580365656,0.7270397367667247],[-0.3266667367787776,0.20014451895157073,-0.2697860091051192,-0.5405534887417606,-0.27705690475814143,0.317327424218167,0.9110916478601278,0.8849157908776532],[-0.17814342208868206,0.915426128721912,-0.20908216185988138,-0.05410853901739977,-0.32207221965050437,0.8279413398850513,-0.21987289654349254,-0.3761264995409965],[0.1046754340590354,0.3501140879082071,0.39167726625491395,0.18395980027568049,0.45646987714698195,0.6647064507931347,0.5096037439367862,0.16401049312201868],[0.5766600438916738,0.2503487519262964,-0.12634227112628993,-0.5979924430981566,0.4517210599428131,-0.5986262582189279,0.2750599569970728,-0.08708030333505243],[-0.05700013121371133,1.238453637373412,-0.34671568337550596,-0.2576156356608099,0.6281270654104767,0.44126662350208495,-0.6664434119643925,0.281140249601404],[0.6898293778862264,0.6326400501483165,0.0007411862023423144,0.0051037081237482,-0.181659190876659,-0.4720944115106597,-0.08345674542229725,0.03703600038692146]],[[-0.8855975748595493,0.13504457945466689,0.5657842125373953,-0.355091655301795],[-0.8057317626874022,0.24808388996293324,0.46267809639502827,0.7066137708747585],[-0.5217631314800715,-0.5320924736689732,0.6046647583962413,-0.1448463073755174],[-0.22461796522324784,-0.16966242510884588,0.7425228348533313,0.3776164526867698],[-0.5128525859444303,0.9390682364680879,-0.9381010699316727,-0.24987690342815125],[0.5684911190592997,-0.9649458542464983,-0.9515415688595977,0.2562465199551791],[1.1494318091137745,-0.23827906716265723,0.46026984340436355,-0.107077535977184],[0.424057300105851,0.02789375660129118,-1.0674035680411025,-1.0383250270114635]]],"intercepts":[[-0.05750986230620525,-0.026537983539854374,0.17016563472144583,0.2682912208244209,0.33413557132546656,-0.10467441967249062,-0.09199315635975851,0.5985338347509451,0.7270464274104383,0.43283895527655436,0.5739055367313132,0.14582805230709905,0.1679483841458503,0.24795847132606558,0.4946267546500883,-0.04854456377895154],[0.27452468308590056,-0.13534295025181686,0.0,-0.0738760558028387,0.08753953371104628,0.26674012642159567,0.37062617800279457,0.27911020800773184],[0.22556203886366893,-0.25566604272130417,-0.15506676911387685,-0.2065823288708065]],"scaler_mean":[0.7456394508368203,48.5169011273354,2.0776056567365955,-9.9386917932134,2.7154105998212765],"scaler_scale":[0.6622291731028409,11.064427259500942,15.562619647555376,25.26362858341977,7.645045629691185],"activation":"relu","output":"softmax"};
+
+// Pure-JS forward pass — mirrors python_forward() in mood_classifier.ipynb.
+// Returns { mood, conf, probs }.
+function predictMood(features) {
+  const W = MODEL_WEIGHTS;
+  const x = features.map((v, i) => (v - W.scaler_mean[i]) / W.scaler_scale[i]);
+  let h = x.slice();
+  for (let l = 0; l < W.coefs.length; l++) {
+    const Wl = W.coefs[l], bl = W.intercepts[l];
+    const out = new Array(bl.length).fill(0);
+    for (let j = 0; j < bl.length; j++) {
+      let s = bl[j];
+      for (let i = 0; i < h.length; i++) s += h[i] * Wl[i][j];
+      out[j] = s;
+    }
+    if (l < W.coefs.length - 1) {
+      for (let j = 0; j < out.length; j++) if (out[j] < 0) out[j] = 0; // ReLU
+    }
+    h = out;
+  }
+  // softmax
+  const m = Math.max(...h);
+  const e = h.map(v => Math.exp(v - m));
+  const z = e.reduce((a, b) => a + b, 0);
+  const probs = e.map(v => v / z);
+  let idx = 0;
+  for (let i = 1; i < probs.length; i++) if (probs[i] > probs[idx]) idx = i;
+  const probsByName = {};
+  W.classes.forEach((c, i) => probsByName[c] = probs[i]);
+  return { mood: W.classes[idx], conf: probs[idx], probs: probsByName };
+}
+
+// ─────────────────────────────────────────────────────────────────
+// DEVICES (5 Core2 devices — one per team member including Nawa)
+// ─────────────────────────────────────────────────────────────────
+const DEVICES = [
+  { id: 'core2_01', owner: 'Hanqing' },
+  { id: 'core2_02', owner: 'Blair' },
+  { id: 'core2_03', owner: 'Richard' },
+  { id: 'core2_04', owner: 'Ruisheng' },
+  { id: 'core2_05', owner: 'Nawa' },
+];
+const DEVICE_IDS = DEVICES.map(d => d.id);
+
+// ─────────────────────────────────────────────────────────────────
+// MOOD META
+// ─────────────────────────────────────────────────────────────────
+const MOOD_META = {
+  calm:      { color: 'var(--calm-mid)',   hex: '#1d9e75',
+               face: `<circle cx="18" cy="18" r="13" stroke="currentColor" stroke-width="1.2" opacity=".4"/><circle cx="13" cy="15" r="1.6" fill="currentColor" opacity=".8"/><circle cx="23" cy="15" r="1.6" fill="currentColor" opacity=".8"/><path d="M12 22 Q18 26.5 24 22" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" fill="none"/>` },
+  energetic: { color: 'var(--energy-mid)', hex: '#ef9f27',
+               face: `<circle cx="18" cy="18" r="13" stroke="currentColor" stroke-width="1.2" opacity=".4"/><circle cx="13" cy="14" r="1.8" fill="currentColor" opacity=".8"/><circle cx="23" cy="14" r="1.8" fill="currentColor" opacity=".8"/><path d="M11 22 Q18 28 25 22" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/><path d="M9 12 L11 9 M27 12 L25 9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>` },
+  stressed:  { color: 'var(--stress-mid)', hex: '#d85a30',
+               face: `<circle cx="18" cy="18" r="13" stroke="currentColor" stroke-width="1.2" opacity=".4"/><circle cx="13" cy="14" r="2" fill="currentColor" opacity=".9"/><circle cx="23" cy="14" r="2" fill="currentColor" opacity=".9"/><path d="M11 24 Q18 20 25 24" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" fill="none"/><path d="M10 11 L14 13 M26 11 L22 13" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>` },
+  tired:     { color: 'var(--tired-mid)',  hex: '#888780',
+               face: `<circle cx="18" cy="18" r="13" stroke="currentColor" stroke-width="1.2" opacity=".4"/><ellipse cx="13" cy="15.5" rx="2.5" ry="1.4" fill="currentColor" opacity=".7"/><ellipse cx="23" cy="15.5" rx="2.5" ry="1.4" fill="currentColor" opacity=".7"/><path d="M12 23 Q18 21 24 23" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" fill="none"/>` },
+};
+const UNKNOWN_FACE = `<circle cx="18" cy="18" r="13" stroke="currentColor" stroke-width="1.2" opacity=".3"/>`;
+
+// Map legacy short labels → canonical (defensive: tolerate "energy"/"stress")
+function normalizeMood(m) {
+  if (!m) return null;
+  m = String(m).toLowerCase().trim();
+  if (m === 'energy')  return 'energetic';
+  if (m === 'stress')  return 'stressed';
+  return m;
+}
+
+// ─────────────────────────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────────────────────────
+const deviceState = {}; // device_id -> { mood, accel_rms, mic_avg, light_avg, touch_rate, ts, owner, history: [], lastSeenMs }
+let selectedDevice = DEVICES[0].id;
+let currentSource  = 'replay';
+let replayTimer    = null;
+let replayIdx      = 0;
+let replaySpeed    = 4;
+let replayPlaying  = false;
+let replayRows     = [];
+let replayT0       = 0;
+
+let mqttClient    = null;
+let mqttConnected = false;
+
+const SPARK_LEN = 20;
+const HYSTERESIS_N = 2;  // require N consecutive same-mood predictions before journaling a transition
+const timelineLog = [];
+const alertsLog   = [];
+
+// ─────────────────────────────────────────────────────────────────
+// DEVICE GRID — build cards once, update in place
+// ─────────────────────────────────────────────────────────────────
+function buildDeviceGrid() {
+  const grid = document.getElementById('device-grid');
+  grid.innerHTML = '';
+  DEVICES.forEach(d => {
+    const card = document.createElement('div');
+    card.className = 'dcard mood-unknown offline';
+    card.id = 'dcard-' + d.id;
+    card.onclick = () => selectDevice(d.id);
+    card.innerHTML = `
+      <div class="dcard-header">
+        <span class="dcard-id">${d.id}</span>
+        <span class="dcard-owner">${d.owner}</span>
+      </div>
+      <div class="dcard-body">
+        <div class="dcard-ring"><svg viewBox="0 0 36 36" fill="none">${UNKNOWN_FACE}</svg></div>
+        <div class="dcard-text">
+          <span class="dcard-mood">—</span>
+          <span class="dcard-age">offline</span>
+        </div>
+      </div>
+      <div class="dcard-indicator"><div class="dcard-indicator-fill" style="width:0%"></div></div>
+    `;
+    grid.appendChild(card);
+
+    // Initialize state
+    deviceState[d.id] = {
+      owner: d.owner,
+      mood: null,             // STABLE mood (only changes after hysteresis confirms)
+      rawMood: null,          // most-recent raw model prediction
+      candidateMood: null,    // mood we're considering switching to
+      candidateCount: 0,      // how many consecutive windows have voted for it
+      accel_rms: null, mic_avg: null,
+      angle_x: null, angle_y: null, angle_z: null,
+      ts: null, lastSeenMs: 0,
+      sparks: { accel: [], mic: [], ax: [], ay: [], az: [] },
+      history: [], // {x, y, mood, ts} — normalized x in 0..1
+      firstTs: null, lastTs: null,
+      lastAlertedMood: null,
+    };
+  });
+}
+
+function selectDevice(id) {
+  selectedDevice = id;
+  DEVICES.forEach(d => {
+    const card = document.getElementById('dcard-' + d.id);
+    card.classList.toggle('selected', d.id === id);
+  });
+  refreshDetailPanel();
+  updateBodyMoodTint();
+}
+
+// Body background tint follows the SELECTED device's current mood.
+function updateBodyMoodTint() {
+  const s = deviceState[selectedDevice];
+  const moods = ['mood-calm', 'mood-energetic', 'mood-stressed', 'mood-tired'];
+  document.body.classList.remove(...moods);
+  if (s && s.mood && MOOD_META[s.mood]) {
+    document.body.classList.add('mood-' + s.mood);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// INGEST — single entry point for both replay and MQTT
+// Expects state-message schema:
+//   { device_id, utc_ts, mood, window_s?, accel_rms, mic_avg, light_avg, touch_rate }
+// ─────────────────────────────────────────────────────────────────
+function ingest(msg) {
+  const devId = msg.device_id;
+  const s = deviceState[devId];
+  if (!s) { console.warn('Unknown device_id:', devId); return; }
+
+  const prevMood = s.mood;
+  const ts = Number(msg.utc_ts) || Date.now();
+
+  // Read raw sensor features
+  const accel = Number(msg.accel_rms);
+  const mic   = Number(msg.mic_avg);
+  const ax    = Number(msg.angle_x);
+  const ay    = Number(msg.angle_y);
+  const az    = Number(msg.angle_z);
+
+  // Run the trained XGBoost classifier — feature order must match MODEL_WEIGHTS.feature_names
+  let rawMood, conf, probs;
+  if ([accel, mic, ax, ay, az].every(Number.isFinite)) {
+    const pred = predictMood([accel, mic, ax, ay, az]);
+    rawMood = pred.mood; conf = pred.conf; probs = pred.probs;
+  } else {
+    // fallback: trust the message label if features are missing
+    rawMood = normalizeMood(msg.mood); conf = null; probs = null;
+  }
+  if (!MOOD_META[rawMood]) { console.warn('Unknown mood from model:', rawMood); return; }
+
+  // Track ground-truth label too (only when message includes one) so we
+  // can flag disagreements between the source label and the model.
+  const truthMood = normalizeMood(msg.mood) || null;
+  s.truthMood = truthMood;
+  s.modelConf = conf;
+  s.modelProbs = probs;
+  s.rawMood = rawMood;
+
+  // ── Hysteresis (the "2 consecutive windows" rule) ────────────────
+  // The journal only commits a transition once the same NEW mood has
+  // been predicted for HYSTERESIS_N windows in a row. This prevents
+  // single-window flickers (e.g. one stray "stressed" reading during
+  // a calm session) from polluting the journal.
+  let mood;
+  let confirmedNow = false;
+  if (s.mood == null) {
+    // First reading — bootstrap directly
+    s.mood = rawMood;
+    s.candidateMood = rawMood;
+    s.candidateCount = HYSTERESIS_N;
+    confirmedNow = true;
+    mood = rawMood;
+  } else if (rawMood === s.mood) {
+    // Same as stable — confirm and reset candidate
+    s.candidateMood = rawMood;
+    s.candidateCount = HYSTERESIS_N;
+    mood = s.mood;
+  } else {
+    // Different from stable
+    if (rawMood === s.candidateMood) {
+      s.candidateCount++;
+    } else {
+      s.candidateMood = rawMood;
+      s.candidateCount = 1;
+    }
+    if (s.candidateCount >= HYSTERESIS_N) {
+      // Commit the transition
+      s.mood = rawMood;
+      confirmedNow = true;
+    }
+    mood = s.mood;
+  }
+  s.candidateMoodPending = (s.candidateMood !== s.mood) ? s.candidateMood : null;
+  s.candidatePendingCount = (s.candidateMood !== s.mood) ? s.candidateCount : 0;
+  s.accel_rms  = accel;
+  s.mic_avg    = mic;
+  s.angle_x    = ax;
+  s.angle_y    = ay;
+  s.angle_z    = az;
+  s.ts         = ts;
+  s.lastSeenMs = Date.now();
+  if (s.firstTs === null) s.firstTs = ts;
+  s.lastTs = ts;
+
+  // Update sparks
+  const smap = { accel: s.accel_rms, mic: s.mic_avg,
+                 ax: s.angle_x, ay: s.angle_y, az: s.angle_z };
+  Object.keys(smap).forEach(k => {
+    if (!Number.isFinite(smap[k])) return;
+    s.sparks[k].push(smap[k]);
+    if (s.sparks[k].length > SPARK_LEN) s.sparks[k].shift();
+  });
+
+  // Update history (selected-device chart uses this)
+  // Activation = movement intensity (accel + tilt magnitude) + voice
+  const tiltMag = Math.sqrt(
+    (Number(s.angle_x)||0)**2 + (Number(s.angle_y)||0)**2
+  ) / 90;
+  const featSum = (Number(s.accel_rms)||0)*0.5 + (Number(s.mic_avg)||0)/120 + tiltMag*0.3;
+  // Map feature intensity to a 0..1 "activation" axis for the chart
+  const activation = Math.max(0.05, Math.min(0.95, featSum));
+  s.history.push({ mood, ts, activation });
+  if (s.history.length > 120) s.history.shift();
+
+  // Refresh device card
+  renderDeviceCard(devId);
+
+  // Refresh selected detail panel if this device is selected
+  if (devId === selectedDevice) {
+    refreshDetailPanel();
+    if (prevMood !== mood) updateBodyMoodTint();
+  }
+
+  // Timeline + alerts on CONFIRMED mood transitions only
+  // (raw single-window flickers do not write to the journal).
+  if (confirmedNow && prevMood !== mood) {
+    const d = new Date(ts);
+    const timeStr = d.getHours() + ':' + String(d.getMinutes()).padStart(2,'0') + ':' + String(d.getSeconds()).padStart(2,'0');
+    addTimelineRow(timeStr, devId, mood, HYSTERESIS_N);
+    if (mood === 'stressed' && s.lastAlertedMood !== 'stressed')
+      addAlert('stressed', '!', `Stress entry · ${s.owner}`, `accel ${fmt(s.accel_rms,2)} · mic ${fmt(s.mic_avg,1)} dB · tilt ${fmt(s.angle_x,0)}°/${fmt(s.angle_y,0)}°`);
+    else if (mood === 'energetic' && s.lastAlertedMood !== 'energetic')
+      addAlert('energetic', '↑', `Energy entry · ${s.owner}`, `accel ${fmt(s.accel_rms,2)} · tilt ${fmt(s.angle_x,0)}°/${fmt(s.angle_y,0)}°`);
+    else if (mood === 'calm' && prevMood && prevMood !== 'calm')
+      addAlert('calm', '✓', `Returned to calm · ${s.owner}`, `accel ${fmt(s.accel_rms,2)} · mic ${fmt(s.mic_avg,1)} dB`);
+    else if (mood === 'tired' && s.lastAlertedMood !== 'tired')
+      addAlert('tired', '~', `Tired entry · ${s.owner}`, `accel ${fmt(s.accel_rms,2)} · low movement`);
+    s.lastAlertedMood = mood;
+  }
+
+  // Latency pill — arrival time minus message timestamp
+  if (Number.isFinite(ts)) {
+    const lag = Math.max(0, Date.now() - ts);
+    const pill = document.getElementById('latency-pill');
+    if (pill) {
+      pill.textContent = `ingest ${lag}ms`;
+      pill.classList.toggle('warn', lag > 500);
+    }
+  }
+
+  // Status / summary
+  updateDeviceCountLabel();
+}
+
+function fmt(v, digits) { return Number.isFinite(Number(v)) ? Number(v).toFixed(digits) : '—'; }
+
+// ─────────────────────────────────────────────────────────────────
+// DEVICE CARD RENDER
+// ─────────────────────────────────────────────────────────────────
+function renderDeviceCard(id) {
+  const s = deviceState[id];
+  const card = document.getElementById('dcard-' + id);
+  if (!card) return;
+  card.classList.remove('mood-unknown','mood-calm','mood-energetic','mood-stressed','mood-tired','offline');
+  if (!s.mood) { card.classList.add('mood-unknown','offline'); return; }
+  card.classList.add('mood-' + s.mood);
+
+  const ring = card.querySelector('.dcard-ring svg');
+  ring.innerHTML = MOOD_META[s.mood].face;
+  ring.style.color = MOOD_META[s.mood].color;
+  card.querySelector('.dcard-mood').textContent = s.mood;
+  card.querySelector('.dcard-age').textContent = ageString(s.lastSeenMs);
+
+  // Bar fill = normalized feature activation
+  const fill = Math.min(100, Math.round(((Number(s.accel_rms)||0)*0.5 + (Number(s.mic_avg)||0)/120) * 100));
+  card.querySelector('.dcard-indicator-fill').style.width = fill + '%';
+}
+
+function ageString(lastSeenMs) {
+  if (!lastSeenMs) return 'offline';
+  const age = Math.floor((Date.now() - lastSeenMs) / 1000);
+  if (age < 2)  return 'live';
+  if (age < 60) return age + 's ago';
+  return Math.floor(age/60) + 'm ago';
+}
+
+// ─────────────────────────────────────────────────────────────────
+// DETAIL PANEL (selected device)
+// ─────────────────────────────────────────────────────────────────
+function refreshDetailPanel() {
+  const s = deviceState[selectedDevice];
+  document.getElementById('sel-device-id').textContent = selectedDevice + ' · ' + s.owner;
+  document.getElementById('hist-device').textContent = selectedDevice;
+
+  const ring = document.getElementById('mood-ring');
+  const prevMood = ring.dataset.mood;
+  ring.className = 'mood-icon-ring ' + (s.mood || '');
+  ring.dataset.mood = s.mood || '';
+  const svg = document.getElementById('mood-svg');
+  if (s.mood) {
+    svg.style.color = MOOD_META[s.mood].color;
+    svg.innerHTML = MOOD_META[s.mood].face;
+  } else {
+    svg.style.color = 'var(--tired-mid)';
+    svg.innerHTML = UNKNOWN_FACE;
+  }
+  if (prevMood && prevMood !== s.mood) {
+    ring.classList.remove('live-pulse');
+    void ring.offsetWidth;
+    ring.classList.add('live-pulse');
+  }
+
+  document.getElementById('mood-name').textContent = s.mood || '—';
+  if (s.mood) {
+    const confStr = (s.modelConf != null) ? `${(s.modelConf*100).toFixed(0)}% conf` : 'no conf';
+    const dis = (s.truthMood && s.truthMood !== s.mood)
+      ? ` · ⚠ truth=${s.truthMood}` : '';
+    document.getElementById('mood-context').textContent =
+      `XGBoost · ${confStr} · ${ageString(s.lastSeenMs)}${dis}`;
+  } else {
+    document.getElementById('mood-context').textContent = 'waiting for data…';
+  }
+
+  document.getElementById('f-accel').textContent = fmt(s.accel_rms, 2);
+  document.getElementById('f-mic').textContent   = fmt(s.mic_avg, 1);
+  document.getElementById('f-ax').textContent    = fmt(s.angle_x, 1);
+  document.getElementById('f-ay').textContent    = fmt(s.angle_y, 1);
+  document.getElementById('f-az').textContent    = fmt(s.angle_z, 1);
+
+  const color = s.mood ? MOOD_META[s.mood].hex : '#888780';
+  renderSparkline('accel', s.sparks.accel, color);
+  renderSparkline('mic',   s.sparks.mic,   color);
+  renderSparkline('ax',    s.sparks.ax,    color);
+  renderSparkline('ay',    s.sparks.ay,    color);
+  renderSparkline('az',    s.sparks.az,    color);
+
+  renderHistoryChart(s);
+}
+
+// ─────────────────────────────────────────────────────────────────
+// SPARKLINE RENDERER
+// ─────────────────────────────────────────────────────────────────
+function renderSparkline(key, buf, hexColor) {
+  const poly = document.getElementById('poly-' + key);
+  if (!poly) return;
+  if (buf.length < 2) { poly.setAttribute('points',''); return; }
+  const min = Math.min(...buf), max = Math.max(...buf);
+  const range = max - min || 1;
+  const pts = buf.map((v, i) => {
+    const x = (i / (SPARK_LEN - 1)) * 80;
+    const y = 20 - ((v - min) / range) * 18;
+    return x.toFixed(1) + ',' + y.toFixed(1);
+  }).join(' ');
+  poly.setAttribute('points', pts);
+  poly.setAttribute('stroke', hexColor);
+}
+
+// ─────────────────────────────────────────────────────────────────
+// HISTORY CHART RENDERER (selected device)
+// ─────────────────────────────────────────────────────────────────
+function renderHistoryChart(s) {
+  const svg = document.getElementById('history-svg');
+  svg.querySelectorAll('.seg').forEach(e => e.remove());
+  const dotsG = document.getElementById('history-dots');
+  dotsG.innerHTML = '';
+  if (!s.history || s.history.length < 1) return;
+
+  const first = s.firstTs || s.history[0].ts;
+  const last  = s.lastTs  || s.history[s.history.length-1].ts;
+  const span  = Math.max(1, last - first);
+
+  const pts = s.history.map(h => {
+    const xFrac = (h.ts - first) / span;
+    const x = 20 + xFrac * 510;
+    // valence-like axis: map activation 0..1 → y 104..14
+    // but we color by mood rather than depend only on activation
+    const y = 104 - h.activation * 90;
+    return { x, y, mood: h.mood };
+  });
+
+  // Build segments per contiguous mood run
+  let seg = [pts[0]];
+  for (let i = 1; i < pts.length; i++) {
+    seg.push(pts[i]);
+    if (i === pts.length - 1 || pts[i+1].mood !== pts[i].mood) {
+      const poly = document.createElementNS('http://www.w3.org/2000/svg','polyline');
+      poly.setAttribute('class','seg');
+      poly.setAttribute('fill','none');
+      poly.setAttribute('stroke', MOOD_META[pts[i].mood].hex);
+      poly.setAttribute('stroke-width','1.5');
+      poly.setAttribute('points', seg.map(p => p.x.toFixed(1)+','+p.y.toFixed(1)).join(' '));
+      svg.appendChild(poly);
+      seg = [pts[i]];
+    }
+  }
+
+  // Dots on mood transitions
+  pts.forEach((p, i) => {
+    if (i === 0 || pts[i-1].mood !== p.mood) {
+      const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      c.setAttribute('cx', p.x.toFixed(1));
+      c.setAttribute('cy', p.y.toFixed(1));
+      c.setAttribute('r', '4');
+      c.setAttribute('fill', MOOD_META[p.mood].hex);
+      dotsG.appendChild(c);
+    }
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────
+// TIMELINE & ALERTS
+// ─────────────────────────────────────────────────────────────────
+function addTimelineRow(time, devId, mood, hyN) {
+  timelineLog.push({ time, devId, mood, hyN });
+  const log = document.getElementById('timeline-log');
+  if (timelineLog.length === 1) log.innerHTML = '';
+  const div = document.createElement('div');
+  div.className = 'tl-row';
+  const conf = hyN ? `<span class="tl-conf" title="Confirmed by ${hyN} consecutive windows of the same prediction (anti-flicker rule).">(${hyN}/${hyN} confirmed)</span>` : '';
+  div.innerHTML = `
+    <span class="tl-time">${time}</span>
+    <span class="tl-dev">${devId}</span>
+    <span class="mood-badge ${mood}">${mood}</span>
+    ${conf}
+  `;
+  log.prepend(div);
+  while (log.children.length > 7) log.removeChild(log.lastChild);
+}
+
+function addAlert(type, icon, title, desc) {
+  alertsLog.push({ type, icon, title, desc });
+  const log = document.getElementById('alerts-log');
+  if (alertsLog.length === 1) log.innerHTML = '';
+  const div = document.createElement('div');
+  // Mood class on the ROW so the whole row tints by mood
+  div.className = 'alert-row ' + type;
+  div.innerHTML = `<div class="alert-icon ${type}">${icon}</div><div class="alert-body"><div class="alert-title">${title}</div><div class="alert-desc">${desc}</div></div>`;
+  log.prepend(div);
+  while (log.children.length > 5) log.removeChild(log.lastChild);
+}
+
+// Active-device counter + staleness tick
+function updateDeviceCountLabel() {
+  const now = Date.now();
+  const active = DEVICE_IDS.filter(id => {
+    const s = deviceState[id];
+    return s.lastSeenMs && (now - s.lastSeenMs) < 15000;
+  }).length;
+  const lbl = document.getElementById('device-count-label');
+  lbl.textContent = active + ' / 5 devices active';
+  const dot = document.getElementById('device-count-dot');
+  dot.style.background = active === 5 ? 'var(--calm-mid)' : (active > 0 ? 'var(--energy-mid)' : 'var(--border-strong)');
+}
+
+// Refresh all device-card "age" labels once a second
+setInterval(() => {
+  DEVICE_IDS.forEach(id => {
+    const s = deviceState[id];
+    if (s.lastSeenMs) {
+      const card = document.getElementById('dcard-' + id);
+      if (card) card.querySelector('.dcard-age').textContent = ageString(s.lastSeenMs);
+    }
+  });
+  updateDeviceCountLabel();
+}, 1000);
+
+// ─────────────────────────────────────────────────────────────────
+// SOURCE SWITCHING
+// ─────────────────────────────────────────────────────────────────
+function switchSource(src) {
+  currentSource = src;
+  document.getElementById('btn-replay').classList.toggle('active', src === 'replay');
+  document.getElementById('btn-mqtt').classList.toggle('active', src === 'mqtt');
+  document.getElementById('replay-controls').style.display = src === 'replay' ? '' : 'none';
+  document.getElementById('mqtt-fields').style.display = src === 'mqtt' ? '' : 'none';
+  if (src === 'mqtt') stopReplay();
+}
+
+// ─────────────────────────────────────────────────────────────────
+// REPLAY ENGINE
+// Plays a time-ordered stream of rows. Each row is one state message.
+// Rows for different devices may interleave; the engine uses the row's
+// ts to schedule the next callback at (dt / speed) ms.
+// ─────────────────────────────────────────────────────────────────
+function initReplay() {
+  replayRows = generateReplayRows();
+  replayRows.sort((a,b) => a.utc_ts - b.utc_ts);
+  replayT0 = replayRows.length ? replayRows[0].utc_ts : 0;
+}
+
+function togglePlay() {
+  if (replayPlaying) stopReplay();
+  else startReplay();
+}
+
+function startReplay() {
+  if (!replayRows.length) initReplay();
+  if (replayIdx >= replayRows.length) replayIdx = 0;
+  replayPlaying = true;
+  document.getElementById('play-btn').textContent = '⏸ Pause';
+  document.getElementById('play-btn').classList.add('playing');
+  scheduleNext();
+}
+
+function stopReplay() {
+  replayPlaying = false;
+  clearTimeout(replayTimer);
+  document.getElementById('play-btn').textContent = '▶ Play';
+  document.getElementById('play-btn').classList.remove('playing');
+  document.getElementById('src-status').textContent = 'paused';
+  document.getElementById('src-dot').style.background = 'var(--tired-mid)';
+}
+
+function scheduleNext() {
+  if (!replayPlaying || replayIdx >= replayRows.length) {
+    if (replayIdx >= replayRows.length) {
+      stopReplay();
+      document.getElementById('src-status').textContent = 'replay done';
+    }
+    return;
+  }
+  const row = replayRows[replayIdx];
+  const nextRow = replayRows[replayIdx + 1];
+  let delay = 1000;
+  if (nextRow) {
+    const dt = nextRow.utc_ts - row.utc_ts;
+    delay = Math.max(40, dt / replaySpeed);
+  }
+
+  // Progress
+  const lastTs = replayRows[replayRows.length-1].utc_ts;
+  const span   = Math.max(1, lastTs - replayT0);
+  const pct    = ((row.utc_ts - replayT0) / span) * 100;
+  document.getElementById('progress-fill').style.width = pct.toFixed(1) + '%';
+  const secs = Math.floor((row.utc_ts - replayT0) / 1000);
+  document.getElementById('progress-ts').textContent = secs + 's';
+
+  document.getElementById('src-status').textContent = 'replaying';
+  document.getElementById('src-dot').style.background = MOOD_META[normalizeMood(row.mood)||'calm'].hex;
+
+  ingest(row);
+  replayIdx++;
+  replayTimer = setTimeout(scheduleNext, delay);
+}
+
+function setSpeed(v) { replaySpeed = parseFloat(v); }
+
+// Build a realistic multi-device session: each device runs its own
+// 2-minute journey, staggered so transitions don't all land at once.
+function generateReplayRows() {
+  const now = Date.now();
+  // Each journey: list of {mood, duration_s, features}
+  // ax/ay/az = baseline tilt angles in degrees
+  const JOURNEYS = {
+    core2_01: [ // Hanqing — calm → energetic → calm (walk to lab)
+      { mood:'calm',      dur: 24, feat: { accel: 0.30, mic: 40, ax:  -2, ay:   3, az:   1 }},
+      { mood:'energetic', dur: 60, feat: { accel: 1.85, mic: 62, ax:  18, ay: -22, az:  12 }},
+      { mood:'calm',      dur: 28, feat: { accel: 0.45, mic: 45, ax:   3, ay:  -1, az:   2 }},
+    ],
+    core2_02: [ // Blair — calm → stressed → calm (deadline then recovery)
+      { mood:'calm',      dur: 20, feat: { accel: 0.32, mic: 44, ax:   1, ay:   4, az:  -2 }},
+      { mood:'stressed',  dur: 50, feat: { accel: 1.10, mic: 72, ax: -28, ay:  16, az:  -8 }},
+      { mood:'calm',      dur: 42, feat: { accel: 0.38, mic: 46, ax:   2, ay:   3, az:  -1 }},
+    ],
+    core2_03: [ // Richard — energetic → calm (finishing workout)
+      { mood:'energetic', dur: 40, feat: { accel: 2.10, mic: 58, ax:  35, ay: -30, az:  20 }},
+      { mood:'calm',      dur: 72, feat: { accel: 0.42, mic: 43, ax:  -1, ay:   2, az:   0 }},
+    ],
+    core2_04: [ // Ruisheng — tired → calm (morning wake-up)
+      { mood:'tired',     dur: 36, feat: { accel: 0.20, mic: 34, ax:  -8, ay: -75, az:   4 }},
+      { mood:'calm',      dur: 76, feat: { accel: 0.33, mic: 41, ax:   0, ay:   1, az:  -1 }},
+    ],
+    core2_05: [ // Nawa — tired → calm → stressed → calm (dashboard day)
+      { mood:'tired',     dur: 20, feat: { accel: 0.18, mic: 32, ax:  -5, ay: -60, az:   2 }},
+      { mood:'calm',      dur: 36, feat: { accel: 0.31, mic: 42, ax:   2, ay:   2, az:  -1 }},
+      { mood:'stressed',  dur: 44, feat: { accel: 0.95, mic: 68, ax: -22, ay:  14, az:  -6 }},
+      { mood:'calm',      dur: 52, feat: { accel: 0.36, mic: 44, ax:   1, ay:   3, az:  -1 }},
+    ],
+  };
+
+  const STEP_MS = 4000; // 4s per row
+  const rows = [];
+  for (const devId of Object.keys(JOURNEYS)) {
+    let t = 0;
+    for (const seg of JOURNEYS[devId]) {
+      const nSteps = Math.max(1, Math.round(seg.dur / (STEP_MS/1000)));
+      for (let i = 0; i < nSteps; i++) {
+        // Add small noise to each feature
+        const jitter = (base, amp) => base + (Math.random() - 0.5) * amp;
+        const jitterAbs = (base, amp) => Math.max(0, base + (Math.random() - 0.5) * amp);
+        rows.push({
+          device_id:  devId,
+          utc_ts:     now + t,
+          mood:       seg.mood,
+          window_s:   60,
+          accel_rms:  jitterAbs(seg.feat.accel, seg.feat.accel * 0.18),
+          mic_avg:    jitterAbs(seg.feat.mic,   seg.feat.mic   * 0.08),
+          angle_x:    jitter(seg.feat.ax, 6),
+          angle_y:    jitter(seg.feat.ay, 6),
+          angle_z:    jitter(seg.feat.az, 4),
+          label:      'auto',
+        });
+        t += STEP_MS;
+      }
+    }
+  }
+  return rows;
+}
+
+// ─────────────────────────────────────────────────────────────────
+// MQTT ENGINE
+// ─────────────────────────────────────────────────────────────────
+function toggleMqtt() {
+  if (mqttConnected) disconnectMqtt();
+  else connectMqtt();
+}
+
+function connectMqtt() {
+  const broker = document.getElementById('mqtt-broker').value.trim();
+  const port   = parseInt(document.getElementById('mqtt-port').value.trim());
+  const topic  = document.getElementById('mqtt-topic').value.trim() || 'drawmood/state/+';
+
+  const url = `wss://${broker}:${port}/mqtt`;
+  document.getElementById('src-status').textContent = 'connecting…';
+  document.getElementById('mqtt-btn').textContent = 'Connecting…';
+
+  mqttClient = mqtt.connect(url, {
+    clientId: 'drawmood_dash_' + Math.random().toString(16).slice(2,8),
+    reconnectPeriod: 3000,
+  });
+
+  mqttClient.on('connect', () => {
+    mqttConnected = true;
+    document.getElementById('src-status').textContent = 'connected · ' + broker;
+    document.getElementById('src-dot').style.background = 'var(--calm-mid)';
+    document.getElementById('mqtt-btn').textContent = 'Disconnect';
+    mqttClient.subscribe(topic, { qos: 0 }, (err) => {
+      if (err) console.warn('subscribe error', err);
+    });
+  });
+
+  mqttClient.on('message', (recvTopic, payload) => {
+    try {
+      const msg = JSON.parse(payload.toString());
+      // If device_id is missing from payload, fall back to the last segment of the topic
+      if (!msg.device_id) {
+        const parts = recvTopic.split('/');
+        msg.device_id = parts[parts.length - 1];
+      }
+      ingest(msg);
+    } catch (e) {
+      console.warn('MQTT parse error:', e.message, payload.toString());
+    }
+  });
+
+  mqttClient.on('error', (err) => {
+    document.getElementById('src-status').textContent = 'error: ' + err.message.slice(0, 40);
+    document.getElementById('src-dot').style.background = 'var(--stress-mid)';
+  });
+
+  mqttClient.on('close', () => {
+    if (mqttConnected) {
+      mqttConnected = false;
+      document.getElementById('src-status').textContent = 'disconnected';
+      document.getElementById('src-dot').style.background = 'var(--tired-mid)';
+      document.getElementById('mqtt-btn').textContent = 'Connect';
+    }
+  });
+}
+
+function disconnectMqtt() {
+  if (mqttClient) mqttClient.end();
+  mqttConnected = false;
+  document.getElementById('src-status').textContent = 'disconnected';
+  document.getElementById('src-dot').style.background = 'var(--tired-mid)';
+  document.getElementById('mqtt-btn').textContent = 'Connect';
+}
+
+// ─────────────────────────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────────────────────────
+buildDeviceGrid();
+selectDevice(DEVICES[0].id);
+
+// ─────────────────────────────────────────────────────────────────
+// SAVE MY DAY — Strava-style shareable card export
+// Produces a 1080×1080 PNG with TRANSPARENT background containing:
+//   - the mood history wave (colored line + transition dots)
+//   - per-mood time stats (calm/energetic/stressed/tired durations)
+//   - "drawmood" wordmark
+//   - a small footer naming the device + date
+// User can drop the PNG into Instagram Stories, on top of any photo.
+// ─────────────────────────────────────────────────────────────────
+function saveCard() {
+  const s = deviceState[selectedDevice];
+  if (!s || !s.history || s.history.length < 2) {
+    alert('No mood history yet — start the replay or wait for more messages, then try again.');
+    return;
+  }
+
+  // Aggregate per-mood time (in seconds) from the history buffer.
+  // Each consecutive pair of points contributes the mood of the FIRST point
+  // for the duration between them.
+  const moodTime = { calm: 0, energetic: 0, stressed: 0, tired: 0 };
+  for (let i = 1; i < s.history.length; i++) {
+    const dt = (s.history[i].ts - s.history[i-1].ts) / 1000;
+    if (dt > 0 && moodTime[s.history[i-1].mood] != null) {
+      moodTime[s.history[i-1].mood] += dt;
+    }
+  }
+  // Tail: include the last segment as the most-recent mood
+  const totalSec = Object.values(moodTime).reduce((a,b)=>a+b, 0);
+
+  function fmtDur(sec) {
+    sec = Math.round(sec);
+    if (sec < 60)        return sec + 's';
+    if (sec < 3600)      return Math.floor(sec/60) + 'm ' + (sec%60) + 's';
+    return Math.floor(sec/3600) + 'h ' + Math.round((sec%3600)/60) + 'm';
+  }
+
+  // Build the wave path for the card — same logic as the dashboard's history chart,
+  // just rescaled for the bigger canvas.
+  const W = 1080, H = 1080;
+  const waveX0 = 80, waveX1 = 1000, waveY0 = 240, waveY1 = 540;
+  const waveW = waveX1 - waveX0, waveH = waveY1 - waveY0;
+  const first = s.firstTs || s.history[0].ts;
+  const last  = s.lastTs  || s.history[s.history.length-1].ts;
+  const span  = Math.max(1, last - first);
+
+  const pts = s.history.map(h => {
+    const xFrac = (h.ts - first) / span;
+    return {
+      x: waveX0 + xFrac * waveW,
+      y: waveY1 - h.activation * waveH,
+      mood: h.mood,
+    };
+  });
+
+  // Build per-segment polylines colored by mood (so a calm→energetic transition
+  // is half green, half yellow).
+  let segLines = '';
+  for (let i = 1; i < pts.length; i++) {
+    const a = pts[i-1], b = pts[i];
+    const color = MOOD_META[b.mood].hex;
+    segLines += `<line x1="${a.x.toFixed(1)}" y1="${a.y.toFixed(1)}" x2="${b.x.toFixed(1)}" y2="${b.y.toFixed(1)}" stroke="${color}" stroke-width="6" stroke-linecap="round"/>`;
+  }
+  // Transition dots
+  let dots = '';
+  for (let i = 1; i < pts.length; i++) {
+    if (pts[i].mood !== pts[i-1].mood) {
+      dots += `<circle cx="${pts[i].x.toFixed(1)}" cy="${pts[i].y.toFixed(1)}" r="10" fill="${MOOD_META[pts[i].mood].hex}"/>`;
+    }
+  }
+
+  // Stat blocks (4 columns, each: BIG label + duration).
+  // Text uses paint-order="stroke fill" so a dark outline hugs the white
+  // fill — keeps it readable on any background (light photo, dark phone gallery, IG story).
+  const statY  = 770;
+  const statTitleY = statY + 0;
+  const statValY   = statY + 80;
+  const colW = (waveX1 - waveX0) / 4;
+  function statBlock(idx, label, color, durSec) {
+    const cx = waveX0 + colW * (idx + 0.5);
+    return `
+      <text x="${cx}" y="${statTitleY}" font-family="DM Mono, monospace" font-size="34" font-weight="700" fill="${color}" text-anchor="middle" letter-spacing="3" paint-order="stroke fill" stroke="rgba(0,0,0,0.55)" stroke-width="3">${label}</text>
+      <text x="${cx}" y="${statValY}"   font-family="DM Sans, sans-serif" font-size="68" font-weight="700" fill="white" text-anchor="middle" paint-order="stroke fill" stroke="rgba(0,0,0,0.55)" stroke-width="3">${fmtDur(durSec)}</text>
+    `;
+  }
+
+  // Date string + device tag
+  const date = new Date(s.lastTs || Date.now());
+  const dateStr = date.toLocaleDateString(undefined, {month:'short', day:'numeric', year:'numeric'});
+  const tag = `${selectedDevice} · ${s.owner} · ${dateStr}`;
+
+  // Whole card SVG — transparent background. All text uses white fill +
+  // semi-opaque dark stroke (paint-order="stroke fill") so it stays legible
+  // on light photos, dark mode galleries, and Instagram Story photos alike.
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">
+  <!-- subtle baseline grid (very light) -->
+  <line x1="${waveX0}" y1="${waveY0+waveH/2}" x2="${waveX1}" y2="${waveY0+waveH/2}" stroke="white" stroke-opacity="0.18" stroke-width="2"/>
+  <!-- mood wave -->
+  ${segLines}
+  ${dots}
+  <!-- drawmood wordmark — bigger, bolder, white with dark hug -->
+  <text x="${W/2}" y="690" font-family="DM Sans, sans-serif" font-size="100" font-weight="700" fill="white" text-anchor="middle" letter-spacing="-2" paint-order="stroke fill" stroke="rgba(0,0,0,0.6)" stroke-width="4">drawmood</text>
+  <text x="${W/2}" y="730" font-family="DM Mono, monospace" font-size="22" font-weight="600" fill="white" text-anchor="middle" letter-spacing="3" paint-order="stroke fill" stroke="rgba(0,0,0,0.55)" stroke-width="2">YOUR DAY, WRITTEN BY YOUR SENSORS</text>
+  <!-- 4 stat columns -->
+  ${statBlock(0, 'CALM',      MOOD_META.calm.hex,      moodTime.calm)}
+  ${statBlock(1, 'ENERGETIC', MOOD_META.energetic.hex, moodTime.energetic)}
+  ${statBlock(2, 'STRESSED',  MOOD_META.stressed.hex,  moodTime.stressed)}
+  ${statBlock(3, 'TIRED',     MOOD_META.tired.hex,     moodTime.tired)}
+  <!-- footer tag -->
+  <text x="${W/2}" y="990" font-family="DM Mono, monospace" font-size="28" font-weight="600" fill="white" text-anchor="middle" letter-spacing="1.5" paint-order="stroke fill" stroke="rgba(0,0,0,0.55)" stroke-width="2.5">${tag}</text>
+</svg>`;
+
+  // Convert SVG → PNG via Canvas.  Transparent background is preserved
+  // because we never call ctx.fillRect with a background color.
+  const svgBlob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+  const url = URL.createObjectURL(svgBlob);
+  const img = new Image();
+  img.onload = () => {
+    const canvas = document.createElement('canvas');
+    canvas.width  = W;
+    canvas.height = H;
+    const ctx = canvas.getContext('2d');
+    // ctx.clearRect(0, 0, W, H);  // (canvas starts transparent already)
+    ctx.drawImage(img, 0, 0, W, H);
+    URL.revokeObjectURL(url);
+    canvas.toBlob((blob) => {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      const stamp = date.toISOString().slice(0,10);
+      a.download = `drawmood_${selectedDevice}_${stamp}.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    }, 'image/png');
+  };
+  img.onerror = () => {
+    URL.revokeObjectURL(url);
+    alert('Could not render the card. Try Save my day again after a moment.');
+  };
+  img.src = url;
+}
+initReplay();
+startReplay();
+</script>
+</body>
+</html>
