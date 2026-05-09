@@ -1,59 +1,399 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PopFlow Trend Platform · Nawa</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="../style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
-    nav{padding:20px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
-    .back-link{color:var(--accent);text-decoration:none;font-size:14px;font-weight:500}.back-link:hover{text-decoration:underline}
-    .nav-sep{color:var(--border)}.nav-title{color:var(--muted);font-size:14px}
-    .hero{padding:48px 0 32px;border-bottom:1px solid var(--border)}
-    .proj-tag{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
-    .proj-title{font-family:'DM Serif Display',serif;font-size:clamp(2rem,5vw,3rem);line-height:1.1;margin-bottom:16px}
-    .proj-summary{color:var(--muted);font-size:16px;max-width:600px;line-height:1.7}
-    .screenshot{margin:32px 0;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border)}
-    .ph{height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--muted);font-size:14px;background:linear-gradient(135deg,#f0eee9,#e8e4de)}
-    .ph .icon{font-size:40px;opacity:.4}.ph small{font-size:12px;opacity:.7}
-    .ds{padding:36px 0;border-bottom:1px solid var(--border)}
-    .dl{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;font-weight:500}
-    .dt{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:12px}
-    p{color:var(--muted);margin-bottom:12px}
-    .tg{display:flex;flex-wrap:wrap;gap:8px}.tp{background:var(--ink);color:var(--bg);border-radius:999px;padding:5px 14px;font-size:13px}
-    .rg{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-    .rc{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center}
-    .rn{font-family:'DM Serif Display',serif;font-size:2rem;color:var(--accent);display:block}.rl{font-size:12px;color:var(--muted);margin-top:4px}
-    .lr{display:flex;gap:12px;flex-wrap:wrap}
-    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:var(--radius);font-size:14px;font-weight:500;text-decoration:none;transition:opacity .2s}
-    .btn:hover{opacity:.85}.bp{background:var(--accent);color:white}.bo{background:transparent;border:1px solid var(--border);color:var(--ink)}
-    footer{padding:32px 0;text-align:center;font-size:12px;color:var(--muted);border-top:1px solid var(--border)}
-    footer a{color:var(--accent);text-decoration:none}
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #f9f7f4;
+      --ink:          #1a1814;
+      --muted:        #7a7570;
+      --accent:       #2d5be3;
+      --accent-light: #eef1fd;
+      --border:       #e4e0da;
+      --card:         #ffffff;
+      --surface:      #f2f0ec;
+      --radius:       12px;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.6;
+      font-size: 16px;
+    }
+
+    .container { max-width: 740px; margin: 0 auto; padding: 0 24px 64px; }
+
+    /* ── Nav ── */
+    nav {
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .back-link { color: var(--accent); text-decoration: none; font-size: 14px; font-weight: 500; }
+    .back-link:hover { text-decoration: underline; }
+    .nav-sep { color: var(--border); }
+    .nav-title { color: var(--muted); font-size: 14px; }
+
+    /* ── Hero ── */
+    .hero { padding: 40px 0 28px; }
+
+    .proj-tag {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
+
+    .proj-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2.2rem, 6vw, 3.2rem);
+      line-height: 1.05;
+      margin-bottom: 14px;
+      letter-spacing: -0.01em;
+    }
+
+    .proj-summary {
+      font-size: 17px;
+      color: var(--muted);
+      max-width: 580px;
+      line-height: 1.65;
+    }
+    .proj-summary strong { color: var(--ink); font-weight: 500; }
+
+    /* ── Divider ── */
+    .divider { height: 1px; background: var(--border); margin: 28px 0; }
+
+    /* ── Stats ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 32px;
+    }
+    @media (max-width: 560px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+
+    .stat-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 16px 14px;
+    }
+    .stat-number {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.7rem;
+      color: var(--accent);
+      display: block;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .stat-label { font-size: 11px; color: var(--muted); line-height: 1.4; }
+
+    /* ── Screenshot ── */
+    .screenshot {
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      margin-bottom: 32px;
+    }
+    .screenshot img { width: 100%; display: block; }
+    .screenshot-placeholder {
+      height: 240px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 14px;
+      background: var(--surface);
+    }
+    .ph-icon { font-size: 32px; opacity: 0.3; }
+    .ph-hint { font-size: 11px; opacity: 0.55; font-family: monospace; }
+
+    /* ── Sections ── */
+    .section { margin-bottom: 30px; }
+
+    .section-label {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 14px;
+      font-weight: 500;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ── About ── */
+    .about-text {
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+    .about-text strong { color: var(--ink); font-weight: 500; }
+
+    /* ── Pipeline steps ── */
+    .pipeline-steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    @media (max-width: 520px) { .pipeline-steps { grid-template-columns: repeat(2, 1fr); } }
+
+    .pipeline-step {
+      background: var(--surface);
+      border-radius: 8px;
+      padding: 12px 12px 10px;
+    }
+    .pipeline-step.final { background: var(--accent-light); border: 1px solid #c5d3f8; }
+    .step-num { font-size: 10px; color: var(--muted); font-weight: 500; margin-bottom: 4px; letter-spacing: .05em; }
+    .step-name { font-size: 12px; font-weight: 500; color: var(--ink); margin-bottom: 4px; line-height: 1.3; }
+    .pipeline-step.final .step-name { color: var(--accent); }
+    .step-desc { font-size: 11px; color: var(--muted); line-height: 1.4; }
+
+    /* ── Source table ── */
+    .results-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+    .results-table th {
+      text-align: left;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .results-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      color: var(--ink);
+    }
+    .results-table tr:last-child td { border-bottom: none; }
+    .results-table tr:nth-child(even) td { background: var(--surface); }
+    .good { color: var(--accent); font-weight: 500; }
+
+    .result-note {
+      font-size: 13px;
+      color: var(--muted);
+      background: var(--accent-light);
+      border-radius: 8px;
+      padding: 12px 14px;
+      line-height: 1.6;
+    }
+    .result-note strong { color: var(--accent); font-weight: 500; }
+
+    /* ── Tech stack ── */
+    .tech-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tech-pill {
+      background: var(--ink);
+      color: var(--bg);
+      border-radius: 999px;
+      padding: 5px 14px;
+      font-size: 13px;
+    }
+
+    /* ── Links ── */
+    .link-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 22px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: opacity 0.15s;
+      font-family: 'DM Sans', sans-serif;
+      border: none;
+      cursor: pointer;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--ink); }
+
+    /* ── Footer ── */
+    footer {
+      padding-top: 40px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    footer a { color: var(--accent); text-decoration: none; }
   </style>
 </head>
 <body>
 <div class="container">
-  <nav><a href="../index.html" class="back-link">← Back to Portfolio</a><span class="nav-sep">·</span><span class="nav-title">PopFlow Trend Platform</span></nav>
+
+  <!-- Nav -->
+  <nav>
+    <a href="../index.html" class="back-link">← Back</a>
+    <span class="nav-sep">·</span>
+    <span class="nav-title">PopFlow Trend Platform</span>
+  </nav>
+
+  <!-- Hero -->
   <div class="hero">
-    <p class="proj-tag">Data Engineering</p>
+    <p class="proj-tag">Data Engineering · ETL Pipeline · MongoDB</p>
     <h1 class="proj-title">PopFlow Trend Platform</h1>
-    <p class="proj-summary">Built an end-to-end multi-source trend analytics pipeline ingesting 100,000+ records from social, news, and search APIs into MongoDB, with automated ETL and a trend scoring engine.</p>
+    <p class="proj-summary">
+      Built an <strong>end-to-end multi-source trend analytics pipeline</strong> ingesting
+      100,000+ records from social, news, and search APIs into MongoDB — with automated
+      ETL, deduplication logic, and a <strong>trend scoring engine</strong> that surfaces
+      emerging topics before they peak.
+    </p>
   </div>
-  <div class="screenshot"><div class="ph"><span class="icon">🌊</span><span>Add your project screenshot here</span><small>Replace with: &lt;img src="../images/popflow.png"&gt;</small></div></div>
-  <div class="ds">
-    <p class="dl">About the Project</p><h2 class="dt">Tracking What the World Cares About</h2>
-    <p>PopFlow aggregates trend signals from multiple data sources — social media APIs, news feeds, and search trend data — into a unified MongoDB pipeline. The platform normalizes and scores trends across domains in near real time.</p>
-    <p>The ETL pipeline features automated ingestion schedules, deduplication logic, and error recovery across 100K+ records.</p>
-    <p>The trend scoring engine uses weighted signals to surface emerging topics before they peak.</p>
+
+  <div class="divider"></div>
+
+  <!-- Key Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-number">100K+</span>
+      <span class="stat-label">Records ingested across all sources</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">3+</span>
+      <span class="stat-label">APIs integrated (social, news, search)</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">Auto</span>
+      <span class="stat-label">Fully automated ETL with cron scheduling</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">Real‑time</span>
+      <span class="stat-label">Trend scoring across domains</span>
+    </div>
   </div>
-  <div class="ds"><p class="dl">Tools & Tech Stack</p><div class="tg"><span class="tp">Python</span><span class="tp">MongoDB</span><span class="tp">REST APIs</span><span class="tp">ETL Pipeline</span><span class="tp">Pandas</span><span class="tp">Pymongo</span><span class="tp">Cron</span></div></div>
-  <div class="ds"><p class="dl">Key Results</p><div class="rg">
-    <div class="rc"><span class="rn">100K+</span><span class="rl">Records ingested</span></div>
-    <div class="rc"><span class="rn">Multi</span><span class="rl">Source APIs integrated</span></div>
-    <div class="rc"><span class="rn">Auto</span><span class="rl">Fully automated ETL</span></div>
-  </div></div>
-  <div class="ds"><p class="dl">Links</p><div class="lr"><a href="https://popflow-silk.vercel.app" target="_blank" class="btn bp">🚀 Launch Dashboard</a><a href="#" class="btn bo">📄 View Report</a></div></div>
-  <footer>Built by Nawa · <a href="../index.html">Back to Portfolio</a></footer>
+
+  <!-- Screenshot -->
+  <div class="screenshot">
+    <div class="screenshot-placeholder">
+      <span class="ph-icon">🌊</span>
+      <span>Add your project screenshot here</span>
+      <span class="ph-hint">&lt;img src="../images/popflow.png" alt="PopFlow dashboard"&gt;</span>
+    </div>
+  </div>
+
+  <!-- What I Built -->
+  <div class="section">
+    <p class="section-label">What I built</p>
+    <p class="about-text">
+      Most trend tools show you what's already viral — PopFlow was built to catch
+      what's <strong>about to peak</strong>. The platform aggregates signals from multiple
+      data sources — social media APIs, news feeds, and search trend data — into a
+      <strong>unified MongoDB pipeline</strong>. The system normalizes and scores trends
+      across domains in near real time, using <strong>weighted scoring logic</strong> to
+      surface emerging topics before mainstream attention arrives.
+    </p>
+  </div>
+
+  <!-- ETL Pipeline -->
+  <div class="section">
+    <p class="section-label">ETL pipeline architecture</p>
+    <div class="pipeline-steps">
+      <div class="pipeline-step">
+        <p class="step-num">Stage 1</p>
+        <p class="step-name">Multi-Source Ingestion</p>
+        <p class="step-desc">Pulls from social, news, and search APIs on automated cron schedules</p>
+      </div>
+      <div class="pipeline-step">
+        <p class="step-num">Stage 2</p>
+        <p class="step-name">Normalize & Deduplicate</p>
+        <p class="step-desc">Cleans and deduplicates 100K+ records with error recovery logic</p>
+      </div>
+      <div class="pipeline-step final">
+        <p class="step-num">Stage 3 ✦ Output</p>
+        <p class="step-name">Trend Scoring Engine</p>
+        <p class="step-desc">Weighted signal scoring surfaces emerging topics before they peak</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Data Sources Table -->
+  <div class="section">
+    <p class="section-label">Data sources integrated</p>
+    <table class="results-table">
+      <thead>
+        <tr>
+          <th>Source Type</th>
+          <th>Data Signal</th>
+          <th>Update Frequency</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Social Media APIs</strong></td>
+          <td>Engagement, mentions</td>
+          <td>Near real-time</td>
+          <td class="good">Active ✦</td>
+        </tr>
+        <tr>
+          <td><strong>News Feeds</strong></td>
+          <td>Article volume, topics</td>
+          <td>Hourly</td>
+          <td class="good">Active ✦</td>
+        </tr>
+        <tr>
+          <td><strong>Search Trend Data</strong></td>
+          <td>Query volume, spikes</td>
+          <td>Daily</td>
+          <td class="good">Active ✦</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="result-note">
+      <strong>Automated deduplication + error recovery</strong> across all sources ensures
+      clean data at scale — the pipeline handles ingestion failures gracefully and
+      resumes without data loss across 100K+ records.
+    </p>
+  </div>
+
+  <!-- Tech Stack -->
+  <div class="section">
+    <p class="section-label">Tech stack</p>
+    <div class="tech-grid">
+      <span class="tech-pill">Python</span>
+      <span class="tech-pill">MongoDB</span>
+      <span class="tech-pill">REST APIs</span>
+      <span class="tech-pill">ETL Pipeline</span>
+      <span class="tech-pill">Pandas</span>
+      <span class="tech-pill">Pymongo</span>
+      <span class="tech-pill">Cron</span>
+    </div>
+  </div>
+
+  <!-- Links -->
+  <div class="section">
+    <p class="section-label">Links</p>
+    <div class="link-row">
+      <a href="https://popflow-silk.vercel.app" target="_blank" class="btn btn-primary">🚀 Launch Dashboard</a>
+      <a href="#" class="btn btn-outline">📄 View Report</a>
+    </div>
+  </div>
+
+  <footer>
+    Built by Nawa · <a href="../index.html">Back to Portfolio</a>
+  </footer>
+
 </div>
 </body>
 </html>
