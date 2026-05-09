@@ -55,7 +55,7 @@ window.addEventListener('DOMContentLoaded', function () {
       lat:      51.5074,
       lng:      -0.1278,
       years:    'Jan – May 2026',
-      desc:     'Zanista · Industry Project & Operational Research (Remote)',
+      desc:     'Zanista · Industry Project & Operational Research',
       tag:      '💻 Remote Project',
       isActive: false
     },
