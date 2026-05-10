@@ -20,222 +20,136 @@
       --radius:       12px;
     }
 
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--bg);
-      color: var(--ink);
-      line-height: 1.6;
-      font-size: 16px;
-    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--ink); line-height: 1.6; font-size: 18px; }
+    .container { max-width: 960px; margin: 0 auto; padding: 0 40px 64px; }
 
-    .container { max-width: 740px; margin: 0 auto; padding: 0 24px 64px; }
-
-    /* ── Nav ── */
-    nav {
-      padding: 24px 0;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+    /* Nav */
+    nav { padding: 24px 0; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
     .back-link { color: var(--accent); text-decoration: none; font-size: 14px; font-weight: 500; }
     .back-link:hover { text-decoration: underline; }
     .nav-sep { color: var(--border); }
     .nav-title { color: var(--muted); font-size: 14px; }
 
-    /* ── Hero ── */
+    /* Hero */
     .hero { padding: 40px 0 28px; }
+    .proj-tag { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; font-weight: 500; }
+    .proj-title { font-family: 'DM Serif Display', serif; font-size: clamp(2.8rem, 6vw, 4rem); line-height: 1.05; margin-bottom: 10px; letter-spacing: -0.01em; }
+    .proj-subtitle { font-size: 19px; color: var(--muted); line-height: 1.5; margin-bottom: 18px; max-width: 680px; }
+    .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .badge { display: inline-flex; align-items: center; gap: 5px; border-radius: 999px; padding: 4px 14px; font-size: 12px; font-weight: 500; }
+    .badge-blue { background: var(--accent-light); color: var(--accent); }
+    .badge-dark { background: var(--ink); color: var(--bg); }
+    .role-strip { background: var(--surface); border-radius: var(--radius); padding: 12px 16px; font-size: 13px; color: var(--muted); border-left: 3px solid var(--accent); margin-top: 16px; }
+    .role-strip strong { color: var(--ink); font-weight: 500; }
 
-    .proj-tag {
-      font-size: 11px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 10px;
-      font-weight: 500;
-    }
-
-    .proj-title {
-      font-family: 'DM Serif Display', serif;
-      font-size: clamp(2.2rem, 6vw, 3.2rem);
-      line-height: 1.05;
-      margin-bottom: 14px;
-      letter-spacing: -0.01em;
-    }
-
-    .proj-summary {
-      font-size: 17px;
-      color: var(--muted);
-      max-width: 580px;
-      line-height: 1.65;
-    }
-    .proj-summary strong { color: var(--ink); font-weight: 500; }
-
-    /* ── Divider ── */
+    /* Divider */
     .divider { height: 1px; background: var(--border); margin: 28px 0; }
 
-    /* ── Stats ── */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      margin-bottom: 32px;
-    }
-    @media (max-width: 560px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+    /* Sections */
+    .section { margin-bottom: 36px; }
+    .section-label { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; font-weight: 500; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
 
-    .stat-card {
-      background: var(--surface);
-      border-radius: var(--radius);
-      padding: 16px 14px;
-    }
-    .stat-number {
-      font-family: 'DM Serif Display', serif;
-      font-size: 1.7rem;
-      color: var(--accent);
-      display: block;
-      line-height: 1;
-      margin-bottom: 6px;
-    }
-    .stat-label { font-size: 11px; color: var(--muted); line-height: 1.4; }
+    /* Goal */
+    .goal-text { font-size: 19px; color: var(--ink); line-height: 1.7; max-width: 780px; }
+    .goal-text em { color: var(--accent); font-style: normal; font-weight: 500; }
 
-    /* ── Screenshot ── */
-    .screenshot {
-      border-radius: var(--radius);
-      overflow: hidden;
-      border: 1px solid var(--border);
-      margin-bottom: 32px;
-    }
+    /* Problem / Solution */
+    .ps-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 520px) { .ps-grid { grid-template-columns: 1fr; } }
+    .ps-card { background: var(--surface); border-radius: var(--radius); padding: 16px 18px; }
+    .ps-card.solution { background: var(--accent-light); border: 1px solid #c5d3f8; }
+    .ps-heading { font-size: 12px; font-weight: 500; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .05em; }
+    .ps-card.solution .ps-heading { color: var(--accent); }
+    .ps-body { font-size: 15px; color: var(--ink); line-height: 1.6; }
+
+    /* UX Steps */
+    .ux-steps { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+    .ux-step { display: flex; align-items: flex-start; gap: 14px; background: var(--surface); border-radius: var(--radius); padding: 14px 16px; }
+    .ux-num { font-family: 'DM Serif Display', serif; font-size: 1.3rem; color: var(--accent); min-width: 28px; line-height: 1; padding-top: 2px; }
+    .ux-content { flex: 1; }
+    .ux-title { font-size: 16px; font-weight: 500; color: var(--ink); margin-bottom: 2px; }
+    .ux-desc { font-size: 14px; color: var(--muted); line-height: 1.5; }
+    .ux-arrow { text-align: center; font-size: 14px; color: var(--accent); font-weight: 500; padding: 8px 0; }
+
+    /* Results grid */
+    .results-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+    @media (max-width: 560px) { .results-grid { grid-template-columns: repeat(2, 1fr); } }
+    .result-card { background: var(--surface); border-radius: var(--radius); padding: 16px 14px; }
+    .result-number { font-family: 'DM Serif Display', serif; font-size: 2rem; color: var(--accent); display: block; line-height: 1; margin-bottom: 6px; }
+    .result-label { font-size: 12px; color: var(--muted); line-height: 1.4; }
+    .result-note { font-size: 14px; color: var(--muted); background: var(--accent-light); border-radius: 8px; padding: 12px 14px; line-height: 1.6; }
+    .result-note strong { color: var(--accent); font-weight: 500; }
+
+    /* Screenshot */
+    .screenshot { border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); margin-bottom: 8px; }
     .screenshot img { width: 100%; display: block; }
-    .screenshot-placeholder {
-      height: 240px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      color: var(--muted);
-      font-size: 14px;
-      background: var(--surface);
-    }
+    .screenshot-placeholder { height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--muted); font-size: 14px; background: var(--surface); }
     .ph-icon { font-size: 32px; opacity: 0.3; }
     .ph-hint { font-size: 11px; opacity: 0.55; font-family: monospace; }
+    .photo-caption { font-size: 12px; color: var(--muted); text-align: center; margin-bottom: 20px; }
 
-    /* ── Sections ── */
-    .section { margin-bottom: 30px; }
+    /* Feature cards — Artist Decision Hub */
+    .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+    @media (max-width: 520px) { .feature-grid { grid-template-columns: 1fr; } }
+    .feature-card { background: var(--surface); border-radius: var(--radius); padding: 16px; }
+    .feature-card.optimal { border-top: 3px solid #22c55e; }
+    .feature-card.wait { border-top: 3px solid #f59e0b; }
+    .feature-status { font-size: 10px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 6px; }
+    .feature-status.optimal { color: #22c55e; }
+    .feature-status.wait { color: #f59e0b; }
+    .feature-name { font-size: 16px; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
+    .feature-conf { font-size: 13px; color: var(--accent); font-weight: 500; margin-bottom: 8px; }
+    .feature-desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
 
-    .section-label {
-      font-size: 11px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 14px;
-      font-weight: 500;
-      padding-bottom: 10px;
-      border-bottom: 1px solid var(--border);
+    /* Predictor banner */
+    .predictor-banner {
+      background: var(--ink);
+      color: white;
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-bottom: 16px;
     }
+    .predictor-label { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: #a78bfa; font-weight: 500; margin-bottom: 6px; }
+    .predictor-title { font-family: 'DM Serif Display', serif; font-size: 1.4rem; color: white; margin-bottom: 8px; }
+    .predictor-desc { font-size: 13px; color: #9ca3af; line-height: 1.6; }
 
-    /* ── About ── */
-    .about-text {
-      font-size: 15px;
-      color: var(--muted);
-      line-height: 1.75;
-    }
-    .about-text strong { color: var(--ink); font-weight: 500; }
+    /* Outcome list */
+    .outcome-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .outcome-list li { display: flex; align-items: flex-start; gap: 10px; font-size: 16px; color: var(--muted); line-height: 1.6; }
+    .outcome-list li::before { content: "→"; color: var(--accent); font-weight: 500; flex-shrink: 0; margin-top: 1px; }
+    .outcome-list li strong { color: var(--ink); font-weight: 500; }
 
-    /* ── Pipeline steps ── */
-    .pipeline-steps {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-bottom: 4px;
-    }
+    /* Pipeline steps */
+    .pipeline-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
     @media (max-width: 520px) { .pipeline-steps { grid-template-columns: repeat(2, 1fr); } }
-
-    .pipeline-step {
-      background: var(--surface);
-      border-radius: 8px;
-      padding: 12px 12px 10px;
-    }
+    .pipeline-step { background: var(--surface); border-radius: 8px; padding: 12px 12px 10px; }
     .pipeline-step.final { background: var(--accent-light); border: 1px solid #c5d3f8; }
     .step-num { font-size: 10px; color: var(--muted); font-weight: 500; margin-bottom: 4px; letter-spacing: .05em; }
     .step-name { font-size: 12px; font-weight: 500; color: var(--ink); margin-bottom: 4px; line-height: 1.3; }
     .pipeline-step.final .step-name { color: var(--accent); }
     .step-desc { font-size: 11px; color: var(--muted); line-height: 1.4; }
 
-    /* ── Source table ── */
-    .results-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-      margin-bottom: 12px;
-    }
-    .results-table th {
-      text-align: left;
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--muted);
-      letter-spacing: .05em;
-      text-transform: uppercase;
-      padding: 8px 12px;
-      border-bottom: 1px solid var(--border);
-    }
-    .results-table td {
-      padding: 10px 12px;
-      border-bottom: 1px solid var(--border);
-      color: var(--ink);
-    }
+    /* Table */
+    .results-table { width: 100%; border-collapse: collapse; font-size: 15px; margin-bottom: 12px; }
+    .results-table th { text-align: left; font-size: 11px; font-weight: 500; color: var(--muted); letter-spacing: .05em; text-transform: uppercase; padding: 8px 12px; border-bottom: 1px solid var(--border); }
+    .results-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--ink); }
     .results-table tr:last-child td { border-bottom: none; }
     .results-table tr:nth-child(even) td { background: var(--surface); }
     .good { color: var(--accent); font-weight: 500; }
 
-    .result-note {
-      font-size: 13px;
-      color: var(--muted);
-      background: var(--accent-light);
-      border-radius: 8px;
-      padding: 12px 14px;
-      line-height: 1.6;
-    }
-    .result-note strong { color: var(--accent); font-weight: 500; }
-
-    /* ── Tech stack ── */
+    /* Tech stack */
     .tech-grid { display: flex; flex-wrap: wrap; gap: 8px; }
-    .tech-pill {
-      background: var(--ink);
-      color: var(--bg);
-      border-radius: 999px;
-      padding: 5px 14px;
-      font-size: 13px;
-    }
+    .tech-pill { background: var(--ink); color: var(--bg); border-radius: 999px; padding: 6px 16px; font-size: 14px; }
 
-    /* ── Links ── */
+    /* Links */
     .link-row { display: flex; gap: 12px; flex-wrap: wrap; }
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 11px 22px;
-      border-radius: var(--radius);
-      font-size: 14px;
-      font-weight: 500;
-      text-decoration: none;
-      transition: opacity 0.15s;
-      font-family: 'DM Sans', sans-serif;
-      border: none;
-      cursor: pointer;
-    }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 22px; border-radius: var(--radius); font-size: 14px; font-weight: 500; text-decoration: none; transition: opacity 0.15s; font-family: 'DM Sans', sans-serif; border: none; cursor: pointer; }
     .btn:hover { opacity: 0.85; }
     .btn-primary { background: var(--accent); color: white; }
     .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--ink); }
 
-    /* ── Footer ── */
-    footer {
-      padding-top: 40px;
-      border-top: 1px solid var(--border);
-      text-align: center;
-      font-size: 12px;
-      color: var(--muted);
-    }
+    /* Footer */
+    footer { padding-top: 40px; border-top: 1px solid var(--border); text-align: center; font-size: 12px; color: var(--muted); }
     footer a { color: var(--accent); text-decoration: none; }
   </style>
 </head>
@@ -249,122 +163,229 @@
     <span class="nav-title">PopFlow Trend Platform</span>
   </nav>
 
-  <!-- Hero -->
+  <!-- 1. HERO -->
   <div class="hero">
-    <p class="proj-tag">Data Engineering · ETL Pipeline · MongoDB</p>
-    <h1 class="proj-title">PopFlow Trend Platform</h1>
-    <p class="proj-summary">
-      Built an <strong>end-to-end multi-source trend analytics pipeline</strong> ingesting
-      100,000+ records from social, news, and search APIs into MongoDB — with automated
-      ETL, deduplication logic, and a <strong>trend scoring engine</strong> that surfaces
-      emerging topics before they peak.
+    <p class="proj-tag">Data Engineering · Music Analytics · IP Commercialization</p>
+    <h1 class="proj-title">PopFlow</h1>
+    <p class="proj-subtitle">
+      Unlocking culture momentum for smarter IP commercialization —
+      a real-time analytics platform that tells artist managers exactly when to drop merch, sell tickets, and book venues.
     </p>
+    <div class="badges">
+      <span class="badge badge-blue">Spotify · YouTube · TikTok · Google</span>
+      <span class="badge badge-blue">250K+ Records</span>
+      <span class="badge badge-dark">Data Engineering · Columbia APAN 5400</span>
+    </div>
+    <div class="role-strip">
+      <strong>My role:</strong> Worked in a team of 4 to develop the idea and build the website. I led the design of calculation metrics and data visualization dashboard.
+    </div>
   </div>
 
   <div class="divider"></div>
 
-  <!-- Key Stats -->
-  <div class="stats-grid">
-    <div class="stat-card">
-      <span class="stat-number">100K+</span>
-      <span class="stat-label">Records ingested across all sources</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-number">3+</span>
-      <span class="stat-label">APIs integrated (social, news, search)</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-number">Auto</span>
-      <span class="stat-label">Fully automated ETL with cron scheduling</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-number">Real‑time</span>
-      <span class="stat-label">Trend scoring across domains</span>
-    </div>
-  </div>
-
-  <!-- Screenshot -->
-  <div class="screenshot">
-    <div class="screenshot-placeholder">
-      <span class="ph-icon">🌊</span>
-      <span>Add your project screenshot here</span>
-      <span class="ph-hint">&lt;img src="../images/popflow.png" alt="PopFlow dashboard"&gt;</span>
-    </div>
-  </div>
-
-  <!-- What I Built -->
+  <!-- 2. GOAL -->
   <div class="section">
-    <p class="section-label">What I built</p>
-    <p class="about-text">
-      Most trend tools show you what's already viral — PopFlow was built to catch
-      what's <strong>about to peak</strong>. The platform aggregates signals from multiple
-      data sources — social media APIs, news feeds, and search trend data — into a
-      <strong>unified MongoDB pipeline</strong>. The system normalizes and scores trends
-      across domains in near real time, using <strong>weighted scoring logic</strong> to
-      surface emerging topics before mainstream attention arrives.
+    <p class="section-label">Goal</p>
+    <p class="goal-text">
+      Artist managers make million-dollar IP deals based on <em>gut feeling and lagging data</em>.
+      PopFlow replaces guesswork with <em>real-time cultural signal intelligence</em> — so every decision is backed by data.
     </p>
   </div>
 
-  <!-- ETL Pipeline -->
+  <!-- 3. PROBLEM / SOLUTION -->
   <div class="section">
-    <p class="section-label">ETL pipeline architecture</p>
-    <div class="pipeline-steps">
-      <div class="pipeline-step">
-        <p class="step-num">Stage 1</p>
-        <p class="step-name">Multi-Source Ingestion</p>
-        <p class="step-desc">Pulls from social, news, and search APIs on automated cron schedules</p>
+    <p class="section-label">Problem & solution</p>
+    <div class="ps-grid">
+      <div class="ps-card">
+        <p class="ps-heading">⚠ The Problem</p>
+        <p class="ps-body">Merch drops, ticket pre-sales, and tour bookings are timed by instinct. Artist data is scattered across Spotify, YouTube, TikTok, and Google — with no unified intelligence layer.</p>
       </div>
-      <div class="pipeline-step">
-        <p class="step-num">Stage 2</p>
-        <p class="step-name">Normalize & Deduplicate</p>
-        <p class="step-desc">Cleans and deduplicates 100K+ records with error recovery logic</p>
-      </div>
-      <div class="pipeline-step final">
-        <p class="step-num">Stage 3 ✦ Output</p>
-        <p class="step-name">Trend Scoring Engine</p>
-        <p class="step-desc">Weighted signal scoring surfaces emerging topics before they peak</p>
+      <div class="ps-card solution">
+        <p class="ps-heading">💡 The Solution</p>
+        <p class="ps-body">A real-time cultural signals engine with an Artist Decision Hub — giving managers one dashboard with confidence scores for merchandise, ticketing, and event logistics decisions.</p>
       </div>
     </div>
   </div>
 
-  <!-- Data Sources Table -->
+  <!-- 4. USER EXPERIENCE -->
   <div class="section">
-    <p class="section-label">Data sources integrated</p>
+    <p class="section-label">How it works for a user</p>
+    <div class="ux-steps">
+      <div class="ux-step">
+        <span class="ux-num">1</span>
+        <div class="ux-content">
+          <p class="ux-title">Open the Music Analytics Overview</p>
+          <p class="ux-desc">See live KPIs — total streams, monthly listeners, active regions, and popularity index — all updating in real time.</p>
+        </div>
+      </div>
+      <div class="ux-step">
+        <span class="ux-num">2</span>
+        <div class="ux-content">
+          <p class="ux-title">Explore streaming trends and competitor standings</p>
+          <p class="ux-desc">The Eras Evolution chart tracks an artist's global streaming growth since debut. Global Titan Standings compares monthly listeners across top artists.</p>
+        </div>
+      </div>
+      <div class="ux-step">
+        <span class="ux-num">3</span>
+        <div class="ux-content">
+          <p class="ux-title">Check the Artist Decision Hub</p>
+          <p class="ux-desc">Three strategy cards — Merchandise Drop, Ticket Pre-sale, Event Logistics — each show a status (Optimal / Wait) and a confidence score backed by real signals.</p>
+        </div>
+      </div>
+      <div class="ux-step">
+        <span class="ux-num">4</span>
+        <div class="ux-content">
+          <p class="ux-title">Get the Growth Predictor forecast</p>
+          <p class="ux-desc">The platform predicts the next organic engagement peak based on historical era cycle patterns — helping teams pre-sell tickets at exactly the right moment.</p>
+        </div>
+      </div>
+    </div>
+    <p class="ux-arrow">→ From scattered data to actionable cultural intelligence</p>
+  </div>
+
+
+
+  <!-- 5. KEY FEATURES -->
+  <div class="section">
+    <p class="section-label">Key features</p>
+    <div class="feature-grid">
+      <div class="feature-card optimal">
+        <p class="feature-status optimal">✓ Optimal</p>
+        <p class="feature-name">Merchandise Drop</p>
+        <p class="feature-conf">94% Confidence</p>
+        <p class="feature-desc">Demand velocity tracking — when streaming velocity spikes in key regions, the system flags the optimal window to launch merch before the peak.</p>
+      </div>
+      <div class="feature-card wait">
+        <p class="feature-status wait">⏳ Wait</p>
+        <p class="feature-name">Ticket Pre-sale</p>
+        <p class="feature-conf">42% Confidence</p>
+        <p class="feature-desc">Engagement stability scoring — the system waits for a "Velocity Spike" signal before recommending pre-sale launch, reducing unsold inventory risk.</p>
+      </div>
+      <div class="feature-card optimal">
+        <p class="feature-status optimal">✓ Optimal</p>
+        <p class="feature-name">Event Logistics</p>
+        <p class="feature-conf">87% Confidence</p>
+        <p class="feature-desc">Geographic market clustering — identifies regional intensity clusters (e.g. Tri-State area) to support stadium-scale residency planning.</p>
+      </div>
+    </div>
+
+    <!-- Growth Predictor -->
+    <div class="predictor-banner">
+      <p class="predictor-label">↗ Growth Predictor</p>
+      <p class="predictor-title">Next Performance Peak: July 2026</p>
+      <p class="predictor-desc">Based on 2-year album cycle trends, the next organic engagement peak is forecast for mid-summer. Aligning national tours with this window reduces marketing CAC by an estimated 18%.</p>
+    </div>
+  </div>
+
+<div class="screenshot" style="margin-bottom: 8px;">
+  <img src="../images/popflow-team.jpeg" alt="PopFlow Group 4 team photo" />
+</div>
+<p class="photo-caption"> Group 4 (Nawa, Hanqing, Kunyue (Not here), Eric) with Professor Amreeta Choudhury — after the final presentation </p>
+
+<div class="screenshot" style="margin-bottom: 8px;">
+  <img src="../images/popflow-presentation.jpeg" alt="PopFlow final presentation" />
+</div>
+<p class="photo-caption">Final presentation day </p>
+
+  <!-- 6. RESULTS -->
+  <div class="section">
+    <p class="section-label">Results</p>
+    <div class="results-grid">
+      <div class="result-card">
+        <span class="result-number">250K+</span>
+        <span class="result-label">Records ingested across all sources</span>
+      </div>
+      <div class="result-card">
+        <span class="result-number">4</span>
+        <span class="result-label">Platforms: Spotify, YouTube, TikTok, Google</span>
+      </div>
+      <div class="result-card">
+        <span class="result-number">$150B</span>
+        <span class="result-label">IP merch market opportunity addressed</span>
+      </div>
+      <div class="result-card">
+        <span class="result-number">3</span>
+        <span class="result-label">Decision categories: Merch, Tickets, Events</span>
+      </div>
+    </div>
+    <p class="result-note">
+      <strong>94% confidence on merchandise timing, 87% on event logistics</strong> — powered by demand velocity tracking, geographic clustering, and era-cycle pattern recognition across 250K+ records.
+    </p>
+  </div>
+
+  <!-- 7. IMPACT -->
+  <div class="section">
+    <p class="section-label">Impact & outcome</p>
+    <ul class="outcome-list">
+      <li><strong>Turns streaming data into business decisions</strong> — not just charts, but actionable confidence scores for merch drops, ticket pre-sales, and venue sizing.</li>
+      <li><strong>Predicts cultural peaks before they happen</strong> — Growth Predictor forecasts next engagement peak from era-cycle patterns, helping teams act 14+ days early.</li>
+      <li><strong>Addresses a $150B market</strong> — IP merch and licensing deals worth millions are currently timed by gut feeling; PopFlow makes them data-driven.</li>
+      <li><strong>Phase 1 proves the full stack works</strong> — from scraping and storage to scoring and live dashboard — ready to scale to real artist management teams.</li>
+    </ul>
+  </div>
+
+  <!-- 8. HOW IT WORKS — technical -->
+  <div class="section">
+    <p class="section-label">How it works — technical overview</p>
+    <div class="pipeline-steps" style="margin-bottom: 16px;">
+      <div class="pipeline-step">
+        <p class="step-num">Ingestion</p>
+        <p class="step-name">API + Scraping</p>
+        <p class="step-desc">Spotify Web API + kworb.net · YouTube · TikTok · Google Trends daily batch</p>
+      </div>
+      <div class="pipeline-step">
+        <p class="step-num">Storage</p>
+        <p class="step-name">MongoDB + PostgreSQL</p>
+        <p class="step-desc">MongoDB for flexible artist/track data · PostgreSQL for fast filtering and queries</p>
+      </div>
+      <div class="pipeline-step">
+        <p class="step-num">Processing</p>
+        <p class="step-name">PySpark + Flask</p>
+        <p class="step-desc">PySpark calculates velocity + recommendation scores · Flask serves JSON to frontend</p>
+      </div>
+      <div class="pipeline-step final">
+        <p class="step-num">Output ✦</p>
+        <p class="step-name">Live Dashboard</p>
+        <p class="step-desc">Dark analytics UI · KPI board · Decision Hub · Growth Predictor · Chart.js</p>
+      </div>
+    </div>
+
     <table class="results-table">
       <thead>
         <tr>
-          <th>Source Type</th>
-          <th>Data Signal</th>
-          <th>Update Frequency</th>
-          <th>Status</th>
+          <th>Source</th>
+          <th>Signal</th>
+          <th>Volume</th>
+          <th>Frequency</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td><strong>Social Media APIs</strong></td>
-          <td>Engagement, mentions</td>
+          <td><strong>Spotify Web API</strong></td>
+          <td>Streams, followers, popularity</td>
+          <td class="good">2 GB/month</td>
+          <td>Real-time</td>
+        </tr>
+        <tr>
+          <td><strong>YouTube Data API</strong></td>
+          <td>Views, likes, comments</td>
+          <td class="good">2–4 GB/month</td>
+          <td>Real-time</td>
+        </tr>
+        <tr>
+          <td><strong>TikTok Platform</strong></td>
+          <td>Hashtag views, sound trends</td>
+          <td class="good">400MB–3GB/month</td>
           <td>Near real-time</td>
-          <td class="good">Active ✦</td>
         </tr>
         <tr>
-          <td><strong>News Feeds</strong></td>
-          <td>Article volume, topics</td>
-          <td>Hourly</td>
-          <td class="good">Active ✦</td>
-        </tr>
-        <tr>
-          <td><strong>Search Trend Data</strong></td>
-          <td>Query volume, spikes</td>
-          <td>Daily</td>
-          <td class="good">Active ✦</td>
+          <td><strong>Google Trends</strong></td>
+          <td>Search volume, regional interest</td>
+          <td class="good">Varies</td>
+          <td>Daily / weekly</td>
         </tr>
       </tbody>
     </table>
-    <p class="result-note">
-      <strong>Automated deduplication + error recovery</strong> across all sources ensures
-      clean data at scale — the pipeline handles ingestion failures gracefully and
-      resumes without data loss across 100K+ records.
-    </p>
   </div>
 
   <!-- Tech Stack -->
@@ -373,11 +394,16 @@
     <div class="tech-grid">
       <span class="tech-pill">Python</span>
       <span class="tech-pill">MongoDB</span>
-      <span class="tech-pill">REST APIs</span>
-      <span class="tech-pill">ETL Pipeline</span>
-      <span class="tech-pill">Pandas</span>
-      <span class="tech-pill">Pymongo</span>
-      <span class="tech-pill">Cron</span>
+      <span class="tech-pill">PostgreSQL</span>
+      <span class="tech-pill">PySpark</span>
+      <span class="tech-pill">Flask</span>
+      <span class="tech-pill">Spotify API</span>
+      <span class="tech-pill">YouTube API</span>
+      <span class="tech-pill">Google Trends</span>
+      <span class="tech-pill">Chart.js</span>
+      <span class="tech-pill">Tailwind CSS</span>
+      <span class="tech-pill">Apache Kafka</span>
+      <span class="tech-pill">Apache Spark</span>
     </div>
   </div>
 
@@ -386,7 +412,6 @@
     <p class="section-label">Links</p>
     <div class="link-row">
       <a href="https://popflow-silk.vercel.app" target="_blank" class="btn btn-primary">🚀 Launch Dashboard</a>
-      <a href="#" class="btn btn-outline">📄 View Report</a>
     </div>
   </div>
 
