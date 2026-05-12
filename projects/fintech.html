@@ -27,10 +27,10 @@
       background: var(--bg);
       color: var(--ink);
       line-height: 1.6;
-      font-size: 16px;
+      font-size: 18px;
     }
 
-    .container { max-width: 740px; margin: 0 auto; padding: 0 24px 64px; }
+    .container { max-width: 960px; margin: 0 auto; padding: 0 40px 64px; }
 
     /* ── Nav ── */
     nav {
@@ -49,7 +49,7 @@
     .hero { padding: 40px 0 28px; }
 
     .proj-tag {
-      font-size: 11px;
+      font-size: 12px;
       letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--muted);
@@ -59,20 +59,20 @@
 
     .proj-title {
       font-family: 'DM Serif Display', serif;
-      font-size: clamp(2.2rem, 6vw, 3.2rem);
+      font-size: clamp(2.6rem, 6vw, 3.8rem);
       line-height: 1.05;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       letter-spacing: -0.01em;
     }
 
     .proj-subtitle {
       font-family: 'DM Sans', sans-serif;
-      font-size: 16px;
+      font-size: 18px;
       color: var(--muted);
       font-style: italic;
       line-height: 1.45;
-      margin-bottom: 18px;
-      max-width: 600px;
+      margin-bottom: 20px;
+      max-width: 720px;
     }
 
     .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
@@ -90,9 +90,9 @@
     .badge-dark  { background: var(--ink); color: var(--bg); }
 
     .proj-summary {
-      font-size: 17px;
+      font-size: 19px;
       color: var(--muted);
-      max-width: 580px;
+      max-width: 700px;
       line-height: 1.65;
     }
     .proj-summary strong { color: var(--ink); font-weight: 500; }
@@ -101,12 +101,12 @@
     .role-strip {
       background: var(--surface);
       border-radius: var(--radius);
-      padding: 12px 16px;
-      font-size: 13px;
+      padding: 14px 18px;
+      font-size: 14px;
       color: var(--muted);
       border-left: 3px solid var(--accent);
-      margin-top: 16px;
-      max-width: 680px;
+      margin-top: 18px;
+      max-width: 800px;
     }
     .role-strip strong { color: var(--ink); font-weight: 500; }
 
@@ -141,13 +141,13 @@
     }
     .stat-number {
       font-family: 'DM Serif Display', serif;
-      font-size: 1.7rem;
+      font-size: 2rem;
       color: var(--accent);
       display: block;
-      line-height: 1;
-      margin-bottom: 6px;
+      line-height: 1.05;
+      margin-bottom: 8px;
     }
-    .stat-label { font-size: 11px; color: var(--muted); line-height: 1.4; }
+    .stat-label { font-size: 12px; color: var(--muted); line-height: 1.45; }
 
     /* ── Screenshot ── */
     .screenshot {
@@ -175,11 +175,11 @@
     .section { margin-bottom: 30px; }
 
     .section-label {
-      font-size: 11px;
+      font-size: 12px;
       letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--muted);
-      margin-bottom: 14px;
+      margin-bottom: 16px;
       font-weight: 500;
       padding-bottom: 10px;
       border-bottom: 1px solid var(--border);
@@ -187,9 +187,10 @@
 
     /* ── About ── */
     .about-text {
-      font-size: 15px;
+      font-size: 17px;
       color: var(--muted);
       line-height: 1.75;
+      max-width: 780px;
     }
     .about-text strong { color: var(--ink); font-weight: 500; }
 
@@ -201,9 +202,9 @@
       padding: 14px 16px;
       margin-top: 16px;
     }
-    .case-tag { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--warn); font-weight: 500; margin-bottom: 4px; }
-    .case-title { font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
-    .case-detail { font-size: 13px; color: var(--muted); line-height: 1.55; }
+    .case-tag { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--warn); font-weight: 500; margin-bottom: 6px; }
+    .case-title { font-size: 16px; font-weight: 500; color: var(--ink); margin-bottom: 6px; }
+    .case-detail { font-size: 15px; color: var(--muted); line-height: 1.6; }
     .case-detail strong { color: var(--ink); font-weight: 500; }
 
     /* ── Model pipeline ── */
@@ -222,21 +223,21 @@
       position: relative;
     }
     .model-step.final { background: var(--accent-light); border: 1px solid #c5d3f8; }
-    .step-num { font-size: 10px; color: var(--muted); font-weight: 500; margin-bottom: 4px; letter-spacing: .05em; }
-    .step-name { font-size: 12px; font-weight: 500; color: var(--ink); margin-bottom: 4px; line-height: 1.3; }
+    .step-num { font-size: 11px; color: var(--muted); font-weight: 500; margin-bottom: 6px; letter-spacing: .05em; }
+    .step-name { font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 6px; line-height: 1.3; }
     .model-step.final .step-name { color: var(--accent); }
-    .step-desc { font-size: 11px; color: var(--muted); line-height: 1.4; }
+    .step-desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
 
     /* ── Results table ── */
     .results-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 14px;
+      font-size: 15px;
       margin-bottom: 12px;
     }
     .results-table th {
       text-align: left;
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 500;
       color: var(--muted);
       letter-spacing: .05em;
@@ -254,11 +255,11 @@
     .good { color: var(--accent); font-weight: 500; }
 
     .result-note {
-      font-size: 13px;
+      font-size: 14px;
       color: var(--muted);
       background: var(--accent-light);
       border-radius: 8px;
-      padding: 12px 14px;
+      padding: 14px 18px;
       line-height: 1.6;
     }
     .result-note strong { color: var(--accent); font-weight: 500; }
@@ -275,12 +276,12 @@
       border-radius: 8px;
       padding: 12px 14px;
     }
-    .impact-name { font-size: 13px; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
-    .impact-desc { font-size: 11px; color: var(--muted); line-height: 1.45; }
+    .impact-name { font-size: 15px; font-weight: 500; color: var(--ink); margin-bottom: 6px; }
+    .impact-desc { font-size: 13px; color: var(--muted); line-height: 1.55; }
 
     /* ── Limitations list ── */
     .lim-list { list-style: none; padding: 0; margin: 0; }
-    .lim-list li { padding: 6px 0 6px 18px; position: relative; font-size: 14px; color: var(--muted); line-height: 1.6; }
+    .lim-list li { padding: 8px 0 8px 22px; position: relative; font-size: 16px; color: var(--muted); line-height: 1.65; }
     .lim-list li::before { content: "•"; position: absolute; left: 4px; color: var(--accent); font-weight: bold; }
     .lim-list li strong { color: var(--ink); font-weight: 500; }
 
@@ -290,8 +291,8 @@
       background: var(--ink);
       color: var(--bg);
       border-radius: 999px;
-      padding: 5px 14px;
-      font-size: 13px;
+      padding: 6px 16px;
+      font-size: 14px;
     }
 
     /* ── Links ── */
