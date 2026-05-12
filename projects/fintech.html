@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fintech Risk Analytics · Nawa</title>
+  <title>Catching the crashes Value-at-Risk misses · Nawa</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -14,6 +14,8 @@
       --muted:        #7a7570;
       --accent:       #2d5be3;
       --accent-light: #eef1fd;
+      --warn:         #b8392e;
+      --warn-light:   #fbeeed;
       --border:       #e4e0da;
       --card:         #ffffff;
       --surface:      #f2f0ec;
@@ -59,8 +61,18 @@
       font-family: 'DM Serif Display', serif;
       font-size: clamp(2.2rem, 6vw, 3.2rem);
       line-height: 1.05;
-      margin-bottom: 14px;
+      margin-bottom: 10px;
       letter-spacing: -0.01em;
+    }
+
+    .proj-subtitle {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px;
+      color: var(--muted);
+      font-style: italic;
+      line-height: 1.45;
+      margin-bottom: 18px;
+      max-width: 600px;
     }
 
     .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
@@ -156,6 +168,19 @@
     }
     .about-text strong { color: var(--ink); font-weight: 500; }
 
+    /* ── Case study card ── */
+    .case-card {
+      background: var(--warn-light);
+      border-left: 3px solid var(--warn);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin-top: 16px;
+    }
+    .case-tag { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--warn); font-weight: 500; margin-bottom: 4px; }
+    .case-title { font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
+    .case-detail { font-size: 13px; color: var(--muted); line-height: 1.55; }
+    .case-detail strong { color: var(--ink); font-weight: 500; }
+
     /* ── Model pipeline ── */
     .model-steps {
       display: grid;
@@ -213,6 +238,27 @@
     }
     .result-note strong { color: var(--accent); font-weight: 500; }
 
+    /* ── Impact grid (matches model-steps style, 2x2) ── */
+    .impact-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    @media (max-width: 520px) { .impact-grid { grid-template-columns: 1fr; } }
+    .impact-step {
+      background: var(--surface);
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+    .impact-name { font-size: 13px; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
+    .impact-desc { font-size: 11px; color: var(--muted); line-height: 1.45; }
+
+    /* ── Limitations list ── */
+    .lim-list { list-style: none; padding: 0; margin: 0; }
+    .lim-list li { padding: 6px 0 6px 18px; position: relative; font-size: 14px; color: var(--muted); line-height: 1.6; }
+    .lim-list li::before { content: "•"; position: absolute; left: 4px; color: var(--accent); font-weight: bold; }
+    .lim-list li strong { color: var(--ink); font-weight: 500; }
+
     /* ── Tech stack ── */
     .tech-grid { display: flex; flex-wrap: wrap; gap: 8px; }
     .tech-pill {
@@ -261,22 +307,24 @@
   <nav>
     <a href="../index.html" class="back-link">← Back</a>
     <span class="nav-sep">·</span>
-    <span class="nav-title">Fintech Risk Analytics</span>
+    <span class="nav-title">Tail Risk Model</span>
   </nav>
 
   <!-- Hero -->
   <div class="hero">
-    <p class="proj-tag">Machine Learning · Quantitative Finance · NLP</p>
-    <h1 class="proj-title">Fintech Risk Analytics</h1>
+    <p class="proj-tag">Quantitative Finance · NLP · Tail-Risk Modeling</p>
+    <h1 class="proj-title">Catching the crashes Value-at-Risk misses</h1>
+    <p class="proj-subtitle">A downside-asymmetric Student-t framework for news-conditioned tail risk in equities</p>
     <div class="badges">
       <span class="badge badge-blue">🇬🇧 London (Remote)</span>
       <span class="badge badge-blue">Columbia Engineering</span>
       <span class="badge badge-dark">MS Operations Research</span>
     </div>
     <p class="proj-summary">
-      Built a <strong>news-driven downside risk model</strong> that captures
-      what traditional Gaussian models miss — asymmetric panic reactions,
-      fat-tailed crashes, and black swan events — tested on Nike, Exxon, and Google.
+      A risk model that catches the <strong>panic-driven crashes traditional Value-at-Risk misses</strong> —
+      built around news sentiment and a heavy-tailed Student-t distribution. Cuts the VaR breach
+      rate from ~26% down to as low as 1.67% across three sectors. Industry capstone with
+      <strong>Zanista</strong> (Nike, Exxon, Google).
     </p>
   </div>
 
@@ -285,43 +333,135 @@
   <!-- Key Stats -->
   <div class="stats-grid">
     <div class="stat-card">
-      <span class="stat-number">3</span>
-      <span class="stat-label">Stocks tested across sectors</span>
+      <span class="stat-number">25.9% → 1.67%</span>
+      <span class="stat-label">Best VaR breach rate (Gaussian → Model 4.0)</span>
     </div>
     <div class="stat-card">
-      <span class="stat-number">1.67%</span>
-      <span class="stat-label">Best VaR breach rate (vs 25% baseline)</span>
+      <span class="stat-number">3 sectors</span>
+      <span class="stat-label">Retail, Energy, Big Tech tested</span>
     </div>
     <div class="stat-card">
       <span class="stat-number">4</span>
       <span class="stat-label">Model versions developed</span>
     </div>
     <div class="stat-card">
-      <span class="stat-number">v=2.0</span>
+      <span class="stat-number">v ≈ 2.0</span>
       <span class="stat-label">Student-t tail confirmed empirically</span>
     </div>
   </div>
 
-  <!-- Screenshot -->
-  <div class="screenshot">
-    <div class="screenshot-placeholder">
-      <span class="ph-icon">📊</span>
-      <span>Add your project screenshot here</span>
-      <span class="ph-hint">&lt;img src="../images/fintech.png" alt="Model output"&gt;</span>
+  <!-- Hero illustration: News → Sentiment → Tail Risk -->
+  <div class="screenshot" style="background:#eef1fd;">
+    <svg viewBox="0 0 800 260" xmlns="http://www.w3.org/2000/svg" style="display:block; width:100%; height:auto;" aria-label="News flowing through a sentiment model into an asymmetric tail risk distribution">
+
+      <!-- Zone labels -->
+      <text x="60"  y="32" font-family="DM Sans, sans-serif" font-size="10" font-weight="500" fill="#7a7570" letter-spacing="1.8">NEWS FLOW</text>
+      <text x="370" y="32" font-family="DM Sans, sans-serif" font-size="10" font-weight="500" fill="#7a7570" letter-spacing="1.8">SENTIMENT MODEL</text>
+      <text x="600" y="32" font-family="DM Sans, sans-serif" font-size="10" font-weight="500" fill="#7a7570" letter-spacing="1.8">TAIL RISK</text>
+
+      <!-- LEFT: news pulses -->
+      <g transform="translate(60, 56)">
+        <rect x="0"  y="0"   width="180" height="8" rx="4" fill="#7a7570" opacity="0.35"/>
+        <rect x="15" y="22"  width="120" height="8" rx="4" fill="#b8392e" opacity="0.9"/>
+        <rect x="0"  y="44"  width="160" height="8" rx="4" fill="#7a7570" opacity="0.35"/>
+        <rect x="25" y="66"  width="100" height="8" rx="4" fill="#b8392e" opacity="0.9"/>
+        <rect x="10" y="88"  width="170" height="8" rx="4" fill="#7a7570" opacity="0.35"/>
+        <rect x="0"  y="110" width="140" height="8" rx="4" fill="#2d5be3" opacity="0.65"/>
+        <rect x="20" y="132" width="115" height="8" rx="4" fill="#b8392e" opacity="0.9"/>
+        <rect x="5"  y="154" width="155" height="8" rx="4" fill="#7a7570" opacity="0.35"/>
+
+        <!-- Sentiment legend -->
+        <g transform="translate(0, 184)" font-family="DM Sans, sans-serif" font-size="9" fill="#7a7570">
+          <circle cx="4" cy="-2" r="3" fill="#b8392e"/><text x="13" y="1">negative</text>
+          <circle cx="68" cy="-2" r="3" fill="#2d5be3" opacity="0.65"/><text x="77" y="1">positive</text>
+          <circle cx="130" cy="-2" r="3" fill="#7a7570" opacity="0.35"/><text x="139" y="1">neutral</text>
+        </g>
+      </g>
+
+      <!-- MIDDLE: flow lines + model node -->
+      <g transform="translate(280, 56)">
+        <path d="M -10 30  Q 100 90, 200 100" stroke="#7a7570" stroke-width="1"   fill="none" opacity="0.25"/>
+        <path d="M -10 60  Q 100 100, 200 100" stroke="#b8392e" stroke-width="1.4" fill="none" opacity="0.4"/>
+        <path d="M -10 100 Q 100 100, 200 100" stroke="#2d5be3" stroke-width="1"   fill="none" opacity="0.35"/>
+        <path d="M -10 130 Q 100 100, 200 100" stroke="#b8392e" stroke-width="1.4" fill="none" opacity="0.4"/>
+        <path d="M -10 160 Q 100 110, 200 100" stroke="#7a7570" stroke-width="1"   fill="none" opacity="0.25"/>
+
+        <!-- Model node -->
+        <circle cx="100" cy="100" r="26" fill="#1a1814"/>
+        <text x="100" y="106" font-family="DM Serif Display, serif" font-style="italic" font-size="18" fill="#eef1fd" text-anchor="middle">f(x)</text>
+        <text x="100" y="148" font-family="DM Sans, sans-serif" font-size="9" fill="#7a7570" text-anchor="middle" letter-spacing="1">Student-t</text>
+      </g>
+
+      <!-- RIGHT: asymmetric distribution -->
+      <g transform="translate(560, 56)">
+        <!-- baseline -->
+        <line x1="0" y1="170" x2="200" y2="170" stroke="#1a1814" stroke-width="0.8" opacity="0.35"/>
+
+        <!-- distribution fill -->
+        <path d="M 5 170
+                 C 30 170, 55 168, 75 158
+                 C 95 145, 108 105, 130 75
+                 C 150 55, 165 75, 180 110
+                 C 192 145, 195 165, 195 170 Z"
+              fill="#1a1814" opacity="0.08"/>
+
+        <!-- distribution outline -->
+        <path d="M 5 170
+                 C 30 170, 55 168, 75 158
+                 C 95 145, 108 105, 130 75
+                 C 150 55, 165 75, 180 110
+                 C 192 145, 195 165, 195 170"
+              fill="none" stroke="#1a1814" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+
+        <!-- fat left tail shaded (downside) -->
+        <path d="M 5 170
+                 C 30 170, 55 168, 75 158
+                 L 75 170 L 5 170 Z"
+              fill="#b8392e" opacity="0.55"/>
+
+        <!-- VaR threshold -->
+        <line x1="75" y1="65" x2="75" y2="170" stroke="#b8392e" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="75" y="56" font-family="DM Sans, sans-serif" font-size="10" font-weight="500" fill="#b8392e" text-anchor="middle">VaR</text>
+
+        <!-- Tail label -->
+        <text x="40" y="195" font-family="DM Sans, sans-serif" font-size="9" font-weight="500" fill="#b8392e" text-anchor="middle" letter-spacing="1">DOWNSIDE TAIL</text>
+      </g>
+
+    </svg>
+  </div>
+
+  <!-- Why this matters -->
+  <div class="section">
+    <p class="section-label">The goal</p>
+    <p class="about-text">
+      Standard Value-at-Risk (VaR) models — the tool banks and hedge funds use to size positions
+      and reserve capital — miss roughly <strong>1 in 4 stress-period losses</strong>. They assume
+      markets crash gently and react symmetrically to news. This project rebuilds VaR around two
+      facts real markets actually obey: <strong>news sentiment matters</strong>, and
+      <strong>bad news hits harder than good</strong>. The result is a model that catches the
+      crashes Gaussian VaR systematically misses.
+    </p>
+    <div class="case-card">
+      <p class="case-tag">Case study</p>
+      <p class="case-title">United Airlines, June 2025 — Strait of Hormuz closure</p>
+      <p class="case-detail">
+        A geopolitical news shock (Iran conflict, closure of the Strait of Hormuz) drove
+        <strong>UAL down 9.5% in a single day</strong> — the steepest decline in 10 months —
+        closing at $106.30. Markets reacted instantly to sentiment, while traditional Gaussian
+        VaR models flagged nothing.
+      </p>
     </div>
   </div>
 
   <!-- What I Built -->
   <div class="section">
-    <p class="section-label">What I built</p>
+    <p class="section-label">What we built</p>
     <p class="about-text">
-      Traditional risk models assume <strong>normal distributions</strong> and symmetric
-      market reactions — but real markets don't work that way. Negative news triggers
-      exponentially stronger panic than positive news triggers optimism. This project
-      built a <strong>generative news-shock framework</strong> that maps daily sentiment
-      signals directly to equity volatility, using a downside-asymmetric
-      <strong>Student-t distribution</strong> to correctly model fat tails and stress periods.
-      The business name for the project was <strong>Zanista</strong>.
+      A <strong>news-shock framework</strong> that maps daily sentiment signals to equity volatility,
+      using a downside-asymmetric <strong>Student-t distribution</strong> to capture the leverage
+      effect — where negative news triggers exponentially stronger reactions than positive news.
+      Built and validated across Nike, Exxon Mobil, and Google as a 5-person team capstone for
+      the Zanista industry partner.
     </p>
   </div>
 
@@ -337,12 +477,12 @@
       <div class="model-step">
         <p class="step-num">Model 2.0</p>
         <p class="step-name">Improved Linear</p>
-        <p class="step-desc">Separate positive/negative shocks + market controls</p>
+        <p class="step-desc">Separate positive/negative shocks + news volume + market controls</p>
       </div>
       <div class="model-step">
         <p class="step-num">Model 3.0</p>
         <p class="step-name">Nonlinear + Tail-Aware</p>
-        <p class="step-desc">Nonlinear terms, interactions, conditional risk layer</p>
+        <p class="step-desc">Direction × Intensity features, conditional risk layer</p>
       </div>
       <div class="model-step final">
         <p class="step-num">Model 4.0 ✦ Final</p>
@@ -390,10 +530,44 @@
       </tbody>
     </table>
     <p class="result-note">
-  <strong>VaR breach rate dropped from 25.9% → as low as 1.67%</strong> — all 3 stocks
-      breach rate in traditional Gaussian models. The Student-t framework with
-      v ≈ 2.0 confirmed heavy-tailed residuals empirically across every sector tested.
+      <strong>VaR breach rate dropped from 25.9% → as low as 1.67%</strong> across all 3 stocks
+      vs. traditional Gaussian models. The Student-t framework with v ≈ 2.0 confirmed
+      heavy-tailed residuals empirically across every sector tested.
     </p>
+  </div>
+
+  <!-- Real-world impact -->
+  <div class="section">
+    <p class="section-label">Real-world impact</p>
+    <div class="impact-grid">
+      <div class="impact-step">
+        <p class="impact-name">🛡 Risk Management</p>
+        <p class="impact-desc">Improves VaR and Expected Shortfall; detects early signs of market stress for hedging.</p>
+      </div>
+      <div class="impact-step">
+        <p class="impact-name">📈 Portfolio Strategy</p>
+        <p class="impact-desc">Sentiment-aware exposure adjustments and smarter hedging decisions in real time.</p>
+      </div>
+      <div class="impact-step">
+        <p class="impact-name">🌐 Corporate Risk</p>
+        <p class="impact-desc">Monitors supply-chain and geopolitical news that affect demand and operations.</p>
+      </div>
+      <div class="impact-step">
+        <p class="impact-name">🎯 Scenario Analysis</p>
+        <p class="impact-desc">Translates qualitative news events into quantifiable stress-test scenarios.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Limitations / Future -->
+  <div class="section">
+    <p class="section-label">Limitations &amp; what's next</p>
+    <ul class="lim-list">
+      <li><strong>Data:</strong> RavenPack only — no social media, earnings calls, or macro signals yet</li>
+      <li><strong>Granularity:</strong> Daily data misses intra-day reactions; next step is intraday signals</li>
+      <li><strong>Coverage:</strong> Validated on 3 stocks; extending to FX, crypto, and bonds</li>
+      <li><strong>Model flex:</strong> Future work explores BERT for text and regime-switching tail models</li>
+    </ul>
   </div>
 
   <!-- Tech Stack -->
@@ -405,24 +579,23 @@
       <span class="tech-pill">RavenPack API</span>
       <span class="tech-pill">Student-t Distribution</span>
       <span class="tech-pill">VaR Modeling</span>
-      <span class="tech-pill">GARCH</span>
+      <span class="tech-pill">Joint MLE</span>
       <span class="tech-pill">Scikit-learn</span>
       <span class="tech-pill">Pandas</span>
       <span class="tech-pill">Matplotlib</span>
     </div>
   </div>
 
-  <!-- Links -->
+  <!-- Industry partner -->
   <div class="section">
-    <p class="section-label">Links</p>
+    <p class="section-label">Industry partner</p>
     <div class="link-row">
-      <a href="#" class="btn btn-primary">🔗 View on GitHub</a>
-      <a href="#" class="btn btn-outline">📄 View Report</a>
+      <a href="https://zanista.ai/" class="btn btn-primary" target="_blank" rel="noopener">🌐 Visit Zanista</a>
     </div>
   </div>
 
   <footer>
-    Built by Nawa · <a href="../index.html">Back to Portfolio</a>
+    Built by Nawa with the AZ1 team · <a href="../index.html">Back to Portfolio</a>
   </footer>
 
 </div>
