@@ -97,6 +97,18 @@
     }
     .proj-summary strong { color: var(--ink); font-weight: 500; }
 
+    /* Inline links inside body text */
+    .proj-summary a, .about-text a {
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid var(--accent-light);
+      transition: border-color 0.15s;
+    }
+    .proj-summary a:hover, .about-text a:hover {
+      border-bottom-color: var(--accent);
+    }
+    .proj-summary a strong { color: var(--accent); }
+
     /* ── Divider ── */
     .divider { height: 1px; background: var(--border); margin: 28px 0; }
 
@@ -324,7 +336,7 @@
       A risk model that catches the <strong>panic-driven crashes traditional Value-at-Risk misses</strong> —
       built around news sentiment and a heavy-tailed Student-t distribution. Cuts the VaR breach
       rate from ~26% down to as low as 1.67% across three sectors. Industry capstone with
-      <strong>Zanista</strong> (Nike, Exxon, Google).
+      <a href="https://zanista.ai/" target="_blank" rel="noopener"><strong>Zanista</strong></a> (Nike, Exxon, Google).
     </p>
   </div>
 
@@ -461,7 +473,7 @@
       using a downside-asymmetric <strong>Student-t distribution</strong> to capture the leverage
       effect — where negative news triggers exponentially stronger reactions than positive news.
       Built and validated across Nike, Exxon Mobil, and Google as a 5-person team capstone for
-      the Zanista industry partner.
+      the <a href="https://zanista.ai/" target="_blank" rel="noopener">Zanista</a> industry partner.
     </p>
   </div>
 
