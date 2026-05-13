@@ -1,59 +1,460 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>YouTube Micro-Creator Analytics · Nawa</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="../style.css"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YouTube Market Entry Strategy for New Creators · Nawa</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
-    nav{padding:20px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
-    .back-link{color:var(--accent);text-decoration:none;font-size:14px;font-weight:500}.back-link:hover{text-decoration:underline}
-    .nav-sep{color:var(--border)}.nav-title{color:var(--muted);font-size:14px}
-    .hero{padding:48px 0 32px;border-bottom:1px solid var(--border)}
-    .proj-tag{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
-    .proj-title{font-family:'DM Serif Display',serif;font-size:clamp(2rem,5vw,3rem);line-height:1.1;margin-bottom:16px}
-    .proj-summary{color:var(--muted);font-size:16px;max-width:600px;line-height:1.7}
-    .screenshot{margin:32px 0;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border)}
-    .ph{height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--muted);font-size:14px;background:linear-gradient(135deg,#f0eee9,#e8e4de)}
-    .ph .icon{font-size:40px;opacity:.4}.ph small{font-size:12px;opacity:.7}
-    .ds{padding:36px 0;border-bottom:1px solid var(--border)}
-    .dl{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;font-weight:500}
-    .dt{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:12px}
-    p{color:var(--muted);margin-bottom:12px}
-    .tg{display:flex;flex-wrap:wrap;gap:8px}.tp{background:var(--ink);color:var(--bg);border-radius:999px;padding:5px 14px;font-size:13px}
-    .rg{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-    .rc{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center}
-    .rn{font-family:'DM Serif Display',serif;font-size:2rem;color:var(--accent);display:block}.rl{font-size:12px;color:var(--muted);margin-top:4px}
-    .lr{display:flex;gap:12px;flex-wrap:wrap}
-    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:var(--radius);font-size:14px;font-weight:500;text-decoration:none;transition:opacity .2s}
-    .btn:hover{opacity:.85}.bp{background:var(--accent);color:white}.bo{background:transparent;border:1px solid var(--border);color:var(--ink)}
-    footer{padding:32px 0;text-align:center;font-size:12px;color:var(--muted);border-top:1px solid var(--border)}
-    footer a{color:var(--accent);text-decoration:none}
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #f9f7f4;
+      --ink:          #1a1814;
+      --muted:        #7a7570;
+      --accent:       #2d5be3;
+      --accent-light: #eef1fd;
+      --border:       #e4e0da;
+      --card:         #ffffff;
+      --surface:      #f2f0ec;
+      --radius:       12px;
+    }
+
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--ink); line-height: 1.6; font-size: 18px; }
+    .container { max-width: 960px; margin: 0 auto; padding: 0 40px 64px; }
+
+    /* Nav */
+    nav { padding: 24px 0; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+    .back-link { color: var(--accent); text-decoration: none; font-size: 14px; font-weight: 500; }
+    .back-link:hover { text-decoration: underline; }
+    .nav-sep { color: var(--border); }
+    .nav-title { color: var(--muted); font-size: 14px; }
+
+    /* Hero */
+    .hero { padding: 40px 0 28px; }
+    .proj-tag { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; font-weight: 500; }
+    .proj-title { font-family: 'DM Serif Display', serif; font-size: clamp(2.4rem, 5.2vw, 3.4rem); line-height: 1.1; margin-bottom: 12px; letter-spacing: -0.01em; max-width: 780px; }
+    .proj-subtitle { font-size: 19px; color: var(--muted); line-height: 1.5; margin-bottom: 18px; max-width: 720px; }
+    .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .badge { display: inline-flex; align-items: center; gap: 5px; border-radius: 999px; padding: 4px 14px; font-size: 12px; font-weight: 500; }
+    .badge-blue { background: var(--accent-light); color: var(--accent); }
+    .badge-dark { background: var(--ink); color: var(--bg); }
+    .role-strip { background: var(--surface); border-radius: var(--radius); padding: 12px 16px; font-size: 13px; color: var(--muted); border-left: 3px solid var(--accent); margin-top: 16px; }
+    .role-strip strong { color: var(--ink); font-weight: 500; }
+
+    /* Divider */
+    .divider { height: 1px; background: var(--border); margin: 28px 0; }
+
+    /* Sections */
+    .section { margin-bottom: 36px; }
+    .section-label { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; font-weight: 500; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+
+    /* Goal */
+    .goal-text { font-size: 19px; color: var(--ink); line-height: 1.7; max-width: 780px; }
+    .goal-text em { color: var(--accent); font-style: normal; font-weight: 500; }
+
+    /* Problem / Solution */
+    .ps-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 520px) { .ps-grid { grid-template-columns: 1fr; } }
+    .ps-card { background: var(--surface); border-radius: var(--radius); padding: 16px 18px; }
+    .ps-card.solution { background: var(--accent-light); border: 1px solid #c5d3f8; }
+    .ps-heading { font-size: 12px; font-weight: 500; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .05em; }
+    .ps-card.solution .ps-heading { color: var(--accent); }
+    .ps-body { font-size: 15px; color: var(--ink); line-height: 1.6; }
+
+    /* UX Steps */
+    .ux-steps { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+    .ux-step { display: flex; align-items: flex-start; gap: 14px; background: var(--surface); border-radius: var(--radius); padding: 14px 16px; }
+    .ux-num { font-family: 'DM Serif Display', serif; font-size: 1.3rem; color: var(--accent); min-width: 28px; line-height: 1; padding-top: 2px; }
+    .ux-content { flex: 1; }
+    .ux-title { font-size: 16px; font-weight: 500; color: var(--ink); margin-bottom: 2px; }
+    .ux-desc { font-size: 14px; color: var(--muted); line-height: 1.5; }
+    .ux-arrow { text-align: center; font-size: 14px; color: var(--accent); font-weight: 500; padding: 8px 0; }
+
+    /* Archetype grid (4 K-Means clusters) */
+    .arch-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 16px; }
+    @media (max-width: 540px) { .arch-grid { grid-template-columns: 1fr; } }
+    .arch-card { background: var(--surface); border-radius: var(--radius); padding: 16px 18px; border-top: 3px solid var(--accent); }
+    .arch-name { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--ink); margin-bottom: 4px; }
+    .arch-tagline { font-size: 12px; color: var(--accent); font-weight: 500; margin-bottom: 8px; letter-spacing: .03em; }
+    .arch-desc { font-size: 14px; color: var(--muted); line-height: 1.5; }
+    .arch-stat { font-size: 13px; color: var(--ink); font-weight: 500; margin-top: 8px; }
+
+    /* Results grid */
+    .results-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+    @media (max-width: 560px) { .results-grid { grid-template-columns: repeat(2, 1fr); } }
+    .result-card { background: var(--surface); border-radius: var(--radius); padding: 16px 14px; }
+    .result-number { font-family: 'DM Serif Display', serif; font-size: 2rem; color: var(--accent); display: block; line-height: 1; margin-bottom: 6px; }
+    .result-label { font-size: 12px; color: var(--muted); line-height: 1.4; }
+    .result-note { font-size: 14px; color: var(--muted); background: var(--accent-light); border-radius: 8px; padding: 12px 14px; line-height: 1.6; }
+    .result-note strong { color: var(--accent); font-weight: 500; }
+
+    /* Screenshot */
+    .screenshot { border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); margin-bottom: 8px; }
+    .screenshot img { width: 100%; display: block; }
+    .screenshot-placeholder { height: 280px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: var(--muted); font-size: 14px; background: linear-gradient(135deg, #f0eee9, #e8e4de); }
+    .ph-icon { font-size: 40px; opacity: 0.4; }
+    .ph-hint { font-size: 11px; opacity: 0.6; font-family: monospace; }
+    .photo-caption { font-size: 12px; color: var(--muted); text-align: center; margin-bottom: 20px; }
+
+    /* Feature cards */
+    .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+    @media (max-width: 520px) { .feature-grid { grid-template-columns: 1fr; } }
+    .feature-card { background: var(--surface); border-radius: var(--radius); padding: 16px; }
+    .feature-card.optimal { border-top: 3px solid #22c55e; }
+    .feature-card.active { border-top: 3px solid #2d5be3; }
+    .feature-status { font-size: 10px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 6px; }
+    .feature-status.optimal { color: #22c55e; }
+    .feature-status.active { color: #2d5be3; }
+    .feature-name { font-size: 16px; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
+    .feature-conf { font-size: 13px; color: var(--accent); font-weight: 500; margin-bottom: 8px; }
+    .feature-desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+    /* Predictor banner (dark) */
+    .predictor-banner {
+      background: var(--ink);
+      color: white;
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-bottom: 16px;
+    }
+    .predictor-label { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: #a78bfa; font-weight: 500; margin-bottom: 6px; }
+    .predictor-title { font-family: 'DM Serif Display', serif; font-size: 1.4rem; color: white; margin-bottom: 8px; line-height: 1.25; }
+    .predictor-desc { font-size: 13px; color: #9ca3af; line-height: 1.6; }
+
+    /* Outcome list */
+    .outcome-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .outcome-list li { display: flex; align-items: flex-start; gap: 10px; font-size: 16px; color: var(--muted); line-height: 1.6; }
+    .outcome-list li::before { content: "→"; color: var(--accent); font-weight: 500; flex-shrink: 0; margin-top: 1px; }
+    .outcome-list li strong { color: var(--ink); font-weight: 500; }
+
+    /* Pipeline steps */
+    .pipeline-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
+    @media (max-width: 520px) { .pipeline-steps { grid-template-columns: repeat(2, 1fr); } }
+    .pipeline-step { background: var(--surface); border-radius: 8px; padding: 12px 12px 10px; }
+    .pipeline-step.final { background: var(--accent-light); border: 1px solid #c5d3f8; }
+    .step-num { font-size: 10px; color: var(--muted); font-weight: 500; margin-bottom: 4px; letter-spacing: .05em; }
+    .step-name { font-size: 12px; font-weight: 500; color: var(--ink); margin-bottom: 4px; line-height: 1.3; }
+    .pipeline-step.final .step-name { color: var(--accent); }
+    .step-desc { font-size: 11px; color: var(--muted); line-height: 1.4; }
+
+    /* Table */
+    .results-table { width: 100%; border-collapse: collapse; font-size: 15px; margin-bottom: 12px; }
+    .results-table th { text-align: left; font-size: 11px; font-weight: 500; color: var(--muted); letter-spacing: .05em; text-transform: uppercase; padding: 8px 12px; border-bottom: 1px solid var(--border); }
+    .results-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--ink); }
+    .results-table tr:last-child td { border-bottom: none; }
+    .results-table tr:nth-child(even) td { background: var(--surface); }
+    .good { color: var(--accent); font-weight: 500; }
+
+    /* Tech stack */
+    .tech-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tech-pill { background: var(--ink); color: var(--bg); border-radius: 999px; padding: 6px 16px; font-size: 14px; }
+
+    /* Links */
+    .link-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 22px; border-radius: var(--radius); font-size: 14px; font-weight: 500; text-decoration: none; transition: opacity 0.15s; font-family: 'DM Sans', sans-serif; border: none; cursor: pointer; }
+    .btn:hover { opacity: 0.85; }
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--ink); }
+
+    /* Footer */
+    footer { padding-top: 40px; border-top: 1px solid var(--border); text-align: center; font-size: 12px; color: var(--muted); }
+    footer a { color: var(--accent); text-decoration: none; }
   </style>
 </head>
 <body>
 <div class="container">
-  <nav><a href="../index.html" class="back-link">← Back to Portfolio</a><span class="nav-sep">·</span><span class="nav-title">YouTube Micro-Creator Analytics</span></nav>
+
+  <!-- Nav -->
+  <nav>
+    <a href="../index.html" class="back-link">← Back</a>
+    <span class="nav-sep">·</span>
+    <span class="nav-title">YouTube Market Entry Strategy</span>
+  </nav>
+
+  <!-- 1. HERO -->
   <div class="hero">
-    <p class="proj-tag">NLP · Creator Economy</p>
-    <h1 class="proj-title">YouTube Micro-Creator Analytics</h1>
-    <p class="proj-summary">Analyzed engagement patterns across 1,200+ YouTube videos from micro-creators using 15+ engineered features, uncovering what drives outsized reach for channels with small but loyal audiences.</p>
+    <p class="proj-tag">NLP · K-Means Clustering · LDA Topic Modeling</p>
+    <h1 class="proj-title">YouTube Market Entry Strategy for New Creators</h1>
+    <p class="proj-subtitle">
+      A data-driven playbook for new YouTubers — clustering 4 creator archetypes,
+      surfacing content gaps with NLP, and revealing what actually drives engagement
+      for micro-channels with small but loyal audiences.
+    </p>
+    <div class="badges">
+      <span class="badge badge-blue">K-Means · VADER · LDA</span>
+      <span class="badge badge-blue">YouTube Data API</span>
+      <span class="badge badge-dark">APANPS5205: APPLIED MACHINE LEARNING II · Columbia</span>
+    </div>
+    <div class="role-strip">
+      <strong>My role:</strong> I pulled the data via the YouTube Data API and engineered the new feature set in the preprocessing pipeline that fed our NLP analysis.
+    </div>
   </div>
-  <div class="screenshot"><div class="ph"><span class="icon">▶️</span><span>Add your project screenshot here</span><small>Replace with: &lt;img src="../images/youtube.png"&gt;</small></div></div>
-  <div class="ds">
-    <p class="dl">About the Project</p><h2 class="dt">Decoding the Micro-Creator Playbook</h2>
-    <p>Micro-creators often achieve engagement rates that dwarf larger channels. This project collected data from 1,200+ videos via the YouTube Data API and engineered 15+ features including title sentiment, upload timing, and topic clustering.</p>
-    <p>Using regression and classification models, I identified top predictors of engagement spikes and built an interactive dashboard for creators to benchmark their content.</p>
-    <p>Key finding: upload timing and title emotional valence together explained over 40% of variance in above-average engagement rates.</p>
+
+  <div class="divider"></div>
+
+  <!-- Hero overview placeholder -->
+  <div class="screenshot" style="margin-bottom: 8px;">
+    <div class="screenshot-placeholder">
+      <span class="ph-icon">▶️</span>
+      <span>Add your project screenshot here</span>
+      <span class="ph-hint">&lt;img src="../images/youtube.png" alt="Creator archetypes dashboard"&gt;</span>
+    </div>
   </div>
-  <div class="ds"><p class="dl">Tools & Tech Stack</p><div class="tg"><span class="tp">Python</span><span class="tp">YouTube Data API</span><span class="tp">NLP</span><span class="tp">Pandas</span><span class="tp">Scikit-learn</span><span class="tp">Tableau</span><span class="tp">Feature Engineering</span></div></div>
-  <div class="ds"><p class="dl">Key Results</p><div class="rg">
-    <div class="rc"><span class="rn">1,200+</span><span class="rl">Videos analyzed</span></div>
-    <div class="rc"><span class="rn">15+</span><span class="rl">Engineered features</span></div>
-    <div class="rc"><span class="rn">40%</span><span class="rl">Engagement variance explained</span></div>
-  </div></div>
-  <div class="ds"><p class="dl">Links</p><div class="lr"><a href="#" class="btn bp">🔗 View on GitHub</a><a href="#" class="btn bo">📄 View Report</a></div></div>
-  <footer>Built by Nawa · <a href="../index.html">Back to Portfolio</a></footer>
+  <p class="photo-caption">Creator archetype dashboard — 4 K-Means clusters with topic + sentiment fingerprints</p>
+
+  <!-- 2. GOAL -->
+  <div class="section">
+    <p class="section-label">Goal</p>
+    <p class="goal-text">
+      Most YouTube growth advice is <em>anecdote, not analysis</em>. This project clusters
+      real creator data to answer the question new YouTubers actually need answered:
+      <em>which strategies actually work — and which bucket should you play in?</em>
+    </p>
+  </div>
+
+  <!-- 3. PROBLEM / SOLUTION -->
+  <div class="section">
+    <p class="section-label">Problem & solution</p>
+    <div class="ps-grid">
+      <div class="ps-card">
+        <p class="ps-heading">⚠ The Problem</p>
+        <p class="ps-body">New YouTubers get the same generic advice: post consistently, use hashtags, find your niche. But these recommendations come from gut feel — not from analyzing what actually separates breakout micro-channels from stagnant ones.</p>
+      </div>
+      <div class="ps-card solution">
+        <p class="ps-heading">💡 The Solution</p>
+        <p class="ps-body">A creator-strategy pipeline that segments YouTubers into 4 archetypes via K-Means, runs an NLP analysis (VADER + distinctive bigrams + LDA) on titles / descriptions / comments, and surfaces the language and topic strategies that actually drive engagement.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. CREATOR ARCHETYPES (the 4 K-Means clusters) -->
+  <div class="section">
+    <p class="section-label">4 Creator archetypes (K-Means)</p>
+    <div class="arch-grid">
+      <div class="arch-card">
+        <p class="arch-name">Viral Elite</p>
+        <p class="arch-tagline">Efficiency-driven</p>
+        <p class="arch-desc">Optimized for instant algorithm velocity — short, sharp content engineered for early CTR and shares.</p>
+        <p class="arch-stat">Avg subs: 83K</p>
+      </div>
+      <div class="arch-card">
+        <p class="arch-name">Community Builders</p>
+        <p class="arch-tagline">Loyalty-driven</p>
+        <p class="arch-desc">Optimized for deep audience engagement — high like-rate, comment depth, returning viewers over raw reach.</p>
+        <p class="arch-stat">Avg subs: 391</p>
+      </div>
+      <div class="arch-card">
+        <p class="arch-name">Authority Archives</p>
+        <p class="arch-tagline">Asset-driven</p>
+        <p class="arch-desc">Optimized for long-term brand equity — evergreen content, watch duration, and search-driven discovery.</p>
+        <p class="arch-stat">Avg subs: 2.5M</p>
+      </div>
+      <div class="arch-card">
+        <p class="arch-name">Rising Stars</p>
+        <p class="arch-tagline">Growth-driven</p>
+        <p class="arch-desc">The transition phase for new entrants — pivoting from efficiency to loyalty as the channel scales.</p>
+        <p class="arch-stat">Avg subs: 756K</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. STRATEGIC ROADMAP — 3-phase user flow -->
+  <div class="section">
+    <p class="section-label">The 3-phase growth roadmap</p>
+    <div class="ux-steps">
+      <div class="ux-step">
+        <span class="ux-num">1</span>
+        <div class="ux-content">
+          <p class="ux-title">Phase 1 · Survival — master Efficiency</p>
+          <p class="ux-desc">Get into the algorithm. Optimize for early CTR and view-velocity. Short, sharp content with strong identity tags.</p>
+        </div>
+      </div>
+      <div class="ux-step">
+        <span class="ux-num">2</span>
+        <div class="ux-content">
+          <p class="ux-title">Phase 2 · Loyalty — pivot to Like Rate</p>
+          <p class="ux-desc">Build a community. Use warm, identity-specific language and emotional resonance — High creators score 0.419 VADER vs 0.327 for Low.</p>
+        </div>
+      </div>
+      <div class="ux-step">
+        <span class="ux-num">3</span>
+        <div class="ux-content">
+          <p class="ux-title">Phase 3 · Authority — shift to Duration</p>
+          <p class="ux-desc">Secure a market moat. Lean into watch-time depth, evergreen content, and a clear vertical brand.</p>
+        </div>
+      </div>
+      <div class="ux-step">
+        <span class="ux-num">4</span>
+        <div class="ux-content">
+          <p class="ux-title">Find your Blue Ocean niche</p>
+          <p class="ux-desc">Pivot away from saturated "People & Blogs" toward high-leverage categories — high audience demand, low creator competition.</p>
+        </div>
+      </div>
+    </div>
+    <p class="ux-arrow">→ From generic "vlogger" to identity-specific creator with a measurable edge</p>
+  </div>
+
+  <!-- 6. KEY FEATURES — the 3 NLP techniques -->
+  <div class="section">
+    <p class="section-label">Key features · NLP analysis pipeline</p>
+    <div class="feature-grid">
+      <div class="feature-card optimal">
+        <p class="feature-status optimal">✓ NLP</p>
+        <p class="feature-name">VADER Sentiment Analysis</p>
+        <p class="feature-conf">0.419 vs 0.327</p>
+        <p class="feature-desc">Scored on raw text to preserve !, ?, CAPS signals. High-engagement creators produce significantly warmer content — 33% strongly positive vs 23% for Low (compound > 0.8).</p>
+      </div>
+      <div class="feature-card active">
+        <p class="feature-status active">⚡ Bigrams</p>
+        <p class="feature-name">Distinctive Language Mining</p>
+        <p class="feature-conf">TF-difference ranking</p>
+        <p class="feature-desc">Custom stopword removal strips platform noise. Reveals identity-specific vocabulary (jee, haridwar, shayari, assamese) that High creators use vs generic terms (food, aesthetic, cleaning) that Low creators rely on.</p>
+      </div>
+      <div class="feature-card optimal">
+        <p class="feature-status optimal">✓ LDA</p>
+        <p class="feature-name">Topic Saturation Modeling</p>
+        <p class="feature-conf">5 topics per group</p>
+        <p class="feature-desc">sklearn LDA with entropy + max-share metrics. Low group's Topic 1 dominates at 39% — 46% more topic-concentrated than High group, exposing the saturation trap.</p>
+      </div>
+    </div>
+
+    <!-- Headline insight banner -->
+    <div class="predictor-banner">
+      <p class="predictor-label">↗ Headline Insight</p>
+      <p class="predictor-title">4 archetypes, 4 different growth playbooks — and micro-creators win on identity, not reach</p>
+      <p class="predictor-desc">Across the dataset, micro-channels that broke through used identity-specific niches (JEE aspirant vlogs, regional cultural content) and warmer emotional language. Generic "daily vlog + aesthetic" content collapses into the most saturated bucket on YouTube — 39% of the Low group lives in a single topic cluster.</p>
+    </div>
+  </div>
+
+  <!-- 7. RESULTS -->
+  <div class="section">
+    <p class="section-label">Results</p>
+    <div class="results-grid">
+      <div class="result-card">
+        <span class="result-number">4</span>
+        <span class="result-label">K-Means creator archetypes identified</span>
+      </div>
+      <div class="result-card">
+        <span class="result-number">5</span>
+        <span class="result-label">LDA topics modeled per creator group</span>
+      </div>
+      <div class="result-card">
+        <span class="result-number">+10pt</span>
+        <span class="result-label">Strongly-positive sentiment gap (High vs Low)</span>
+      </div>
+      <div class="result-card">
+        <span class="result-number">39%</span>
+        <span class="result-label">Topic concentration in Low group (saturation trap)</span>
+      </div>
+    </div>
+    <p class="result-note">
+      <strong>Identity language + emotional warmth + topic diversification</strong>
+      are the measurable drivers of micro-creator engagement. High creators use
+      hyper-specific vocabulary (JEE/IIT, Assamese culture, Haridwar/Ganga, shayari);
+      Low creators rely on generic terms (food, aesthetic, cleaning) and collapse
+      into a single dominant topic.
+    </p>
+  </div>
+
+  <!-- 8. IMPACT -->
+  <div class="section">
+    <p class="section-label">Impact & outcome</p>
+    <ul class="outcome-list">
+      <li><strong>Diagnoses why micro-creators stagnate</strong> — generic vocabulary, topic saturation, and hashtag dilution are the three measurable killers.</li>
+      <li><strong>Quantifies emotional language as an engagement driver</strong> — a 10-point strongly-positive gap separates winning channels from stuck ones.</li>
+      <li><strong>Provides a concrete tag strategy</strong> — combine 1 platform-reach tag with 2–3 content-fit tags; cap hashtags at 0–3 for micro-channels to avoid audience dilution.</li>
+      <li><strong>Surfaces a Blue Ocean opportunity</strong> — pivot from crowded "People &amp; Blogs" toward high-leverage niches with high demand and low creator saturation.</li>
+    </ul>
+  </div>
+
+  <!-- 9. TECHNICAL OVERVIEW -->
+  <div class="section">
+    <p class="section-label">How it works — technical overview</p>
+    <div class="pipeline-steps">
+      <div class="pipeline-step">
+        <p class="step-num">Ingestion</p>
+        <p class="step-name">YouTube Data API</p>
+        <p class="step-desc">Channels, videos, titles, descriptions, comments · creator-level features for clustering</p>
+      </div>
+      <div class="pipeline-step">
+        <p class="step-num">Segmentation</p>
+        <p class="step-name">K-Means Clustering</p>
+        <p class="step-desc">4 creator archetypes by efficiency / loyalty / authority / growth signals</p>
+      </div>
+      <div class="pipeline-step">
+        <p class="step-num">NLP Pipeline</p>
+        <p class="step-name">VADER + Bigrams + LDA</p>
+        <p class="step-desc">Custom stopwords · sentiment on raw text · distinctive vocabulary · 5-topic LDA per group</p>
+      </div>
+      <div class="pipeline-step final">
+        <p class="step-num">Output ✦</p>
+        <p class="step-name">Creator Playbook</p>
+        <p class="step-desc">3-phase roadmap · 4 content-gap insights · tag strategy recommendations</p>
+      </div>
+    </div>
+
+    <table class="results-table">
+      <thead>
+        <tr>
+          <th>Method</th>
+          <th>Signal</th>
+          <th>Key finding</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>K-Means</strong></td>
+          <td>Creator-level features</td>
+          <td class="good">4 archetypes: Viral Elite, Community Builders, Authority Archives, Rising Stars</td>
+        </tr>
+        <tr>
+          <td><strong>VADER Sentiment</strong></td>
+          <td>Compound score on raw text</td>
+          <td class="good">High 0.419 vs Low 0.327 — warmer language wins</td>
+        </tr>
+        <tr>
+          <td><strong>Distinctive Bigrams</strong></td>
+          <td>Positive comment vocabulary</td>
+          <td class="good">Identity tags (jee, haridwar, shayari) outperform generic tags (food, aesthetic)</td>
+        </tr>
+        <tr>
+          <td><strong>LDA Topic Modeling</strong></td>
+          <td>5 topics per group on titles + descriptions</td>
+          <td class="good">Low group 46% more topic-concentrated — saturation trap exposed</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Tech Stack -->
+  <div class="section">
+    <p class="section-label">Tech stack</p>
+    <div class="tech-grid">
+      <span class="tech-pill">Python</span>
+      <span class="tech-pill">YouTube Data API</span>
+      <span class="tech-pill">scikit-learn</span>
+      <span class="tech-pill">K-Means</span>
+      <span class="tech-pill">LDA Topic Modeling</span>
+      <span class="tech-pill">VADER Sentiment</span>
+      <span class="tech-pill">NLTK</span>
+      <span class="tech-pill">Pandas</span>
+      <span class="tech-pill">NLP</span>
+    </div>
+  </div>
+
+  <!-- Links -->
+  <div class="section">
+    <p class="section-label">Links</p>
+    <div class="link-row">
+      <a href="#" class="btn btn-primary">📄 View Report</a>
+    </div>
+  </div>
+
+  <footer>
+    Built by Nawa · <a href="../index.html">Back to Portfolio</a>
+  </footer>
+
 </div>
 </body>
 </html>
