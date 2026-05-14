@@ -1,61 +1,513 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Google Innovation Lab · Nawa</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="../style.css"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Google Calendar Chief of Staff · Nawa</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
-    nav{padding:20px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
-    .back-link{color:var(--accent);text-decoration:none;font-size:14px;font-weight:500}.back-link:hover{text-decoration:underline}
-    .nav-sep{color:var(--border)}.nav-title{color:var(--muted);font-size:14px}
-    .hero{padding:48px 0 32px;border-bottom:1px solid var(--border)}
-    .proj-tag{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
-    .proj-title{font-family:'DM Serif Display',serif;font-size:clamp(2rem,5vw,3rem);line-height:1.1;margin-bottom:16px}
-    .badge{display:inline-flex;align-items:center;gap:6px;background:#fff8e6;color:#b45309;border-radius:999px;padding:4px 14px;font-size:13px;font-weight:500;margin-bottom:16px}
-    .proj-summary{color:var(--muted);font-size:16px;max-width:600px;line-height:1.7}
-    .screenshot{margin:32px 0;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border)}
-    .ph{height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--muted);font-size:14px;background:linear-gradient(135deg,#f0eee9,#e8e4de)}
-    .ph .icon{font-size:40px;opacity:.4}.ph small{font-size:12px;opacity:.7}
-    .ds{padding:36px 0;border-bottom:1px solid var(--border)}
-    .dl{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;font-weight:500}
-    .dt{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:12px}
-    p{color:var(--muted);margin-bottom:12px}
-    .tg{display:flex;flex-wrap:wrap;gap:8px}.tp{background:var(--ink);color:var(--bg);border-radius:999px;padding:5px 14px;font-size:13px}
-    .rg{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-    .rc{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center}
-    .rn{font-family:'DM Serif Display',serif;font-size:2rem;color:var(--accent);display:block}.rl{font-size:12px;color:var(--muted);margin-top:4px}
-    .lr{display:flex;gap:12px;flex-wrap:wrap}
-    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:var(--radius);font-size:14px;font-weight:500;text-decoration:none;transition:opacity .2s}
-    .btn:hover{opacity:.85}.bp{background:var(--accent);color:white}.bo{background:transparent;border:1px solid var(--border);color:var(--ink)}
-    footer{padding:32px 0;text-align:center;font-size:12px;color:var(--muted);border-top:1px solid var(--border)}
-    footer a{color:var(--accent);text-decoration:none}
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #f9f7f4;
+      --ink:          #1a1814;
+      --muted:        #7a7570;
+      --accent:       #2d5be3;
+      --accent-light: #eef1fd;
+      --warn:         #b8392e;
+      --warn-light:   #fbeeed;
+      --border:       #e4e0da;
+      --card:         #ffffff;
+      --surface:      #f2f0ec;
+      --radius:       12px;
+    }
+
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--ink); line-height: 1.6; font-size: 18px; }
+    .container { max-width: 960px; margin: 0 auto; padding: 0 40px 64px; }
+
+    /* Nav */
+    nav { padding: 24px 0; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+    .back-link { color: var(--accent); text-decoration: none; font-size: 14px; font-weight: 500; }
+    .back-link:hover { text-decoration: underline; }
+    .nav-sep { color: var(--border); }
+    .nav-title { color: var(--muted); font-size: 14px; }
+
+    /* Hero */
+    .hero { padding: 40px 0 28px; }
+    .proj-tag { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; font-weight: 500; }
+    .proj-title { font-family: 'DM Serif Display', serif; font-size: clamp(2.4rem, 5.4vw, 3.5rem); line-height: 1.05; margin-bottom: 12px; letter-spacing: -0.01em; max-width: 780px; }
+    .proj-subtitle { font-size: 19px; color: var(--muted); line-height: 1.5; margin-bottom: 18px; max-width: 720px; }
+    .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .badge { display: inline-flex; align-items: center; gap: 5px; border-radius: 999px; padding: 4px 14px; font-size: 12px; font-weight: 500; }
+    .badge-blue { background: var(--accent-light); color: var(--accent); }
+    .badge-dark { background: var(--ink); color: var(--bg); }
+    .role-strip { background: var(--surface); border-radius: var(--radius); padding: 12px 16px; font-size: 13px; color: var(--muted); border-left: 3px solid var(--accent); margin-top: 16px; }
+    .role-strip strong { color: var(--ink); font-weight: 500; }
+
+    /* Divider */
+    .divider { height: 1px; background: var(--border); margin: 28px 0; }
+
+    /* Sections */
+    .section { margin-bottom: 36px; }
+    .section-label { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; font-weight: 500; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+    .my-contribution-label { color: var(--accent); }
+
+    /* Goal */
+    .goal-text { font-size: 19px; color: var(--ink); line-height: 1.7; max-width: 780px; }
+    .goal-text em { color: var(--accent); font-style: normal; font-weight: 500; }
+
+    /* Problem / Solution */
+    .ps-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 520px) { .ps-grid { grid-template-columns: 1fr; } }
+    .ps-card { background: var(--surface); border-radius: var(--radius); padding: 16px 18px; }
+    .ps-card.solution { background: var(--accent-light); border: 1px solid #c5d3f8; }
+    .ps-heading { font-size: 12px; font-weight: 500; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .05em; }
+    .ps-card.solution .ps-heading { color: var(--accent); }
+    .ps-body { font-size: 15px; color: var(--ink); line-height: 1.6; }
+
+    /* Persona card (Jessica) */
+    .persona-card {
+      background: var(--ink);
+      color: white;
+      border-radius: var(--radius);
+      padding: 22px 24px;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+    @media (max-width: 540px) { .persona-card { grid-template-columns: 1fr; } }
+    .persona-avatar {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.8rem;
+      color: white;
+      flex-shrink: 0;
+    }
+    .persona-name { font-family: 'DM Serif Display', serif; font-size: 1.5rem; color: white; margin-bottom: 4px; }
+    .persona-role { font-size: 13px; color: #a78bfa; letter-spacing: .05em; text-transform: uppercase; margin-bottom: 12px; }
+    .persona-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 14px; }
+    @media (max-width: 480px) { .persona-stats { grid-template-columns: 1fr 1fr; } }
+    .persona-stat-num { font-family: 'DM Serif Display', serif; font-size: 1.4rem; color: white; display: block; line-height: 1.05; margin-bottom: 4px; }
+    .persona-stat-lbl { font-size: 11px; color: #9ca3af; line-height: 1.4; }
+    .persona-desc { font-size: 14px; color: #d1d5db; line-height: 1.55; }
+
+    /* UX Steps */
+    .ux-steps { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+    .ux-step { display: flex; align-items: flex-start; gap: 14px; background: var(--surface); border-radius: var(--radius); padding: 14px 16px; }
+    .ux-num { font-family: 'DM Serif Display', serif; font-size: 1.3rem; color: var(--accent); min-width: 28px; line-height: 1; padding-top: 2px; }
+    .ux-content { flex: 1; }
+    .ux-title { font-size: 16px; font-weight: 500; color: var(--ink); margin-bottom: 2px; }
+    .ux-desc { font-size: 14px; color: var(--muted); line-height: 1.5; }
+    .ux-arrow { text-align: center; font-size: 14px; color: var(--accent); font-weight: 500; padding: 8px 0; }
+
+    /* Results grid */
+    .results-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+    @media (max-width: 560px) { .results-grid { grid-template-columns: repeat(2, 1fr); } }
+    .result-card { background: var(--surface); border-radius: var(--radius); padding: 16px 14px; }
+    .result-number { font-family: 'DM Serif Display', serif; font-size: 2rem; color: var(--accent); display: block; line-height: 1.05; margin-bottom: 6px; }
+    .result-label { font-size: 12px; color: var(--muted); line-height: 1.4; }
+    .result-note { font-size: 14px; color: var(--muted); background: var(--accent-light); border-radius: 8px; padding: 12px 14px; line-height: 1.6; }
+    .result-note strong { color: var(--accent); font-weight: 500; }
+
+    /* Screenshot */
+    .screenshot { border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); margin-bottom: 8px; }
+    .screenshot img { width: 100%; display: block; }
+    .screenshot-placeholder { height: 280px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: var(--muted); font-size: 14px; background: linear-gradient(135deg, #f0eee9, #e8e4de); }
+    .ph-icon { font-size: 40px; opacity: 0.4; }
+    .ph-hint { font-size: 11px; opacity: 0.6; font-family: monospace; }
+    .photo-caption { font-size: 12px; color: var(--muted); text-align: center; margin-bottom: 20px; }
+
+    /* Feature cards */
+    .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+    @media (max-width: 520px) { .feature-grid { grid-template-columns: 1fr; } }
+    .feature-card { background: var(--surface); border-radius: var(--radius); padding: 16px; }
+    .feature-card.optimal { border-top: 3px solid #22c55e; }
+    .feature-card.active { border-top: 3px solid #2d5be3; }
+    .feature-card.warn { border-top: 3px solid var(--warn); }
+    .feature-status { font-size: 10px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 6px; }
+    .feature-status.optimal { color: #22c55e; }
+    .feature-status.active { color: #2d5be3; }
+    .feature-status.warn { color: var(--warn); }
+    .feature-name { font-size: 16px; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
+    .feature-conf { font-size: 13px; color: var(--accent); font-weight: 500; margin-bottom: 8px; }
+    .feature-desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+    /* Metric cards (special — for user's contribution) */
+    .metric-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+    @media (max-width: 540px) { .metric-grid { grid-template-columns: 1fr; } }
+    .metric-card {
+      background: var(--accent-light);
+      border: 1px solid #c5d3f8;
+      border-radius: var(--radius);
+      padding: 16px 18px;
+    }
+    .metric-tag { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); font-weight: 500; margin-bottom: 6px; }
+    .metric-name { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--ink); margin-bottom: 6px; }
+    .metric-formula { font-size: 12px; color: var(--accent); font-family: monospace; background: rgba(255,255,255,0.6); padding: 6px 8px; border-radius: 4px; margin-bottom: 8px; }
+    .metric-target { font-size: 13px; color: var(--ink); font-weight: 500; margin-bottom: 6px; }
+    .metric-desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+    /* Predictor banner (dark) */
+    .predictor-banner {
+      background: var(--ink);
+      color: white;
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-bottom: 16px;
+    }
+    .predictor-label { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: #a78bfa; font-weight: 500; margin-bottom: 6px; }
+    .predictor-title { font-family: 'DM Serif Display', serif; font-size: 1.4rem; color: white; margin-bottom: 8px; line-height: 1.25; }
+    .predictor-desc { font-size: 13px; color: #9ca3af; line-height: 1.6; }
+
+    /* Outcome list */
+    .outcome-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .outcome-list li { display: flex; align-items: flex-start; gap: 10px; font-size: 16px; color: var(--muted); line-height: 1.6; }
+    .outcome-list li::before { content: "→"; color: var(--accent); font-weight: 500; flex-shrink: 0; margin-top: 1px; }
+    .outcome-list li strong { color: var(--ink); font-weight: 500; }
+
+    /* Pipeline steps */
+    .pipeline-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
+    @media (max-width: 520px) { .pipeline-steps { grid-template-columns: repeat(2, 1fr); } }
+    .pipeline-step { background: var(--surface); border-radius: 8px; padding: 12px 12px 10px; }
+    .pipeline-step.final { background: var(--accent-light); border: 1px solid #c5d3f8; }
+    .step-num { font-size: 10px; color: var(--muted); font-weight: 500; margin-bottom: 4px; letter-spacing: .05em; }
+    .step-name { font-size: 12px; font-weight: 500; color: var(--ink); margin-bottom: 4px; line-height: 1.3; }
+    .pipeline-step.final .step-name { color: var(--accent); }
+    .step-desc { font-size: 11px; color: var(--muted); line-height: 1.4; }
+
+    /* Table */
+    .results-table { width: 100%; border-collapse: collapse; font-size: 15px; margin-bottom: 12px; }
+    .results-table th { text-align: left; font-size: 11px; font-weight: 500; color: var(--muted); letter-spacing: .05em; text-transform: uppercase; padding: 8px 12px; border-bottom: 1px solid var(--border); }
+    .results-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--ink); }
+    .results-table tr:last-child td { border-bottom: none; }
+    .results-table tr:nth-child(even) td { background: var(--surface); }
+    .good { color: var(--accent); font-weight: 500; }
+
+    /* Tech stack */
+    .tech-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tech-pill { background: var(--ink); color: var(--bg); border-radius: 999px; padding: 6px 16px; font-size: 14px; }
+
+    /* Links */
+    .link-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 22px; border-radius: var(--radius); font-size: 14px; font-weight: 500; text-decoration: none; transition: opacity 0.15s; font-family: 'DM Sans', sans-serif; border: none; cursor: pointer; }
+    .btn:hover { opacity: 0.85; }
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--ink); }
+
+    /* Footer */
+    footer { padding-top: 40px; border-top: 1px solid var(--border); text-align: center; font-size: 12px; color: var(--muted); }
+    footer a { color: var(--accent); text-decoration: none; }
   </style>
 </head>
 <body>
 <div class="container">
-  <nav><a href="../index.html" class="back-link">← Back to Portfolio</a><span class="nav-sep">·</span><span class="nav-title">Google Innovation Lab</span></nav>
+
+  <!-- Nav -->
+  <nav>
+    <a href="../index.html" class="back-link">← Back</a>
+    <span class="nav-sep">·</span>
+    <span class="nav-title">Google Calendar — Chief of Staff</span>
+  </nav>
+
+  <!-- 1. HERO -->
   <div class="hero">
-    <p class="proj-tag">Consulting · Innovation</p>
-    <h1 class="proj-title">Google Innovation Lab</h1>
-    <span class="badge">🏆 Top 5 Finalist</span>
-    <p class="proj-summary">Designed an AI-powered product solution for Google's Innovation Lab challenge, developing user personas, success metrics, and a product scoring framework that placed in the top 5.</p>
+    <p class="proj-tag">Product Strategy · AI Agent · Workspace Productivity</p>
+    <h1 class="proj-title">Google Calendar — "Chief of Staff" AI Agent</h1>
+    <p class="proj-subtitle">
+      An AI agent inside Google Workspace that turns low-value meetings into async briefs —
+      giving back 5+ hours/week to executives drowning in calendar inflation.
+    </p>
+    <div class="badges">
+      <span class="badge badge-blue">Gemini Embeddings · GNN · Federated Learning</span>
+      <span class="badge badge-blue">RAG · Workspace API</span>
+      <span class="badge badge-dark">Columbia · Product Strategy</span>
+    </div>
+    <div class="role-strip">
+      <strong>My role:</strong> I designed the three success metrics — Async Conversion Rate, Hours Returned, and Override Rate — that define how the product proves it's actually working.
+    </div>
   </div>
-  <div class="screenshot"><div class="ph"><span class="icon">🔬</span><span>Add your project screenshot here</span><small>Replace with: &lt;img src="../images/google.png"&gt;</small></div></div>
-  <div class="ds">
-    <p class="dl">About the Project</p><h2 class="dt">Designing AI for Real Human Needs</h2>
-    <p>Selected to participate in Google's Innovation Lab challenge, this project required designing an AI solution from scratch — starting with deep user research and ending with a measurable product strategy.</p>
-    <p>I built detailed user personas from qualitative data, mapped pain points to opportunity spaces, and designed an AI feature set with clear success metrics tied to business outcomes.</p>
-    <p>The product scoring framework evaluates concept viability across feasibility, desirability, and business impact — earning a Top 5 finalist ranking.</p>
+
+  <div class="divider"></div>
+
+  <!-- Hero overview placeholder -->
+  <div class="screenshot" style="margin-bottom: 8px;">
+    <div class="screenshot-placeholder">
+      <span class="ph-icon">📅</span>
+      <span>Add your project screenshot here</span>
+      <span class="ph-hint">&lt;img src="../images/google.png" alt="Chief of Staff agent UI"&gt;</span>
+    </div>
   </div>
-  <div class="ds"><p class="dl">Tools & Tech Stack</p><div class="tg"><span class="tp">Product Strategy</span><span class="tp">User Research</span><span class="tp">AI Design</span><span class="tp">KPI Frameworks</span><span class="tp">Figma</span><span class="tp">Presentation Design</span></div></div>
-  <div class="ds"><p class="dl">Key Results</p><div class="rg">
-    <div class="rc"><span class="rn">Top 5</span><span class="rl">Finalist ranking</span></div>
-    <div class="rc"><span class="rn">AI</span><span class="rl">Product solution designed</span></div>
-    <div class="rc"><span class="rn">3D</span><span class="rl">Scoring framework built</span></div>
-  </div></div>
-  <div class="ds"><p class="dl">Links</p><div class="lr"><a href="#" class="btn bp">🔗 View on GitHub</a><a href="#" class="btn bo">📄 View Presentation</a></div></div>
-  <footer>Built by Nawa · <a href="../index.html">Back to Portfolio</a></footer>
+  <p class="photo-caption">Team Chief of Staff — Alina, Hanqing, Jingxuan, Maria, Nawa, Sheena</p>
+
+  <!-- 2. GOAL -->
+  <div class="section">
+    <p class="section-label">Goal</p>
+    <p class="goal-text">
+      Executives spend <em>75% of their day in meetings</em> — and most of those meetings could
+      have been a doc. This project asks: can a context-aware AI agent inside Google Workspace
+      <em>turn low-value meetings into async work</em> — and how would we know it's actually working?
+    </p>
+  </div>
+
+  <!-- 3. PROBLEM / SOLUTION -->
+  <div class="section">
+    <p class="section-label">Problem & solution</p>
+    <div class="ps-grid">
+      <div class="ps-card">
+        <p class="ps-heading">⚠ The Problem</p>
+        <p class="ps-body">Cross-functional leads spend 6 hours/day in meetings (75% of workday) and 1–2 hours just on scheduling — leaving only 2 hours for deep work. Calendar inflation drives executive burnout and puts multi-million-dollar targets at risk.</p>
+      </div>
+      <div class="ps-card solution">
+        <p class="ps-heading">💡 The Solution</p>
+        <p class="ps-body">A "Chief of Staff" AI agent that detects meeting conflicts, generates async brief Docs to replace low-value meetings, and gives users back ~5 hours/week — all measured by three success metrics that define product-market fit.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. EXTREME USER PERSONA -->
+  <div class="section">
+    <p class="section-label">The extreme user persona</p>
+    <div class="persona-card">
+      <div class="persona-avatar">J</div>
+      <div>
+        <p class="persona-name">Jessica</p>
+        <p class="persona-role">PMO Lead · Post-Merger Integration · Fortune 500</p>
+        <p class="persona-desc">Cross-functional lead wearing two hats — Integration Team AND Supply Chain. Her calendar is a battlefield where teams compete for her time. The $200M annual sales target rides on her ability to coordinate across business and back office without burning out.</p>
+        <div class="persona-stats">
+          <div>
+            <span class="persona-stat-num">$200M</span>
+            <span class="persona-stat-lbl">Annual brand sales target</span>
+          </div>
+          <div>
+            <span class="persona-stat-num">6 hrs</span>
+            <span class="persona-stat-lbl">Meetings & collaboration · 75% of workday</span>
+          </div>
+          <div>
+            <span class="persona-stat-num">1–2 hrs</span>
+            <span class="persona-stat-lbl">Daily meeting scheduling overhead</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. THE INTELLIGENT ASYNC PIVOT (user flow) -->
+  <div class="section">
+    <p class="section-label">The intelligent async pivot</p>
+    <div class="ux-steps">
+      <div class="ux-step">
+        <span class="ux-num">1</span>
+        <div class="ux-content">
+          <p class="ux-title">Identify & prioritize</p>
+          <p class="ux-desc">AI analyzes Jessica's schedule, detects conflicts between meetings, and nudges her: <em>"Conflict detected. Opt-out and auto-send a written brief instead?"</em></p>
+        </div>
+      </div>
+      <div class="ux-step">
+        <span class="ux-num">2</span>
+        <div class="ux-content">
+          <p class="ux-title">Securely retrieve context</p>
+          <p class="ux-desc">RAG pulls from Google Workspace and Cloud Files — meeting agenda, prior threads, related Docs — to compose a context-aware brief.</p>
+        </div>
+      </div>
+      <div class="ux-step">
+        <span class="ux-num">3</span>
+        <div class="ux-content">
+          <p class="ux-title">Review & collaborate (human-in-the-loop)</p>
+          <p class="ux-desc">Jessica reviews the draft Doc in ~2 min, edits, approves. The system auto-shares with all participants and cancels the meeting — collaboration continues asynchronously.</p>
+        </div>
+      </div>
+    </div>
+    <p class="ux-arrow">→ 2 min review · 30 min meeting saved · 100% context preserved</p>
+  </div>
+
+  <!-- 6. SUCCESS METRICS — USER'S CONTRIBUTION (highlighted) -->
+  <div class="section">
+    <p class="section-label my-contribution-label">★ Success metrics — my contribution</p>
+    <p class="goal-text" style="font-size: 16px; margin-bottom: 18px;">
+      A new AI feature is only as credible as the metrics that prove it works. I designed
+      three measurement layers — <em>product, value, and quality</em> — that together tell us
+      whether the agent is actually helping users.
+    </p>
+    <div class="metric-grid">
+      <div class="metric-card">
+        <p class="metric-tag">Product Metric</p>
+        <p class="metric-name">Async Conversion Rate</p>
+        <p class="metric-formula">ACR = async conversions ÷ eligible meetings</p>
+        <p class="metric-target">Target: 20–25%</p>
+        <p class="metric-desc">% of low-value meetings the agent successfully converts into async (Docs, Gmail). Measured via calendar event cancellations and Doc/Gmail creation triggered by the agent.</p>
+      </div>
+      <div class="metric-card">
+        <p class="metric-tag">User Value Metric</p>
+        <p class="metric-name">Hours Returned</p>
+        <p class="metric-formula">Hours = SUM(minutes saved)</p>
+        <p class="metric-target">Target: +5 hrs/week per user</p>
+        <p class="metric-desc">Number of hours the agent gives back by cancelling, shortening, or converting meetings. Measured via cancelled and shortened meeting durations.</p>
+      </div>
+      <div class="metric-card">
+        <p class="metric-tag">Quality Metric</p>
+        <p class="metric-name">Override Rate</p>
+        <p class="metric-formula">OR = user overrides ÷ agent actions</p>
+        <p class="metric-target">Target: &lt; 5%</p>
+        <p class="metric-desc">% of times users reverse, reject, or undo the agent — reinstating meetings, rejecting async replacements, or deleting generated Docs. Low rates mean the agent is trusted.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. KEY FEATURES — technical -->
+  <div class="section">
+    <p class="section-label">How the AI thinks · two-stream model</p>
+    <div class="feature-grid">
+      <div class="feature-card active">
+        <p class="feature-status active">⚡ Structural</p>
+        <p class="feature-name">Graph Neural Networks</p>
+        <p class="feature-conf">Workspace interaction graph</p>
+        <p class="feature-desc">Detects relationships between sender and receiver across the workspace, calculates relationship scores, and identifies key stakeholders based on actual workflow dependencies.</p>
+      </div>
+      <div class="feature-card optimal">
+        <p class="feature-status optimal">🧠 Semantic</p>
+        <p class="feature-name">Gemini Embeddings</p>
+        <p class="feature-conf">Cosine similarity vs OKRs</p>
+        <p class="feature-desc">Vectorizes unstructured meeting agendas with Gemini Pro Embeddings and maps each meeting against the user's OKRs — quantifying topic relevance vs business objectives.</p>
+      </div>
+      <div class="feature-card warn">
+        <p class="feature-status warn">🔒 Privacy</p>
+        <p class="feature-name">Federated Learning</p>
+        <p class="feature-conf">On-device processing</p>
+        <p class="feature-desc">Relationship data is processed locally on the user's device. Enterprise privacy preserved by design — no sensitive workflow signals leave the user's environment.</p>
+      </div>
+    </div>
+
+    <!-- Strategic impact banner -->
+    <div class="predictor-banner">
+      <p class="predictor-label">↗ Strategic Impact</p>
+      <p class="predictor-title">The killer feature that justifies Gemini Enterprise</p>
+      <p class="predictor-desc">+5 hours/week recovered per user creates immediate hard-dollar ROI — the kind of measurable productivity lift that makes a Gemini Enterprise subscription self-justifying. Workspace becomes the indispensable "Control Plane" of enterprise work — the place where decisions are made, not just events stored.</p>
+    </div>
+  </div>
+
+  <!-- 8. RESULTS -->
+  <div class="section">
+    <p class="section-label">Results · headline numbers</p>
+    <div class="results-grid">
+      <div class="result-card">
+        <span class="result-number">+5 hrs</span>
+        <span class="result-label">Recovered per user per week</span>
+      </div>
+      <div class="result-card">
+        <span class="result-number">75%</span>
+        <span class="result-label">Of workday currently spent in meetings</span>
+      </div>
+      <div class="result-card">
+        <span class="result-number">30 min</span>
+        <span class="result-label">Saved per meeting converted to async brief</span>
+      </div>
+      <div class="result-card">
+        <span class="result-number">2 min</span>
+        <span class="result-label">User review time for AI-generated brief</span>
+      </div>
+    </div>
+    <p class="result-note">
+      <strong>Hard-dollar ROI per user, measured by 3 layered success metrics</strong> —
+      Async Conversion Rate (product), Hours Returned (value), and Override Rate (quality).
+      Together they prove the agent isn't just shipping — it's actually helping.
+    </p>
+  </div>
+
+  <!-- 9. IMPACT / OUTCOMES -->
+  <div class="section">
+    <p class="section-label">Impact & outcome</p>
+    <ul class="outcome-list">
+      <li><strong>Recovers +5 hours per week per user</strong> — a measurable, hard-dollar ROI that justifies a Gemini Enterprise subscription on its own.</li>
+      <li><strong>Shifts Workspace from event storage to decision-making</strong> — Calendar becomes the "Control Plane" where work actually gets done, not just scheduled.</li>
+      <li><strong>Privacy-first by design</strong> — Federated Learning keeps relationship signals on-device, addressing the #1 enterprise blocker for AI in productivity tools.</li>
+      <li><strong>Measurable success criteria</strong> — three success metrics (ACR, Hours Returned, Override Rate) define a clear bar for product-market fit.</li>
+    </ul>
+  </div>
+
+  <!-- 10. TECHNICAL OVERVIEW -->
+  <div class="section">
+    <p class="section-label">How it works — technical overview</p>
+    <div class="pipeline-steps">
+      <div class="pipeline-step">
+        <p class="step-num">Detection</p>
+        <p class="step-name">Conflict Identification</p>
+        <p class="step-desc">Calendar scan · meeting overlaps · low-value meeting flagging</p>
+      </div>
+      <div class="pipeline-step">
+        <p class="step-num">Context</p>
+        <p class="step-name">RAG over Workspace</p>
+        <p class="step-desc">Securely connects to Workspace + Cloud Files · pulls agenda, threads, Docs</p>
+      </div>
+      <div class="pipeline-step">
+        <p class="step-num">Reasoning</p>
+        <p class="step-name">GNN + Gemini</p>
+        <p class="step-desc">Structural stream (relationship scores) + semantic stream (cosine vs OKRs)</p>
+      </div>
+      <div class="pipeline-step final">
+        <p class="step-num">Output ✦</p>
+        <p class="step-name">Brief Generation</p>
+        <p class="step-desc">Draft Doc · human-in-the-loop review · auto-share · meeting cancelled</p>
+      </div>
+    </div>
+
+    <table class="results-table">
+      <thead>
+        <tr>
+          <th>Component</th>
+          <th>Method</th>
+          <th>Output</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Structural analysis</strong></td>
+          <td>Graph Neural Networks on Workspace interaction graph</td>
+          <td class="good">Stakeholder relationship scores</td>
+        </tr>
+        <tr>
+          <td><strong>Semantic analysis</strong></td>
+          <td>Gemini Pro Embeddings + Cosine Similarity</td>
+          <td class="good">Meeting-to-OKR relevance scores</td>
+        </tr>
+        <tr>
+          <td><strong>Privacy layer</strong></td>
+          <td>Federated Learning · on-device computation</td>
+          <td class="good">No sensitive workflow data leaves user environment</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Tech Stack -->
+  <div class="section">
+    <p class="section-label">Tech stack</p>
+    <div class="tech-grid">
+      <span class="tech-pill">Gemini Pro Embeddings</span>
+      <span class="tech-pill">Graph Neural Networks</span>
+      <span class="tech-pill">Federated Learning</span>
+      <span class="tech-pill">RAG</span>
+      <span class="tech-pill">Cosine Similarity</span>
+      <span class="tech-pill">Google Workspace API</span>
+      <span class="tech-pill">Python</span>
+      <span class="tech-pill">Product Analytics</span>
+    </div>
+  </div>
+
+  <!-- Links -->
+  <div class="section">
+    <p class="section-label">Links</p>
+    <div class="link-row">
+    </div>
+  </div>
+
+  <footer>
+    Built by Nawa with the Chief of Staff team · <a href="../index.html">Back to Portfolio</a>
+  </footer>
+
 </div>
 </body>
 </html>
