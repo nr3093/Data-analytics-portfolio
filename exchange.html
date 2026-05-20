@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A Year in Minnesota · Exchange Student · Nawa</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #f9f7f4;
+      --ink:          #1a1814;
+      --muted:        #7a7570;
+      --accent:       #2d5be3;
+      --accent-light: #eef1fd;
+      --border:       #e4e0da;
+      --card:         #ffffff;
+      --surface:      #f2f0ec;
+      --radius:       12px;
+    }
+
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--ink); line-height: 1.6; font-size: 18px; }
+    .container { max-width: 960px; margin: 0 auto; padding: 0 40px 64px; }
+
+    /* Nav */
+    nav { padding: 24px 0; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+    .back-link { color: var(--accent); text-decoration: none; font-size: 14px; font-weight: 500; }
+    .back-link:hover { text-decoration: underline; }
+    .nav-sep { color: var(--border); }
+    .nav-title { color: var(--muted); font-size: 14px; }
+
+    /* Hero */
+    .hero { padding: 40px 0 28px; }
+    .proj-tag { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; font-weight: 500; }
+    .proj-title { font-family: 'DM Serif Display', serif; font-size: clamp(2.8rem, 6vw, 4rem); line-height: 1.05; margin-bottom: 10px; letter-spacing: -0.01em; }
+    .proj-subtitle { font-size: 19px; color: var(--muted); line-height: 1.5; margin-bottom: 18px; max-width: 680px; }
+    .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .badge { display: inline-flex; align-items: center; gap: 5px; border-radius: 999px; padding: 4px 14px; font-size: 12px; font-weight: 500; }
+    .badge-blue { background: var(--accent-light); color: var(--accent); }
+    .badge-dark { background: var(--ink); color: var(--bg); }
+    .role-strip { background: var(--surface); border-radius: var(--radius); padding: 12px 16px; font-size: 13px; color: var(--muted); border-left: 3px solid var(--accent); margin-top: 16px; }
+    .role-strip strong { color: var(--ink); font-weight: 500; }
+
+    /* Divider */
+    .divider { height: 1px; background: var(--border); margin: 28px 0; }
+
+    /* Sections */
+    .section { margin-bottom: 36px; }
+    .section-label { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; font-weight: 500; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+
+    /* Goal */
+    .goal-text { font-size: 19px; color: var(--ink); line-height: 1.7; max-width: 780px; }
+    .goal-text em { color: var(--accent); font-style: normal; font-weight: 500; }
+
+    /* Class cards */
+    .class-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    @media (max-width: 540px) { .class-grid { grid-template-columns: 1fr; } }
+    .class-card { background: var(--surface); border-radius: var(--radius); padding: 16px 18px; border-top: 3px solid var(--accent); }
+    .class-name { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--ink); margin-bottom: 6px; }
+    .class-tag { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); font-weight: 500; margin-bottom: 6px; }
+    .class-desc { font-size: 14px; color: var(--muted); line-height: 1.55; }
+
+    /* Screenshot / photos */
+    .screenshot { border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); margin-bottom: 8px; }
+    .screenshot img { width: 100%; display: block; }
+    .screenshot-placeholder { height: 260px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: var(--muted); font-size: 14px; background: linear-gradient(135deg, #f0eee9, #e8e4de); }
+    .ph-icon { font-size: 40px; opacity: 0.4; }
+    .ph-hint { font-size: 11px; opacity: 0.6; font-family: monospace; }
+    .photo-caption { font-size: 13px; color: var(--muted); text-align: center; margin-bottom: 24px; }
+
+    /* Photo gallery (2-up) */
+    .photo-gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px; }
+    @media (max-width: 540px) { .photo-gallery { grid-template-columns: 1fr; } }
+
+    /* Outcome list */
+    .outcome-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .outcome-list li { display: flex; align-items: flex-start; gap: 10px; font-size: 16px; color: var(--muted); line-height: 1.6; }
+    .outcome-list li::before { content: "→"; color: var(--accent); font-weight: 500; flex-shrink: 0; margin-top: 1px; }
+    .outcome-list li strong { color: var(--ink); font-weight: 500; }
+
+    /* Footer */
+    footer { padding-top: 40px; border-top: 1px solid var(--border); text-align: center; font-size: 12px; color: var(--muted); }
+    footer a { color: var(--accent); text-decoration: none; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Nav -->
+  <nav>
+    <a href="index.html" class="back-link">← Back</a>
+    <span class="nav-sep">·</span>
+    <span class="nav-title">Exchange Student</span>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <p class="proj-tag">Exchange Student · Cross-Cultural Experience</p>
+    <h1 class="proj-title">A Year in Minnesota</h1>
+    <p class="proj-subtitle">
+      A school year at Waterville-Elysian-Morristown High School in Madison Lake, Minnesota —
+      Biology, AP Calculus, Wind Ensemble, and a lot of learning to ask questions in a new language.
+    </p>
+    <div class="badges">
+      <span class="badge badge-blue">🇺🇸 Madison Lake, MN</span>
+      <span class="badge badge-blue">2012 — 2013</span>
+      <span class="badge badge-dark">Full academic year</span>
+    </div>
+    <div class="role-strip">
+      <strong>Where + when:</strong> Waterville-Elysian-Morristown High School &middot; Madison Lake, Minnesota, USA &middot; September 2012 — June 2013.
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Hero photo placeholder -->
+  <div class="screenshot" style="margin-bottom: 8px;">
+    <div class="screenshot-placeholder">
+      <span class="ph-icon">📸</span>
+      <span>Add a hero photo from your year in Minnesota</span>
+      <span class="ph-hint">&lt;img src="images/exchange-hero.jpg" alt="WEM High School year"&gt;</span>
+    </div>
+  </div>
+  <p class="photo-caption">Waterville-Elysian-Morristown High School · Madison Lake, Minnesota</p>
+
+  <!-- The story -->
+  <div class="section">
+    <p class="section-label">The story</p>
+    <p class="goal-text">
+      At 16, I left Bangkok for a school year in <em>rural Minnesota</em> — population
+      ~1,000 in Madison Lake. It was my first time living abroad, my first American
+      Thanksgiving, my first time playing in a school wind ensemble — and the first time
+      I had to do calculus, biology, and band class all in English at the same time.
+    </p>
+  </div>
+
+  <!-- Classes I took -->
+  <div class="section">
+    <p class="section-label">What I studied</p>
+    <div class="class-grid">
+      <div class="class-card">
+        <p class="class-tag">Science</p>
+        <p class="class-name">Biology</p>
+        <p class="class-desc">Hands-on labs in a U.S. high school setting — dissections, microscope work, and lab reports in English. Built my comfort with technical vocabulary I didn't have before.</p>
+      </div>
+      <div class="class-card">
+        <p class="class-tag">Math</p>
+        <p class="class-name">AP Calculus</p>
+        <p class="class-desc">First calculus course — and in a second language. The math symbols were universal but the word problems forced me to slow down and translate before solving.</p>
+      </div>
+      <div class="class-card">
+        <p class="class-tag">Athletics</p>
+        <p class="class-name">Advanced PE</p>
+        <p class="class-desc">First exposure to American sports culture — team-based PE was very different from PE back home. Pushed me out of my comfort zone physically and socially.</p>
+      </div>
+      <div class="class-card">
+        <p class="class-tag">Music</p>
+        <p class="class-name">Wind Ensemble</p>
+        <p class="class-desc">Joined the school's wind ensemble. Music turned out to be the easiest language to share — sitting in a section with classmates was where I made my first real friends.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Photo gallery placeholder -->
+  <div class="section">
+    <p class="section-label">Photos</p>
+    <div class="photo-gallery">
+      <div class="screenshot">
+        <div class="screenshot-placeholder">
+          <span class="ph-icon">🇺🇸</span>
+          <span>Photo 1</span>
+          <span class="ph-hint">images/exchange-1.jpg</span>
+        </div>
+      </div>
+      <div class="screenshot">
+        <div class="screenshot-placeholder">
+          <span class="ph-icon">🎷</span>
+          <span>Photo 2</span>
+          <span class="ph-hint">images/exchange-2.jpg</span>
+        </div>
+      </div>
+    </div>
+    <p class="photo-caption">Replace with your own photos when you upload them to <code>images/</code></p>
+  </div>
+
+  <!-- What I brought home -->
+  <div class="section">
+    <p class="section-label">What I brought home</p>
+    <ul class="outcome-list">
+      <li><strong>Comfort with ambiguity</strong> — learning to function when you don't fully understand the rules yet, in language or in social settings.</li>
+      <li><strong>Asking better questions</strong> — when you can't assume context, you learn to ask before deciding. That habit shows up directly in how I approach data work and user research today.</li>
+      <li><strong>Cross-cultural communication</strong> — translating not just words but expectations, humor, and what people actually mean vs. what they say.</li>
+      <li><strong>Resilience under loneliness</strong> — a small Minnesota town in winter is a long way from Bangkok. The year built a quiet confidence I still rely on.</li>
+    </ul>
+  </div>
+
+  <footer>
+    Built by Nawa · <a href="index.html">Back to Portfolio</a>
+  </footer>
+
+</div>
+</body>
+</html>
