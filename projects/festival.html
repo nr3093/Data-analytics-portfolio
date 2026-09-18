@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The database behind a festival you can actually plan around · Nawa</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #f9f7f4;
+      --ink:          #1a1814;
+      --muted:        #7a7570;
+      --accent:       #2d5be3;
+      --accent-light: #eef1fd;
+      --warn:         #b8392e;
+      --warn-light:   #fbeeed;
+      --border:       #e4e0da;
+      --card:         #ffffff;
+      --surface:      #f2f0ec;
+      --radius:       12px;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.6;
+      font-size: 18px;
+    }
+
+    .container { max-width: 960px; margin: 0 auto; padding: 0 40px 64px; }
+
+    nav {
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .back-link { color: var(--accent); text-decoration: none; font-size: 14px; font-weight: 500; }
+    .back-link:hover { text-decoration: underline; }
+    .nav-sep { color: var(--border); }
+    .nav-title { color: var(--muted); font-size: 14px; }
+
+    .hero { padding: 40px 0 28px; }
+
+    .proj-tag {
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
+
+    .proj-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2.6rem, 6vw, 3.8rem);
+      line-height: 1.05;
+      margin-bottom: 12px;
+      letter-spacing: -0.01em;
+      max-width: 760px;
+    }
+
+    .proj-subtitle {
+      font-size: 19px;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-bottom: 20px;
+      max-width: 720px;
+    }
+
+    .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      border-radius: 999px;
+      padding: 4px 14px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .badge-blue  { background: var(--accent-light); color: var(--accent); }
+    .badge-dark  { background: var(--ink); color: var(--bg); }
+
+    .proj-summary { font-size: 19px; color: var(--muted); max-width: 700px; line-height: 1.65; }
+    .proj-summary strong { color: var(--ink); font-weight: 500; }
+
+    .role-strip {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      font-size: 14px;
+      color: var(--muted);
+      border-left: 3px solid var(--accent);
+      margin-top: 18px;
+      max-width: 800px;
+      line-height: 1.6;
+    }
+    .role-strip strong { color: var(--ink); font-weight: 500; }
+
+    .about-text a, .proj-summary a {
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid var(--accent-light);
+      transition: border-color 0.15s;
+    }
+    .about-text a:hover, .proj-summary a:hover { border-bottom-color: var(--accent); }
+
+    .divider { height: 1px; background: var(--border); margin: 28px 0; }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 32px;
+    }
+    @media (max-width: 560px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+    .stat-card { background: var(--surface); border-radius: var(--radius); padding: 16px 14px; }
+    .stat-number {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2rem;
+      color: var(--accent);
+      display: block;
+      line-height: 1.05;
+      margin-bottom: 8px;
+    }
+    .stat-label { font-size: 12px; color: var(--muted); line-height: 1.45; }
+
+    .screenshot {
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      margin-bottom: 32px;
+    }
+    .screenshot img, .screenshot svg { width: 100%; display: block; }
+
+    .section { margin-bottom: 30px; }
+    .section-label {
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+      font-weight: 500;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .about-text { font-size: 17px; color: var(--muted); line-height: 1.75; max-width: 780px; }
+    .about-text strong { color: var(--ink); font-weight: 500; }
+
+    .case-card {
+      background: var(--accent-light);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin-top: 16px;
+    }
+    .case-tag { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); font-weight: 500; margin-bottom: 6px; }
+    .case-title { font-size: 16px; font-weight: 500; color: var(--ink); margin-bottom: 6px; }
+    .case-detail { font-size: 15px; color: var(--muted); line-height: 1.6; }
+    .case-detail strong { color: var(--ink); font-weight: 500; }
+
+    .model-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 4px; }
+    @media (max-width: 640px) { .model-steps { grid-template-columns: 1fr; } }
+    .model-step { background: var(--surface); border-radius: 8px; padding: 12px 12px 10px; position: relative; }
+    .model-step.final { background: var(--accent-light); border: 1px solid #c5d3f8; }
+    .step-num { font-size: 11px; color: var(--muted); font-weight: 500; margin-bottom: 6px; letter-spacing: .05em; }
+    .step-name { font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 6px; line-height: 1.3; }
+    .model-step.final .step-name { color: var(--accent); }
+    .step-desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+    .impact-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    @media (max-width: 520px) { .impact-grid { grid-template-columns: 1fr; } }
+    .impact-step { background: var(--surface); border-radius: 8px; padding: 12px 14px; }
+    .impact-name { font-size: 15px; font-weight: 500; color: var(--ink); margin-bottom: 6px; }
+    .impact-desc { font-size: 13px; color: var(--muted); line-height: 1.55; }
+
+    .lim-list { list-style: none; padding: 0; margin: 0; }
+    .lim-list li { padding: 8px 0 8px 22px; position: relative; font-size: 16px; color: var(--muted); line-height: 1.65; }
+    .lim-list li::before { content: "•"; position: absolute; left: 4px; color: var(--accent); font-weight: bold; }
+    .lim-list li strong { color: var(--ink); font-weight: 500; }
+
+    .tech-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tech-pill { background: var(--ink); color: var(--bg); border-radius: 999px; padding: 6px 16px; font-size: 14px; }
+
+    .link-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 22px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: opacity 0.15s;
+      font-family: 'DM Sans', sans-serif;
+      border: none;
+      cursor: pointer;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--ink); }
+
+    footer {
+      padding-top: 40px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <nav>
+    <a href="../index.html" class="back-link" onclick="if(document.referrer.indexOf('index.html')>-1){history.back();return false;}">← Back</a>
+    <span class="nav-sep">·</span>
+    <span class="nav-title">Rock &amp; Beach Festival Planner</span>
+  </nav>
+
+  <div class="hero">
+    <p class="proj-tag">PostgreSQL · Relational Database Design · Shiny for Python</p>
+    <h1 class="proj-title">The database behind a festival you can actually plan around</h1>
+    <p class="proj-subtitle">A relational schema and live web app for a fictional Atlantic City music festival — the database enforces its own scheduling rules, and recommends what to do with the gaps.</p>
+    <div class="badges">
+      <span class="badge badge-blue">🎓 Columbia University</span>
+      <span class="badge badge-blue">Team project</span>
+      <span class="badge badge-dark">Database Management Systems · Columbia</span>
+    </div>
+    <p class="proj-summary">
+      A festival-companion app built on a <strong>real, deployed PostgreSQL schema</strong> — not sample data.
+      The database does more than store rows: a <strong>trigger blocks double-booked performance picks</strong>
+      at insert time, and a set of views uses <strong>window functions</strong> to find the gaps in an attendee's
+      day and recommend nearby activities and restaurants that actually fit.
+    </p>
+    <div class="role-strip">
+      <strong>My role:</strong> Team project — schema design and the conflict-detection / itinerary SQL were
+      built by a teammate. I built the entire <strong>Shiny for Python front end</strong>: all 12 tabs, the
+      HTML-rendering logic behind the lineup cards, schedule builder, and grounds map, the board-game visual
+      theme, and a fallback layer that keeps the whole app running on mock data if the live database connection
+      ever drops.
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-number">12 tabs</span>
+      <span class="stat-label">Lineup, Schedule, Tickets, Dining, Grounds Map &amp; more — one Shiny app</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">15 queries</span>
+      <span class="stat-label">Multi-table joins, GROUP BY, self-joins, window functions</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">1 trigger</span>
+      <span class="stat-label">Rejects overlapping performance picks before they're saved</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">Always on</span>
+      <span class="stat-label">Mock-data fallback keeps every tab working if the DB is down</span>
+    </div>
+  </div>
+
+  <!-- Schema illustration: how a booking flows through the tables -->
+  <div class="screenshot" style="background:#f2f0ec;">
+    <svg viewBox="0 0 800 300" xmlns="http://www.w3.org/2000/svg" style="display:block; width:100%; height:auto;" aria-label="Entity relationship diagram: attendee links through attendee_performance to performance, which joins artist, venue and festival_day">
+
+      <text x="40" y="26" font-family="DM Sans, sans-serif" font-size="10" font-weight="500" fill="#7a7570" letter-spacing="1.8">SIMPLIFIED SCHEMA</text>
+
+      <!-- ATTENDEE -->
+      <g transform="translate(30,50)">
+        <rect width="130" height="48" rx="8" fill="#ffffff" stroke="#e4e0da" stroke-width="1.5"/>
+        <text x="65" y="21" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="12" font-weight="500" fill="#1a1814">attendee</text>
+        <text x="65" y="37" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="9" fill="#7a7570">attendee_id (PK)</text>
+      </g>
+
+      <!-- ATTENDEE_PERFORMANCE (junction) -->
+      <g transform="translate(240,44)">
+        <rect width="170" height="60" rx="8" fill="#eef1fd" stroke="#2d5be3" stroke-width="1.5"/>
+        <text x="85" y="20" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="12" font-weight="500" fill="#1a1814">attendee_performance</text>
+        <text x="85" y="35" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="9" fill="#2d5be3">junction table</text>
+        <text x="85" y="49" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="9" fill="#7a7570">⛔ trigger: no overlaps</text>
+      </g>
+
+      <!-- PERFORMANCE -->
+      <g transform="translate(490,44)">
+        <rect width="130" height="60" rx="8" fill="#ffffff" stroke="#e4e0da" stroke-width="1.5"/>
+        <text x="65" y="20" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="12" font-weight="500" fill="#1a1814">performance</text>
+        <text x="65" y="35" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="9" fill="#7a7570">performance_id (PK)</text>
+        <text x="65" y="48" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="9" fill="#7a7570">start_time / end_time</text>
+      </g>
+
+      <!-- ARTIST / VENUE / FESTIVAL_DAY, fanning out from performance -->
+      <g transform="translate(690,10)">
+        <rect width="90" height="36" rx="7" fill="#ffffff" stroke="#e4e0da" stroke-width="1.5"/>
+        <text x="45" y="22" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="11" fill="#1a1814">artist</text>
+      </g>
+      <g transform="translate(690,64)">
+        <rect width="90" height="36" rx="7" fill="#ffffff" stroke="#e4e0da" stroke-width="1.5"/>
+        <text x="45" y="22" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="11" fill="#1a1814">venue</text>
+      </g>
+      <g transform="translate(690,118)">
+        <rect width="90" height="36" rx="7" fill="#ffffff" stroke="#e4e0da" stroke-width="1.5"/>
+        <text x="45" y="22" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="10.5" fill="#1a1814">festival_day</text>
+      </g>
+
+      <!-- connecting lines -->
+      <line x1="160" y1="74" x2="240" y2="74" stroke="#7a7570" stroke-width="1.3"/>
+      <line x1="410" y1="74" x2="490" y2="74" stroke="#7a7570" stroke-width="1.3"/>
+      <line x1="620" y1="66" x2="690" y2="28"  stroke="#7a7570" stroke-width="1.1" opacity="0.6"/>
+      <line x1="620" y1="80" x2="690" y2="82"  stroke="#7a7570" stroke-width="1.1" opacity="0.6"/>
+      <line x1="620" y1="94" x2="690" y2="136" stroke="#7a7570" stroke-width="1.1" opacity="0.6"/>
+
+      <!-- window-function annotation -->
+      <g transform="translate(240,150)">
+        <rect width="380" height="70" rx="8" fill="#ffffff" stroke="#e4e0da" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="16" y="24" font-family="DM Sans, sans-serif" font-size="10" font-weight="500" fill="#2d5be3" letter-spacing="0.5">v_attendee_downtime (view)</text>
+        <text x="16" y="42" font-family="DM Sans, sans-serif" font-size="10.5" fill="#7a7570">LEAD() finds the gap between an attendee's picks,</text>
+        <text x="16" y="58" font-family="DM Sans, sans-serif" font-size="10.5" fill="#7a7570">then joins activity / restaurant into what fits it.</text>
+      </g>
+      <line x1="325" y1="104" x2="325" y2="150" stroke="#2d5be3" stroke-width="1.3" stroke-dasharray="3,3"/>
+
+    </svg>
+  </div>
+
+  <!-- The project -->
+  <div class="section">
+    <p class="section-label">The idea</p>
+    <p class="about-text">
+      Most class database projects stop at a schema and a few SELECT statements. This one is wired up to a
+      <strong>live web app</strong> — a Shiny for Python front end themed as a board-game-styled Atlantic City
+      boardwalk festival, "Rock &amp; Beach." Every tab (lineup, tickets, dining, hotels, the grounds map) reads
+      from the same PostgreSQL database, so the app is only as good as the queries and constraints behind it.
+    </p>
+    <div class="case-card">
+      <p class="case-tag">Why it's more than a toy schema</p>
+      <p class="case-title">The database enforces its own rules</p>
+      <p class="case-detail">
+        Rather than checking for scheduling conflicts in the app code, a <strong>PostgreSQL trigger</strong> on
+        the attendee_performance junction table rejects any INSERT that would double-book an attendee into two
+        overlapping performances on the same day — using Postgres's native <strong>OVERLAPS</strong> operator.
+        The data stays consistent no matter what inserts it.
+      </p>
+    </div>
+  </div>
+
+  <!-- What I built -->
+  <div class="section">
+    <p class="section-label">What I built — the front end</p>
+    <p class="about-text">
+      A 12-tab Shiny for Python app covering the full attendee experience: Lineup, My Schedule, Tickets,
+      Activities, Dining, Hotels, a Grounds Map, Sponsors, a Group Planner, Social Match, a FAQ ("Good to
+      Know"), and a personal "My Festival" profile. I wrote the HTML-rendering helpers that turn query results
+      into the lineup cards, the visual schedule builder, the sponsor tiers, and the board-game-styled grounds
+      map — plus the theming that gives the whole thing its Monopoly-boardwalk look.
+    </p>
+  </div>
+
+  <!-- Query techniques -->
+  <div class="section">
+    <p class="section-label">SQL techniques behind the tabs</p>
+    <div class="model-steps">
+      <div class="model-step">
+        <p class="step-num">Lineup &amp; Tickets</p>
+        <p class="step-name">Multi-table JOINs</p>
+        <p class="step-desc">performance ⋈ artist ⋈ venue ⋈ festival_day, plus LEFT JOIN + GROUP BY for ticket availability</p>
+      </div>
+      <div class="model-step">
+        <p class="step-num">Social Match</p>
+        <p class="step-name">Self-JOIN</p>
+        <p class="step-desc">Joins the vote table to itself to surface attendees with overlapping taste</p>
+      </div>
+      <div class="model-step final">
+        <p class="step-num">My Schedule ✦</p>
+        <p class="step-name">Trigger + window function</p>
+        <p class="step-desc">OVERLAPS trigger blocks conflicts; LEAD() finds downtime gaps between picks</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Resilience -->
+  <div class="section">
+    <p class="section-label">Designed to degrade gracefully</p>
+    <div class="impact-grid">
+      <div class="impact-step">
+        <p class="impact-name">🔌 Live-first</p>
+        <p class="impact-desc">Every tab queries the real, deployed PostgreSQL database by default.</p>
+      </div>
+      <div class="impact-step">
+        <p class="impact-name">🛟 Mock fallback</p>
+        <p class="impact-desc">If the DB connection fails, each tab swaps to built-in mock data automatically — the demo never shows a blank screen.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Limitations -->
+  <div class="section">
+    <p class="section-label">Honest limitations</p>
+    <ul class="lim-list">
+      <li><strong>Ticketing &amp; voting:</strong> the attendee/ticket_type/ticket/vote tables are live but still 0 rows — those tabs run on mock data by design until that data exists</li>
+      <li><strong>Group Planner &amp; Social Match:</strong> reference tables that were never built in the final schema, so they're demo-only for now</li>
+      <li><strong>Distance calc:</strong> the activity/restaurant recommendations use a flat-plane approximation, not true great-circle distance — fine for a compact boardwalk, not for a bigger venue</li>
+    </ul>
+  </div>
+
+  <!-- Tech stack -->
+  <div class="section">
+    <p class="section-label">Tech stack</p>
+    <div class="tech-grid">
+      <span class="tech-pill">PostgreSQL</span>
+      <span class="tech-pill">DigitalOcean</span>
+      <span class="tech-pill">Shiny for Python</span>
+      <span class="tech-pill">psycopg2</span>
+      <span class="tech-pill">pandas</span>
+      <span class="tech-pill">SQL Triggers</span>
+      <span class="tech-pill">Window Functions</span>
+    </div>
+  </div>
+
+  <!-- Links -->
+  <div class="section">
+    <p class="section-label">See it live</p>
+    <div class="link-row">
+      <a href="https://019ff8c8-9a37-d102-0d65-cfb33762b0b6.share.connect.posit.cloud/" class="btn btn-primary" target="_blank" rel="noopener">🎲 Open the live app</a>
+      <a href="https://github.com/nr3093/SQL-Project" class="btn btn-outline" target="_blank" rel="noopener">View Code</a>
+    </div>
+  </div>
+
+  <footer>
+    Built by Nawa with the team · <a href="../index.html" onclick="if(document.referrer.indexOf('index.html')>-1){history.back();return false;}">Back to Portfolio</a>
+  </footer>
+
+</div>
+</body>
+</html>

@@ -355,6 +355,12 @@ footer {
     radial-gradient(circle 2px at 72% 72%, var(--accent) 99%, transparent 100%);
 }
 
+/* 7th+ project cards: no die face defined past 6 — hide the corner badge
+   entirely rather than show an empty or wrong-numbered square */
+.projects-grid .project-card:nth-child(n+7)::after {
+  display: none;
+}
+
 /* Skill pills read like game tokens — a soft raised edge that lifts on hover */
 .skill-pill {
   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
