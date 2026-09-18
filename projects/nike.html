@@ -162,7 +162,7 @@
 
   <!-- Nav -->
   <nav>
-    <a href="../index.html" class="back-link">← Back</a>
+    <a href="../index.html" class="back-link" onclick="if(document.referrer.indexOf('index.html')>-1){history.back();return false;}">← Back</a>
     <span class="nav-sep">·</span>
     <span class="nav-title">Analyzing Nike's Revenue Decline</span>
   </nav>
@@ -405,7 +405,7 @@
   </div>
 
   <footer>
-    Built by Nawa with the Go Lions team · <a href="../index.html">Back to Portfolio</a>
+    Built by Nawa with the Go Lions team · <a href="../index.html" onclick="if(document.referrer.indexOf('index.html')>-1){history.back();return false;}">Back to Portfolio</a>
   </footer>
 
 </div>
