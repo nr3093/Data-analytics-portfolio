@@ -11,6 +11,7 @@
   --border:       #e4e0da;
   --card:         #ffffff;
   --radius:       12px;
+  --path:         rgba(45, 91, 227, 0.35);
 }
 
 /* ── Base ── */
@@ -162,6 +163,7 @@ header {
   text-transform: uppercase;
   color: var(--muted);
   margin-bottom: 8px;
+  padding-right: 28px;
 }
 
 .project-title {
@@ -263,4 +265,113 @@ footer {
   text-align: center;
   font-size: 12px;
   color: var(--muted);
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   Game Theme Accents
+   Small, tasteful nods to a board-game motif — dice, tokens, and
+   a dashed "path" that echoes the route line on the journey map.
+   ══════════════════════════════════════════════════════════════ */
+
+/* Section labels get a tiny die glyph + a short dashed underline,
+   like a marker sitting on a board-game path */
+.section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 2px dashed var(--path);
+}
+
+.section-label::before {
+  content: '';
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='2' y='2' width='20' height='20' rx='5' fill='none' stroke='%237a7570' stroke-width='2'/%3E%3Ccircle cx='12' cy='12' r='2.5' fill='%237a7570'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+/* Project cards double as numbered die faces (1–6 in reading order) */
+.project-card {
+  position: relative;
+}
+
+.project-card::after {
+  content: '';
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid var(--accent);
+  border-radius: 4px;
+  background-color: var(--card);
+  transition: transform 0.3s;
+}
+
+.project-card:hover::after {
+  transform: rotate(15deg);
+}
+
+.projects-grid .project-card:nth-child(1)::after {
+  background-image: radial-gradient(circle 2px at 50% 50%, var(--accent) 99%, transparent 100%);
+}
+.projects-grid .project-card:nth-child(2)::after {
+  background-image:
+    radial-gradient(circle 2px at 28% 28%, var(--accent) 99%, transparent 100%),
+    radial-gradient(circle 2px at 72% 72%, var(--accent) 99%, transparent 100%);
+}
+.projects-grid .project-card:nth-child(3)::after {
+  background-image:
+    radial-gradient(circle 2px at 28% 28%, var(--accent) 99%, transparent 100%),
+    radial-gradient(circle 2px at 50% 50%, var(--accent) 99%, transparent 100%),
+    radial-gradient(circle 2px at 72% 72%, var(--accent) 99%, transparent 100%);
+}
+.projects-grid .project-card:nth-child(4)::after {
+  background-image:
+    radial-gradient(circle 2px at 28% 28%, var(--accent) 99%, transparent 100%),
+    radial-gradient(circle 2px at 72% 28%, var(--accent) 99%, transparent 100%),
+    radial-gradient(circle 2px at 28% 72%, var(--accent) 99%, transparent 100%),
+    radial-gradient(circle 2px at 72% 72%, var(--accent) 99%, transparent 100%);
+}
+.projects-grid .project-card:nth-child(5)::after {
+  background-image:
+    radial-gradient(circle 2px at 28% 28%, var(--accent) 99%, transparent 100%),
+    radial-gradient(circle 2px at 72% 28%, var(--accent) 99%, transparent 100%),
+    radial-gradient(circle 2px at 50% 50%, var(--accent) 99%, transparent 100%),
+    radial-gradient(circle 2px at 28% 72%, var(--accent) 99%, transparent 100%),
+    radial-gradient(circle 2px at 72% 72%, var(--accent) 99%, transparent 100%);
+}
+.projects-grid .project-card:nth-child(6)::after {
+  background-image:
+    radial-gradient(circle 2px at 28% 28%, var(--accent) 99%, transparent 100%),
+    radial-gradient(circle 2px at 72% 28%, var(--accent) 99%, transparent 100%),
+    radial-gradient(circle 2px at 28% 50%, var(--accent) 99%, transparent 100%),
+    radial-gradient(circle 2px at 72% 50%, var(--accent) 99%, transparent 100%),
+    radial-gradient(circle 2px at 28% 72%, var(--accent) 99%, transparent 100%),
+    radial-gradient(circle 2px at 72% 72%, var(--accent) 99%, transparent 100%);
+}
+
+/* Skill pills read like game tokens — a soft raised edge that lifts on hover */
+.skill-pill {
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.skill-pill:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* Emoji chips get the same token treatment */
+.emoji-chip {
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.emoji-chip:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
 }
